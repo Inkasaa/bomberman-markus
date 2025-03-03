@@ -1,0 +1,15 @@
+body {
+    margin: 0;
+    height: 100vh;
+}
+
+#game-container {
+    position: absolute;
+    background-color: #eee;
+    overflow: hidden;
+}
+
+#player {
+    position: absolute;
+    background-color: rgb(143, 176, 199);    
+}
