@@ -62,13 +62,23 @@ export class Bomb {
 
             /* TO DO
             if gridspot is occupied by:
+            - level edge: don't draw, stop
             - solid wall: don't draw, stop
             - destructible wall: don't draw, stop, destroy wall
-            - enemy: draw, continue, kill enemy
-            - player: draw, continue, kill player
             - item: don't draw, stop, destroy item
             - bomb: don't draw, explode bomb (timeout to zero)
-             */
+
+            - enemy: draw, continue, kill enemy
+            - player: draw, continue, kill player
+
+            Edges, walls, items and bombs could be saved on a 2d array and checked that way quite fast.
+            Something like:
+            if (level[3][11] == 'wallSolid' || level[3][11] == 'wallDest' || level[3][11] == 'item') {
+                // stop drawing this direction, somehow destroy if necessary
+            }
+
+            Player and enemies would be handled in their collision detections
+            */
 
             horizontalFlame(this.size, this.x + gridStep * i, this.y);
             horizontalFlame(this.size, this.x - gridStep * i, this.y);
