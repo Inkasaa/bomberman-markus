@@ -1,5 +1,6 @@
 import { resizeGameContainer, setUpGame } from "./initialize.js";
 import { Wall } from "./walls.js";
+import { Bomb, setGridSize } from "./bomb.js";
 
 export const startValues = {}
 export const xy = {}
@@ -18,6 +19,7 @@ let playerX = 0
 let playerY = 0
 
 const walls = [];
+const bombs = [];
 
 // Prevent default behavior for arrow keys to avoid page scrolling
 window.addEventListener("keydown", function (e) {
@@ -36,7 +38,7 @@ function getValues() {
     playerY = xy.playerY
 }
 
-function makeWalls() {    
+function makeWalls() {
     const size = bounds.width / 13;
     for (let i = 0; i < 6; i++) {
         for (let j = 0; j < 5; j++) {
@@ -62,7 +64,7 @@ function nextPosition() {
     if (rightDown) newX += speed * slowDown;
     if (upDown) newY -= speed * slowDown;
     if (downDown) newY += speed * slowDown;
-    
+
     // find walls player collides with
     const collidingWalls = []
     for (const wall of walls) {
@@ -73,9 +75,9 @@ function nextPosition() {
     }
 
     // update new coordinates based on possible collision
-    if (collidingWalls.length === 1 ) {
+    if (collidingWalls.length === 1) {
         [playerX, playerY] = collidingWalls[0].checkCollision(newX, newY, playerSize)
-    } else if (collidingWalls.length === 2 ){
+    } else if (collidingWalls.length === 2) {
         [newX, newY] = collidingWalls[0].checkCollision(newX, newY, playerSize)
         [playerX, playerY] = collidingWalls[1].checkCollision(newX, newY, playerSize)
     } else {
@@ -125,14 +127,24 @@ function stop(event) {
     }
 }
 
+
+
+function placeBomb(event) {
+    if (event.key === " ") { // Spacebar to place a bomb
+        bombs.push(new Bomb(playerX + playerSize / 2, playerY + playerSize / 2, mult));
+    }
+}
+
 addEventListener("DOMContentLoaded", function () {
     resizeGameContainer();
     setUpGame();
+    setGridSize();
     getValues();
     makeWalls();
 
     document.addEventListener('keydown', move);
     document.addEventListener('keyup', stop);
+    document.addEventListener("keydown", placeBomb);
 
     gameLoop();
 
