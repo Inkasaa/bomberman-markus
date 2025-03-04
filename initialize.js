@@ -7,11 +7,13 @@ export function resizeGameContainer() {
     const height = window.innerHeight;
 
     // wide or narrow window?
-    if (width / height > 4 / 3) {
+    // single screen Bomberman level has 6*5 unbreakable walls or 7*6 corridors,
+    // so proportions should be (6+7)/(6+5) 
+    if (width / height > 13 / 11) {
         gameContainer.style.height = height * 0.8 + "px";
-        gameContainer.style.width = height * 0.8 * (4 / 3) + "px";
+        gameContainer.style.width = height * 0.8 * (13 / 11) + "px";
     } else {
-        gameContainer.style.height = width * 0.8 * (3 / 4) + "px";
+        gameContainer.style.height = width * 0.8 * (11 / 13) + "px";
         gameContainer.style.width = width * 0.8 + "px";
     }
 
@@ -23,9 +25,9 @@ export function resizeGameContainer() {
 export function setUpGame() {
     //update multiplier
     startValues['multiplier'] = gameContainer.getBoundingClientRect().width / 1000;
-    startValues['moveSpeed'] = 10 * startValues['multiplier']; // Set moveSpeed based on multiplier
+    startValues['moveSpeed'] = 7 * startValues['multiplier']; // Set moveSpeed based on multiplier
 
-    startValues['playerSize'] = 100 * startValues['multiplier'];
+    startValues['playerSize'] = 50 * startValues['multiplier'];
 
     const player0 = document.createElement('div');
     player0.id = "player";
@@ -36,7 +38,7 @@ export function setUpGame() {
 
     player0.style.width = startValues['playerSize'] + 'px';
     player0.style.height = startValues['playerSize'] + 'px';
-    player0.style.borderRadius = startValues['playerSize'] / 2 + 'px';
+    player0.style.borderRadius = startValues['playerSize'] / 5 + 'px';
     player0.style.position = 'absolute';
 
     player0.style.transform = `translate(${xy.playerX}px, ${xy.playerY}px)`;

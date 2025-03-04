@@ -13,3 +13,7 @@ body {
     position: absolute;
     background-color: rgb(143, 176, 199);    
 }
+
+.wall{
+    background-color: rgb(152, 145, 125);    
+}

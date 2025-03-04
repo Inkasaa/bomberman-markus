@@ -1,4 +1,5 @@
-import { setUpGame, resizeGameContainer } from "./initialize.js";
+import { resizeGameContainer, setUpGame } from "./initialize.js";
+import { Wall } from "./walls.js";
 
 export const startValues = {}
 export const xy = {}
@@ -15,6 +16,8 @@ let upDown = false;
 let downDown = false;
 let playerX = 0
 let playerY = 0
+
+const walls = [];
 
 function getValues() {
     playerSize = startValues.playerSize
@@ -41,22 +44,31 @@ function nextPosition() {
     }
 
     // Calculate new position
-    let newX = xy.playerX;
-    let newY = xy.playerY;
+    let newX = playerX;
+    let newY = playerY;
 
     if (leftDown) newX -= speed * slowDown;
     if (rightDown) newX += speed * slowDown;
     if (upDown) newY -= speed * slowDown;
     if (downDown) newY += speed * slowDown;
 
-    // Ensure player stays within container bounds
-    xy.playerX = Math.max(0, Math.min(newX, bounds.width - playerSize));
-    xy.playerY = Math.max(0, Math.min(newY, bounds.height - playerSize));
+    // Collision detection
+    //let collision = walls.some(obstacle => obstacle.checkCollision(newX, newY, playerSize));
+
+    const collidingWall = walls.find((wall) => wall.checkCollision(newX, newY, playerSize).toString() != [newX, newY].toString());
+
+    if (collidingWall) {
+        [playerX, playerY] = collidingWall.checkCollision(newX, newY, playerSize)
+    } else {
+        // max: don't go negative (past left or top), min: don't go past right or bottom 
+        playerX = Math.max(0, Math.min(newX, bounds.width - playerSize));
+        playerY = Math.max(0, Math.min(newY, bounds.height - playerSize));
+    }
 }
 
 function updatePlayerPosition() {
     // Use transform for smoothness (often hardware accelerated)
-    player.style.transform = `translate(${xy.playerX}px, ${xy.playerY}px)`;
+    player.style.transform = `translate(${playerX}px, ${playerY}px)`;
 }
 
 function move(event) {
@@ -93,10 +105,22 @@ function stop(event) {
     }
 }
 
+function makeWalls() {    
+    const size = bounds.width / 13;
+    for (let i = 0; i < 6; i++) {
+        for (let j = 0; j < 5; j++) {
+            const x = bounds.width / 13 * (1 + i * 2);
+            const y = bounds.height / 11 * (1 + j * 2);
+            walls.push(new Wall(x, y, size));
+        }
+    }
+}
+
 addEventListener("DOMContentLoaded", function () {
     resizeGameContainer();
     setUpGame();
     getValues();
+    makeWalls();
 
     document.addEventListener('keydown', move);
     document.addEventListener('keyup', stop);
