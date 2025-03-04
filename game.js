@@ -19,6 +19,13 @@ let playerY = 0
 
 const walls = [];
 
+// Prevent default behavior for arrow keys to avoid page scrolling
+window.addEventListener("keydown", function (e) {
+    if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+        e.preventDefault();
+    }
+});
+
 function getValues() {
     playerSize = startValues.playerSize
     speed = startValues.moveSpeed
@@ -29,12 +36,16 @@ function getValues() {
     playerY = xy.playerY
 }
 
-// Prevent default behavior for arrow keys to avoid page scrolling
-window.addEventListener("keydown", function (e) {
-    if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
-        e.preventDefault();
+function makeWalls() {    
+    const size = bounds.width / 13;
+    for (let i = 0; i < 6; i++) {
+        for (let j = 0; j < 5; j++) {
+            const x = bounds.width / 13 * (1 + i * 2);
+            const y = bounds.height / 11 * (1 + j * 2);
+            walls.push(new Wall(x, y, size));
+        }
     }
-});
+}
 
 function nextPosition() {
     // Calculate diagonal movement slowdown factor
@@ -51,15 +62,24 @@ function nextPosition() {
     if (rightDown) newX += speed * slowDown;
     if (upDown) newY -= speed * slowDown;
     if (downDown) newY += speed * slowDown;
+    
+    // find walls player collides with
+    const collidingWalls = []
+    for (const wall of walls) {
+        if (wall.checkCollision(newX, newY, playerSize).toString() != [newX, newY].toString()) {
+            collidingWalls.push(wall);
+            if (collidingWalls.length === 2) break; // Won't collide with more than two walls
+        }
+    }
 
-    // Collision detection
-    //let collision = walls.some(obstacle => obstacle.checkCollision(newX, newY, playerSize));
-
-    const collidingWall = walls.find((wall) => wall.checkCollision(newX, newY, playerSize).toString() != [newX, newY].toString());
-
-    if (collidingWall) {
-        [playerX, playerY] = collidingWall.checkCollision(newX, newY, playerSize)
+    // update new coordinates based on possible collision
+    if (collidingWalls.length === 1 ) {
+        [playerX, playerY] = collidingWalls[0].checkCollision(newX, newY, playerSize)
+    } else if (collidingWalls.length === 2 ){
+        [newX, newY] = collidingWalls[0].checkCollision(newX, newY, playerSize)
+        [playerX, playerY] = collidingWalls[1].checkCollision(newX, newY, playerSize)
     } else {
+        // may still collide with boundary walls
         // max: don't go negative (past left or top), min: don't go past right or bottom 
         playerX = Math.max(0, Math.min(newX, bounds.width - playerSize));
         playerY = Math.max(0, Math.min(newY, bounds.height - playerSize));
@@ -102,17 +122,6 @@ function stop(event) {
         case "ArrowDown":
             downDown = false;
             break;
-    }
-}
-
-function makeWalls() {    
-    const size = bounds.width / 13;
-    for (let i = 0; i < 6; i++) {
-        for (let j = 0; j < 5; j++) {
-            const x = bounds.width / 13 * (1 + i * 2);
-            const y = bounds.height / 11 * (1 + j * 2);
-            walls.push(new Wall(x, y, size));
-        }
     }
 }
 

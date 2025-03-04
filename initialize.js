@@ -27,7 +27,7 @@ export function setUpGame() {
     startValues['multiplier'] = gameContainer.getBoundingClientRect().width / 1000;
     startValues['moveSpeed'] = 7 * startValues['multiplier']; // Set moveSpeed based on multiplier
 
-    startValues['playerSize'] = 50 * startValues['multiplier'];
+    startValues['playerSize'] = 55 * startValues['multiplier'];
 
     const player0 = document.createElement('div');
     player0.id = "player";

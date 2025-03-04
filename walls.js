@@ -11,6 +11,7 @@ export class Wall {
         this.element.style.height = `${size}px`;
         this.element.style.left = `${x}px`;
         this.element.style.top = `${y}px`;
+        this.element.style.borderRadius = size / 10 + 'px';
 
         document.getElementById("game-container").appendChild(this.element);
     }
@@ -22,22 +23,22 @@ export class Wall {
             return [playerX, playerY]
         } else {
             // find shortest direction out of collision
-                const diffs = {
-                    x1: this.x - (playerX + playerSize),  // this left to player right
-                    x2: (this.x + this.size) - playerX,   // this right to player left
-                    y1: this.y - (playerY + playerSize),  // this top to player bottom
-                    y2: (this.y + this.size) - playerY    // this bottom to player top
-                }
-    
-                // get key and value of item with lowest abs value
-                let [lowestItems] = Object.entries(diffs).sort(([, v1], [, v2]) => Math.abs(v1) - Math.abs(v2))
+            const diffs = {
+                x1: this.x - (playerX + playerSize),  // this left to player right
+                x2: (this.x + this.size) - playerX,   // this right to player left
+                y1: this.y - (playerY + playerSize),  // this top to player bottom
+                y2: (this.y + this.size) - playerY    // this bottom to player top
+            }
 
-                // Return player next to wall
-                if (lowestItems[0].startsWith('x')) {
-                    return [playerX + lowestItems[1], playerY]
-                } else {
-                    return [playerX, playerY + lowestItems[1]]
-                }
+            // get key and value of item with lowest abs value
+            let [lowestItems] = Object.entries(diffs).sort(([, v1], [, v2]) => Math.abs(v1) - Math.abs(v2))
+
+            // modify inputs to place player just outside wall
+            if (lowestItems[0].startsWith('x')) {
+                return [playerX + lowestItems[1], playerY]
+            } else {
+                return [playerX, playerY + lowestItems[1]]
+            }
         }
     }
 }
