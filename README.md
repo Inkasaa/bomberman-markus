@@ -1,3 +1,3 @@
 # make-your-game
 
-Light Bomberman clone in Java-Script
+Light Bomberman clone in JavaScript
