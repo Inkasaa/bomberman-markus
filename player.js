@@ -18,7 +18,8 @@ export class Player {
         document.getElementById("game-container").appendChild(this.element);
 
         // listen for bomb drop button
-        this.bombs = 3  // bombs limit
+        this.bombs = 3;  // bombs limit
+        this.bombPower = 1;
         document.addEventListener("keydown", (event) => {
             if (event.key === " ") { // drop bomb with space
                 this.dropBomb();
@@ -37,7 +38,7 @@ export class Player {
 
     dropBomb() {
         if (this.bombs > 0) {
-            new Bomb(this.x + this.size / 2, this.y + this.size / 2)
+            new Bomb(this.x + this.size / 2, this.y + this.size / 2, this.bombPower)
             this.bombs--
             setTimeout(() => this.bombs++, bombTime)
         }

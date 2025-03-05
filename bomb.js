@@ -31,14 +31,14 @@ function verticalFlame(size, x, y) {
 }
 
 export class Bomb {
-    constructor(x, y) {
+    constructor(x, y, power) {
         const size = mult * 50;
         // Align dropped bomb to grid
         this.x = (Math.floor(x / gridStep)) * gridStep + halfStep - size / 2;
         this.y = (Math.floor(y / gridStep)) * gridStep + halfStep - size / 2;
 
         this.size = size;
-        this.explosionReach = 1;
+        this.power = power;
 
         this.element = document.createElement("div");
         this.element.classList.add("bomb")
@@ -58,7 +58,7 @@ export class Bomb {
         // Draw flames of explosion
         horizontalFlame(this.size, this.x, this.y);
         verticalFlame(this.size, this.x, this.y);
-        for (let i = 1; i <= this.explosionReach; i++) {
+        for (let i = 1; i <= this.power; i++) {
 
             /* TO DO
             if gridspot is occupied by:
