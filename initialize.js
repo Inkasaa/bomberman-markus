@@ -24,18 +24,16 @@ export function resizeGameContainer() {
 }
 
 export function setUpGame(bounds) {
-    // multiplier from game-container size scales everything
-    // (speed, placements) to different sized windows
+    // multiplier from game-container size scales things (speed, placements) 
+    // to different sized windows
     const multiplier = bounds.width / 1000; 
 
-    const speed = 7 * multiplier;
-    const playerSize = 55 * multiplier;
-
-    // put player to top left    
-    const playerX = halfStep - (playerSize / 2);
+    const playerSpeed = 7 * multiplier;
+    const playerSize = 55 * multiplier;    
+    const playerX = halfStep - (playerSize / 2); // put player to top left    
     const playerY = halfStep - (playerSize / 2);
 
-    const player = new Player(playerSize, playerX, playerY);
+    const player = new Player(playerSize, playerSpeed, playerX, playerY);
 
-    return [playerSize, speed, multiplier, player, playerX, playerY]
+    return player
 }

@@ -1,5 +1,4 @@
-import { mult } from "./game.js";
-import { state } from "./state.js";
+import { bombTime, mult } from "./game.js";
 export let gridStep = 0;
 export let halfStep = 0;
 
@@ -50,7 +49,7 @@ export class Bomb {
 
         document.getElementById("game-container").appendChild(this.element);
 
-        setTimeout(() => this.explode(), state.bombTime); // Explode after 2 seconds
+        setTimeout(() => this.explode(), bombTime); // Explode after 2 seconds
     }
 
     explode() {
