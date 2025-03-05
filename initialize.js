@@ -1,50 +1,50 @@
-import { startValues, xy } from "./game.js";
-
-const gameContainer = document.getElementById("game-container");
-
 export function resizeGameContainer() {
-    const width = window.innerWidth;
-    const height = window.innerHeight;
+    const gameContainer = document.getElementById("game-container");
 
-    // wide or narrow window?
-    // single screen Bomberman level has 6*5 unbreakable walls or 7*6 corridors,
-    // so proportions should be (6+7)/(6+5) 
-    if (width / height > 13 / 11) {
-        gameContainer.style.height = height * 0.8 + "px";
-        gameContainer.style.width = height * 0.8 * (13 / 11) + "px";
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+
+    // wide or narrow window? single screen Bomberman level is 13 * 11 squares
+    if (windowWidth / windowHeight > 13 / 11) {
+        gameContainer.style.height = windowHeight * 0.8 + "px";
+        gameContainer.style.width = windowHeight * 0.8 * (13 / 11) + "px";
     } else {
-        gameContainer.style.height = width * 0.8 * (11 / 13) + "px";
-        gameContainer.style.width = width * 0.8 + "px";
+        gameContainer.style.height = windowWidth * 0.8 * (11 / 13) + "px";
+        gameContainer.style.width = windowWidth * 0.8 + "px";
     }
 
-    startValues['bounds'] = gameContainer.getBoundingClientRect();
-    gameContainer.style.left = (width - startValues['bounds'].width) / 2 + 'px';
-    gameContainer.style.top = (height - startValues['bounds'].height) / 2 + 'px';
+    const bounds = gameContainer.getBoundingClientRect();
+    gameContainer.style.left = (windowWidth - bounds.width) / 2 + 'px';
+    gameContainer.style.top = (windowHeight - bounds.height) / 2 + 'px';
+
+    return bounds
 }
 
-export function setUpGame() {
-    //update multiplier
-    startValues['multiplier'] = gameContainer.getBoundingClientRect().width / 1000;
-    startValues['moveSpeed'] = 7 * startValues['multiplier']; // Set moveSpeed based on multiplier
+export function setUpGame(bounds) {
+    const gameContainer = document.getElementById("game-container");
 
-    startValues['playerSize'] = 55 * startValues['multiplier'];
+    //update multiplier
+    const multiplier = bounds.width / 1000;
+    const speed = 7 * multiplier;
+
+    const playerSize = 55 * multiplier;
 
     const player0 = document.createElement('div');
     player0.id = "player";
 
     // Initialize player position to center of container
-    xy.playerX = (gameContainer.clientWidth - startValues['playerSize']) / 2;
-    xy.playerY = (gameContainer.clientHeight - startValues['playerSize']) / 2;
+    const playerX = (bounds.width - playerSize) / 2;
+    const playerY = (bounds.height - playerSize) / 2;
 
-    player0.style.width = startValues['playerSize'] + 'px';
-    player0.style.height = startValues['playerSize'] + 'px';
-    player0.style.borderRadius = startValues['playerSize'] / 5 + 'px';
+    player0.style.width = playerSize + 'px';
+    player0.style.height = playerSize + 'px';
+    player0.style.borderRadius = playerSize / 5 + 'px';
     player0.style.position = 'absolute';
 
-    player0.style.transform = `translate(${xy.playerX}px, ${xy.playerY}px)`;
+    player0.style.transform = `translate(${playerX}px, ${playerY}px)`;
 
-    startValues['player'] = player0;
+    const player = player0;
     gameContainer.appendChild(player0);
 
-    startValues['bounds'] = gameContainer.getBoundingClientRect();
+    return [playerSize, speed, multiplier, player, playerX, playerY]
 }
