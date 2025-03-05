@@ -1,9 +1,9 @@
 import { resizeGameContainer, setUpGame } from "./initialize.js";
 import { Wall } from "./walls.js";
-import { Bomb, setGridSize } from "./bomb.js";
+import { setGridSize } from "./bomb.js";
 
 let bounds;
-let mult = 1.0;
+export let mult = 1.0;
 let player;
 let playerSize = 10
 let speed = 10
@@ -18,7 +18,6 @@ let playerY = 0
 let lastFrameTime = 0;
 
 const walls = [];
-const bombs = [];
 
 // Prevent default behavior for arrow keys to avoid page scrolling
 window.addEventListener("keydown", function (e) {
@@ -38,7 +37,7 @@ function makeWalls() {
     }
 }
 
-function nextPosition(deltaTime) {
+function movePlayer(deltaTime) {
     // diagonal movement slowdown factor
     let slowDown = 1;
     if ((leftDown || rightDown) && (upDown || downDown)) {
@@ -73,16 +72,13 @@ function nextPosition(deltaTime) {
         [newX, newY] = collidingWalls[0].checkCollision(newX, newY, playerSize)
         [playerX, playerY] = collidingWalls[1].checkCollision(newX, newY, playerSize)
     } else {
-        // may still collide with boundary walls
+        // may still collide with outer boundaries
         // max: don't go negative (past left or top), min: don't go past right or bottom 
         playerX = Math.max(0, Math.min(newX, bounds.width - playerSize));
         playerY = Math.max(0, Math.min(newY, bounds.height - playerSize));
     }
-}
 
-function updatePlayerPosition() {
-    // Use transform for smoothness (often hardware accelerated)
-    player.style.transform = `translate(${playerX}px, ${playerY}px)`;
+    player.updatePosition(playerX, playerY)
 }
 
 function move(event) {
@@ -119,21 +115,20 @@ function stop(event) {
     }
 }
 
-function placeBomb(event) {
+/* function placeBomb(event) {
     if (event.key === " ") { // Spacebar to place a bomb
         bombs.push(new Bomb(playerX + playerSize / 2, playerY + playerSize / 2, mult));
     }
-}
+} */
 
 addEventListener("DOMContentLoaded", function () {
     bounds = resizeGameContainer();
-    [playerSize, speed, mult, player, playerX, playerY] = setUpGame(bounds)
     setGridSize();
+    [playerSize, speed, mult, player, playerX, playerY] = setUpGame(bounds);    
     makeWalls();
 
     document.addEventListener('keydown', move);
     document.addEventListener('keyup', stop);
-    document.addEventListener("keydown", placeBomb);
 
     lastFrameTime = this.performance.now() // initialize to current timestamp
 
@@ -143,8 +138,7 @@ addEventListener("DOMContentLoaded", function () {
         let deltaTime = (timestamp - lastFrameTime) / 16.7; // use deltaTime to normalize speed
         lastFrameTime = timestamp;
 
-        nextPosition(deltaTime);
-        updatePlayerPosition();
+        movePlayer(deltaTime);
         // requestAnimationFrame() always runs callback with 'timestamp' (milliseconds since the page loaded)
         requestAnimationFrame(gameLoop);
     }

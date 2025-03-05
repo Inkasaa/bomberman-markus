@@ -1,5 +1,7 @@
-let gridStep = 0;
-let halfStep = 0;
+import { mult } from "./game.js";
+import { state } from "./state.js";
+export let gridStep = 0;
+export let halfStep = 0;
 
 export function setGridSize() {
     const gameContainer = document.getElementById("game-container");
@@ -30,10 +32,9 @@ function verticalFlame(size, x, y) {
 }
 
 export class Bomb {
-    constructor(x, y, mult) {
-
+    constructor(x, y) {
         const size = mult * 50;
-        // Align drop to grid
+        // Align dropped bomb to grid
         this.x = (Math.floor(x / gridStep)) * gridStep + halfStep - size / 2;
         this.y = (Math.floor(y / gridStep)) * gridStep + halfStep - size / 2;
 
@@ -49,7 +50,7 @@ export class Bomb {
 
         document.getElementById("game-container").appendChild(this.element);
 
-        setTimeout(() => this.explode(), 2000); // Explode after 2 seconds
+        setTimeout(() => this.explode(), state.bombTime); // Explode after 2 seconds
     }
 
     explode() {
@@ -104,7 +105,6 @@ export class Bomb {
 
     checkCollision(objX, objY, objSize) {
         return (
-
             // Let's not use radius for this.
             Math.abs(this.x - objX) < this.explosionRadius &&
             Math.abs(this.y - objY) < this.explosionRadius

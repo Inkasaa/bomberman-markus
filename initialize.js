@@ -1,3 +1,6 @@
+import { Player } from "./player.js";
+import { halfStep } from "./bomb.js";
+
 export function resizeGameContainer() {
     const gameContainer = document.getElementById("game-container");
 
@@ -21,30 +24,18 @@ export function resizeGameContainer() {
 }
 
 export function setUpGame(bounds) {
-    const gameContainer = document.getElementById("game-container");
+    // multiplier from game-container size scales everything
+    // (speed, placements) to different sized windows
+    const multiplier = bounds.width / 1000; 
 
-    //update multiplier
-    const multiplier = bounds.width / 1000;
     const speed = 7 * multiplier;
-
     const playerSize = 55 * multiplier;
 
-    const player0 = document.createElement('div');
-    player0.id = "player";
+    // put player to top left    
+    const playerX = halfStep - (playerSize / 2);
+    const playerY = halfStep - (playerSize / 2);
 
-    // Initialize player position to center of container
-    const playerX = (bounds.width - playerSize) / 2;
-    const playerY = (bounds.height - playerSize) / 2;
-
-    player0.style.width = playerSize + 'px';
-    player0.style.height = playerSize + 'px';
-    player0.style.borderRadius = playerSize / 5 + 'px';
-    player0.style.position = 'absolute';
-
-    player0.style.transform = `translate(${playerX}px, ${playerY}px)`;
-
-    const player = player0;
-    gameContainer.appendChild(player0);
+    const player = new Player(playerSize, playerX, playerY);
 
     return [playerSize, speed, multiplier, player, playerX, playerY]
 }

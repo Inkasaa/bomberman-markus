@@ -1,5 +1,5 @@
 export let state = {
-    // score maybe
+    bombTime: 2000
 
 };
 
