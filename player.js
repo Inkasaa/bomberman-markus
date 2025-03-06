@@ -1,10 +1,10 @@
 import { Bomb } from "./bomb.js";
-import { bombTime, bounds, walls } from "./game.js";
+import { bombTime, bombs, bounds, solidWalls, weakWalls } from "./game.js";
 
 export class Player {
     constructor(size, speed, x, y) {
         this.size = size;
-        this.speed = speed
+        this.speed = speed;
         this.x = x;
         this.y = y;
 
@@ -18,7 +18,7 @@ export class Player {
         document.getElementById("game-container").appendChild(this.element);
 
         // listen for bomb drop button
-        this.bombs = 3;  // bombs limit
+        this.bombAmount = 3;
         this.bombPower = 1;
         document.addEventListener("keydown", (event) => {
             if (event.key === " ") { // drop bomb with space
@@ -37,10 +37,10 @@ export class Player {
     }
 
     dropBomb() {
-        if (this.bombs > 0) {
-            new Bomb(this.x + this.size / 2, this.y + this.size / 2, this.bombPower)
-            this.bombs--
-            setTimeout(() => this.bombs++, bombTime)
+        if (this.bombAmount > 0) {
+            new Bomb(this.x + this.size / 2, this.y + this.size / 2, this.bombPower, 'player');
+            this.bombAmount--;
+            setTimeout(() => this.bombAmount++, bombTime);
         }
     }
 
@@ -78,6 +78,8 @@ export class Player {
         }
     }
 
+
+
     movePlayer(deltaTime) {
         // diagonal movement slowdown factor
         let slowDown = 1;
@@ -85,7 +87,7 @@ export class Player {
             slowDown = 0.707;
         }
 
-        // normalize speed for different framerates
+        // normalize speed for diagonal movement and different framerates
         let moveDistance = this.speed * slowDown * deltaTime;
 
         // calculate new position
@@ -94,29 +96,47 @@ export class Player {
         if (this.left) newX -= moveDistance;
         if (this.right) newX += moveDistance;
         if (this.up) newY -= moveDistance;
-        if (this.down) newY += moveDistance;        
+        if (this.down) newY += moveDistance;
 
-        // find walls player collides with
-        const collidingWalls = []
-        for (const wall of walls) {
+        // find walls player would collide with
+        const collidingWalls = [];
+        for (const wall of solidWalls) {
             if (wall.checkCollision(newX, newY, this.size).toString() != [newX, newY].toString()) {
                 collidingWalls.push(wall);
-                if (collidingWalls.length === 2) break; // Can't collide with more than two walls
+                if (collidingWalls.length == 1) break; // Can't collide with more than one solid wall
             }
         }
 
-        // update new coordinates based on possible collision
-        if (collidingWalls.length === 1) {
-            [this.x, this.y] = collidingWalls[0].checkCollision(newX, newY, this.size)
-        } else if (collidingWalls.length === 2) {
-            [newX, newY] = collidingWalls[0].checkCollision(newX, newY, this.size)
-            [this.x, this.y] = collidingWalls[1].checkCollision(newX, newY, this.size)
-        } else {
-            // may still collide with outer boundaries
-            // max: don't go negative (past left or top), min: don't go past right or bottom 
-            this.x = Math.max(0, Math.min(newX, bounds.width - this.size));
-            this.y = Math.max(0, Math.min(newY, bounds.height - this.size));
+        for (const wall of weakWalls) {
+            if (wall.checkCollision(newX, newY, this.size).toString() != [newX, newY].toString()) {
+                collidingWalls.push(wall);
+                if (collidingWalls.length === 3) break; // Can't collide with more than three walls
+            }
         }
+
+        for (const wall of collidingWalls) {
+            [newX, newY] = wall.checkCollision(newX, newY, this.size);
+        }
+
+        const collidingBombs = [];
+        for (const bomb of bombs.values()) {
+            if (bomb.checkCollision(newX, newY, this.size).toString() != [newX, newY].toString()) {
+                collidingBombs.push(bomb);
+            } else {
+                // erase owner when player no longer on top of bomb
+                bomb.owner = '';
+            }
+        }
+
+        for (const bomb of collidingBombs) {
+            // No collision if bomb has owner
+            if (!bomb.owner) {
+                [newX, newY] = bomb.checkCollision(newX, newY, this.size);
+            }            
+        }
+
+        this.x = Math.max(0, Math.min(newX, bounds.width - this.size));
+        this.y = Math.max(0, Math.min(newY, bounds.height - this.size));
 
         this.element.style.transform = `translate(${this.x}px, ${this.y}px)`;
     }

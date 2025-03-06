@@ -17,8 +17,15 @@ body {
 }
 
 .wall {
-    background-color: rgb(152, 145, 125);
     z-index: 1;
+}
+
+.wall.solid {
+    background-color: rgb(136, 136, 136);
+}
+
+.wall.weak {
+    background-color: rgb(199, 165, 130);
 }
 
 .flame {

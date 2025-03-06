@@ -1,12 +1,17 @@
-import { resizeGameContainer, setGridSize, setUpGame, makeWalls } from "./initialize.js";
+import { resizeGameContainer, getGridSize, setUpGame, makeWalls, levelMap } from "./initialize.js";
 
 export let bounds;
 export let mult = 1.0;
 export let gridStep = 0;
 export let halfStep = 0;
+export let map;
 
-export const walls = [];
+export const solidWalls = [];
+export let weakWalls = [];
+
+export let bombs = new Map();
 export const bombTime = 2000;
+
 let player;
 let lastFrameTime = 0;
 
@@ -19,11 +24,12 @@ window.addEventListener("keydown", function (e) {
 
 addEventListener("DOMContentLoaded", function () {
     bounds = resizeGameContainer();
-    [gridStep, halfStep] = setGridSize();
-    [mult, player] = setUpGame(bounds);    
-    walls.push(...makeWalls());
-    lastFrameTime = this.performance.now() // initialize to current timestamp
+    [gridStep, halfStep] = getGridSize();
+    [mult, player] = setUpGame(bounds);
+    map = levelMap()
+    makeWalls();
 
+    lastFrameTime = this.performance.now() // initialize to current timestamp
     gameLoop();
 
     function gameLoop(timestamp) {
@@ -31,6 +37,8 @@ addEventListener("DOMContentLoaded", function () {
         lastFrameTime = timestamp;
 
         player.movePlayer(deltaTime);
+        //console.log(bombs)
+
         // requestAnimationFrame() always runs callback with 'timestamp' (milliseconds since the page loaded)
         requestAnimationFrame(gameLoop);
     }

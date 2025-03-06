@@ -1,4 +1,4 @@
-import { bombTime, mult, gridStep, halfStep } from "./game.js";
+import { bombs, bombTime, mult, gridStep, halfStep } from "./game.js";
 
 function horizontalFlame(size, x, y) {
     let flame = document.createElement('div')
@@ -23,24 +23,29 @@ function verticalFlame(size, x, y) {
 }
 
 export class Bomb {
-    constructor(x, y, power) {
+    constructor(x, y, power, name) {
         const size = mult * 50;
 
         // Align dropped bomb to grid
-        this.x = (Math.floor(x / gridStep)) * gridStep + halfStep - size / 2;
-        this.y = (Math.floor(y / gridStep)) * gridStep + halfStep - size / 2;
-
+        this.mapX = Math.floor(x / gridStep);
+        this.mapY = Math.floor(y / gridStep);
+        this.x = this.mapX * gridStep + halfStep - size / 2;
+        this.y = this.mapY * gridStep + halfStep - size / 2;
         this.size = size;
+
+        this.owner = name;
         this.power = power;
 
         this.element = document.createElement("div");
-        this.element.classList.add("bomb")
+        this.element.classList.add("bomb");
         this.element.style.width = `${size}px`;
         this.element.style.height = `${size}px`;
         this.element.style.left = `${this.x}px`;
         this.element.style.top = `${this.y}px`;
+        this.bounds = this.element.getBoundingClientRect();
 
         document.getElementById("game-container").appendChild(this.element);
+        bombs.set(`bomb${this.mapX}${this.mapY}`, this);  // add bomb to map for collision checks
 
         setTimeout(() => this.explode(), bombTime); // Explode after 2 seconds
     }
@@ -79,27 +84,36 @@ export class Bomb {
             verticalFlame(this.size, this.x, this.y - gridStep * i);
         }
 
-
-
         // Create explosion effect
         setTimeout(() => {
-            this.element.remove(); // Remove bomb after explosion effect
+            // Remove bomb after explosion effect
+            this.element.remove();
+            bombs.delete(`bomb${this.mapX}${this.mapY}`)
         }, 500);
-
-        // Check for obstacles to destroy
-        /*         obstacles.forEach((obstacle, index) => {
-                    if (this.checkCollision(obstacle.x, obstacle.y, obstacle.size)) {
-                        obstacle.element.remove(); // Remove the obstacle visually
-                        obstacles.splice(index, 1); // Remove it from the array
-                    }
-                }); */
     }
 
-    checkCollision(objX, objY, objSize) {
-        return (
-            // Let's not use radius for this.
-            Math.abs(this.x - objX) < this.explosionRadius &&
-            Math.abs(this.y - objY) < this.explosionRadius
-        );
+    checkCollision(playerX, playerY, playerSize) {
+        if (playerX + playerSize < this.x || playerX > this.x + this.size || playerY + playerSize < this.y || playerY > this.y + this.size) {
+            // No collision: player is safely outside on at least one side, return input values
+            return [playerX, playerY]
+        } else {
+            // find shortest direction out of collision
+            const diffs = {
+                x1: this.x - (playerX + playerSize),  // this left to player right
+                x2: (this.x + this.size) - playerX,   // this right to player left
+                y1: this.y - (playerY + playerSize),  // this top to player bottom
+                y2: (this.y + this.size) - playerY    // this bottom to player top
+            };
+
+            // get key and value of item with lowest abs value
+            let [lowestItems] = Object.entries(diffs).sort(([, v1], [, v2]) => Math.abs(v1) - Math.abs(v2));
+
+            // modify inputs to place player just outside wall
+            if (lowestItems[0].startsWith('x')) {
+                return [playerX + lowestItems[1], playerY];
+            } else {
+                return [playerX, playerY + lowestItems[1]];
+            }
+        }
     }
 }

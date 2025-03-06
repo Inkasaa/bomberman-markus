@@ -1,4 +1,4 @@
-export class Wall {
+class Wall {
     constructor(x, y, size) {
         this.x = x;
         this.y = y;
@@ -17,7 +17,6 @@ export class Wall {
     }
 
     checkCollision(playerX, playerY, playerSize) {
-
         if (playerX + playerSize < this.x || playerX > this.x + this.size || playerY + playerSize < this.y || playerY > this.y + this.size) {
             // No collision: player is safely outside on at least one side, return input values
             return [playerX, playerY]
@@ -40,5 +39,19 @@ export class Wall {
                 return [playerX, playerY + lowestItems[1]]
             }
         }
+    }
+}
+
+export class SolidWall extends Wall {
+    constructor(x, y, size) {
+        super(x, y, size);
+        this.element.classList.add("solid");
+    }
+}
+
+export class WeakWall extends Wall {
+    constructor(x, y, size) {
+        super(x, y, size);
+        this.element.classList.add("weak");
     }
 }
