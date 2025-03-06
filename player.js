@@ -19,7 +19,7 @@ export class Player {
 
         // listen for bomb drop button
         this.bombAmount = 3;
-        this.bombPower = 1;
+        this.bombPower = 2;
         document.addEventListener("keydown", (event) => {
             if (event.key === " ") { // drop bomb with space
                 this.dropBomb();
@@ -107,7 +107,7 @@ export class Player {
             }
         }
 
-        for (const wall of weakWalls) {
+        for (const wall of weakWalls.values()) {
             if (wall.checkCollision(newX, newY, this.size).toString() != [newX, newY].toString()) {
                 collidingWalls.push(wall);
                 if (collidingWalls.length === 3) break; // Can't collide with more than three walls

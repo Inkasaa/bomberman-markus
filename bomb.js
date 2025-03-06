@@ -1,4 +1,4 @@
-import { bombs, bombTime, mult, gridStep, halfStep } from "./game.js";
+import { bombs, bombTime, mult, gridStep, halfStep, nameMap, weakWalls } from "./game.js";
 
 function horizontalFlame(size, x, y) {
     let flame = document.createElement('div')
@@ -45,7 +45,7 @@ export class Bomb {
         this.bounds = this.element.getBoundingClientRect();
 
         document.getElementById("game-container").appendChild(this.element);
-        bombs.set(`bomb${this.mapX}${this.mapY}`, this);  // add bomb to map for collision checks
+        bombs.set(`bomb${this.mapX.toString().padStart(2, '0')}${this.mapY.toString().padStart(2, '0')}`, this);  // add bomb to map for collision checks
 
         setTimeout(() => this.explode(), bombTime); // Explode after 2 seconds
     }
@@ -56,6 +56,9 @@ export class Bomb {
         // Draw flames of explosion
         horizontalFlame(this.size, this.x, this.y);
         verticalFlame(this.size, this.x, this.y);
+
+        let [xPlus, xMinus, yPlus, yMinus] = [true, true, true, true];
+
         for (let i = 1; i <= this.power; i++) {
 
             /* TO DO
@@ -78,17 +81,51 @@ export class Bomb {
             Player and enemies would be handled in their collision detections
             */
 
-            horizontalFlame(this.size, this.x + gridStep * i, this.y);
-            horizontalFlame(this.size, this.x - gridStep * i, this.y);
-            verticalFlame(this.size, this.x, this.y + gridStep * i);
-            verticalFlame(this.size, this.x, this.y - gridStep * i);
+            // Stop flames where they hit walls
+            if (this.mapX + i < 13 && nameMap[this.mapY][this.mapX + i] && (nameMap[this.mapY][this.mapX + i].startsWith('weakWall') || nameMap[this.mapY][this.mapX + i] == 'solidWall')) {                
+                xPlus = false;
+                if (nameMap[this.mapY][this.mapX + i].startsWith('weakWall')) {
+                    weakWalls.get(nameMap[this.mapY][this.mapX + i]).collapse();
+                    weakWalls.delete(nameMap[this.mapY][this.mapX + i]);
+                    nameMap[this.mapY][this.mapX + i] = "";
+                }
+            };
+            if (this.mapX - i >= 0 && nameMap[this.mapY][this.mapX - i] && (nameMap[this.mapY][this.mapX - i].startsWith('weakWall') || nameMap[this.mapY][this.mapX - i] == 'solidWall')) {
+                xMinus = false;
+                if (nameMap[this.mapY][this.mapX - i].startsWith('weakWall')) {
+                    weakWalls.get(nameMap[this.mapY][this.mapX - i]).collapse();
+                    weakWalls.delete(nameMap[this.mapY][this.mapX - i]);
+                    nameMap[this.mapY][this.mapX - i] = "";
+                }
+            };
+            if (this.mapY + i < 11 && nameMap[this.mapY + i][this.mapX] && (nameMap[this.mapY + i][this.mapX].startsWith('weakWall') || nameMap[this.mapY + i][this.mapX] == 'solidWall')) {
+                yPlus = false;
+                if (nameMap[this.mapY + i][this.mapX].startsWith('weakWall')) {
+                    weakWalls.get(nameMap[this.mapY + i][this.mapX]).collapse();
+                    weakWalls.delete(nameMap[this.mapY + i][this.mapX]);
+                    nameMap[this.mapY + i][this.mapX] = "";
+                }
+            };
+            if (this.mapY - i >= 0 && nameMap[this.mapY - i][this.mapX] && (nameMap[this.mapY - i][this.mapX].startsWith('weakWall') || nameMap[this.mapY - i][this.mapX] == 'solidWall')) {
+                yMinus = false;
+                if (nameMap[this.mapY - i][this.mapX].startsWith('weakWall')) {
+                    weakWalls.get(nameMap[this.mapY - i][this.mapX]).collapse();
+                    weakWalls.delete(nameMap[this.mapY - i][this.mapX]);
+                    nameMap[this.mapY - i][this.mapX] = "";
+                }
+            };
+
+            if (xPlus) horizontalFlame(this.size, this.x + gridStep * i, this.y);
+            if (xMinus) horizontalFlame(this.size, this.x - gridStep * i, this.y);
+            if (yPlus) verticalFlame(this.size, this.x, this.y + gridStep * i);
+            if (yMinus) verticalFlame(this.size, this.x, this.y - gridStep * i);
         }
 
         // Create explosion effect
         setTimeout(() => {
             // Remove bomb after explosion effect
             this.element.remove();
-            bombs.delete(`bomb${this.mapX}${this.mapY}`)
+            bombs.delete(`bomb${this.mapX.toString().padStart(2, '0')}${this.mapY.toString().padStart(2, '0')}`)
         }, 500);
     }
 

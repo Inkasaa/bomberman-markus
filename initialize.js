@@ -1,4 +1,4 @@
-import { gridStep, halfStep, map, solidWalls, weakWalls } from "./game.js";
+import { gridStep, halfStep, nameMap, solidWalls, weakWalls } from "./game.js";
 import { Player } from "./player.js";
 import { SolidWall, WeakWall } from "./walls.js";
 
@@ -60,24 +60,27 @@ export function makeWalls() {
             const mapY = (1 + j * 2);
             const x = gridStep * mapX;
             const y = gridStep * mapY;
-            solidWalls.push(new SolidWall(x, y, gridStep));
-            map[mapY][mapX] = 'solidWall'
+            const newSolid = new SolidWall(x, y, gridStep)
+            solidWalls.push(newSolid);
+            nameMap[mapY][mapX] = 'solidWall'
         }
     }
 
 
-    while (weakWalls.length < 50) {
+    while (weakWalls.size < 50) {
         const mapX = Math.floor(Math.random() * 13);
         const mapY = Math.floor(Math.random() * 11);
 
         // don't replace content or put anything in the top left and bottom right corners
-        if (map[mapY][mapX] || (mapX < 2 && mapY < 2) || (mapX > 10 && mapY > 9)) {
+        if (nameMap[mapY][mapX] || (mapX < 2 && mapY < 2) || (mapX > 10 && mapY > 9)) {
             continue
         }
 
         const x = gridStep * mapX;
         const y = gridStep * mapY;
-        weakWalls.push(new WeakWall(x, y, gridStep));
-        map[mapY][mapX] = 'weakWall'
+        const name = `weakWall${mapX.toString().padStart(2, '0')}${mapY.toString().padStart(2, '0')}`
+        const newWeak = new WeakWall(x, y, gridStep)        
+        weakWalls.set(name, newWeak);
+        nameMap[mapY][mapX] = name
     }
 }

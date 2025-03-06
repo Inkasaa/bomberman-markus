@@ -4,10 +4,11 @@ export let bounds;
 export let mult = 1.0;
 export let gridStep = 0;
 export let halfStep = 0;
-export let map;
+export let nameMap;
 
 export const solidWalls = [];
-export let weakWalls = [];
+//export let weakWalls = [];
+export let weakWalls = new Map();
 
 export let bombs = new Map();
 export const bombTime = 2000;
@@ -26,7 +27,7 @@ addEventListener("DOMContentLoaded", function () {
     bounds = resizeGameContainer();
     [gridStep, halfStep] = getGridSize();
     [mult, player] = setUpGame(bounds);
-    map = levelMap()
+    nameMap = levelMap()
     makeWalls();
 
     lastFrameTime = this.performance.now() // initialize to current timestamp

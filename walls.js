@@ -45,6 +45,7 @@ class Wall {
 export class SolidWall extends Wall {
     constructor(x, y, size) {
         super(x, y, size);
+        this.wallType = "solid";
         this.element.classList.add("solid");
     }
 }
@@ -52,6 +53,11 @@ export class SolidWall extends Wall {
 export class WeakWall extends Wall {
     constructor(x, y, size) {
         super(x, y, size);
+        this.wallType = "weak";
         this.element.classList.add("weak");
+    }
+
+    collapse() {
+        this.element.remove();
     }
 }
