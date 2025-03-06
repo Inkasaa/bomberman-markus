@@ -1,14 +1,14 @@
-import { resizeGameContainer, setUpGame } from "./initialize.js";
-import { Wall } from "./walls.js";
-import { setGridSize } from "./bomb.js";
+import { resizeGameContainer, setGridSize, setUpGame, makeWalls } from "./initialize.js";
 
 export let bounds;
 export let mult = 1.0;
+export let gridStep = 0;
+export let halfStep = 0;
+
 export const walls = [];
 export const bombTime = 2000;
 let player;
 let lastFrameTime = 0;
-
 
 // Prevent default behavior for arrow keys to avoid page scrolling
 window.addEventListener("keydown", function (e) {
@@ -17,22 +17,11 @@ window.addEventListener("keydown", function (e) {
     }
 });
 
-function makeWalls() {
-    const size = bounds.width / 13;
-    for (let i = 0; i < 6; i++) {
-        for (let j = 0; j < 5; j++) {
-            const x = bounds.width / 13 * (1 + i * 2);
-            const y = bounds.height / 11 * (1 + j * 2);
-            walls.push(new Wall(x, y, size));
-        }
-    }
-}
-
 addEventListener("DOMContentLoaded", function () {
     bounds = resizeGameContainer();
-    setGridSize();
-    player = setUpGame(bounds);    
-    makeWalls();
+    [gridStep, halfStep] = setGridSize();
+    [mult, player] = setUpGame(bounds);    
+    walls.push(...makeWalls());
     lastFrameTime = this.performance.now() // initialize to current timestamp
 
     gameLoop();

@@ -1,12 +1,4 @@
-import { bombTime, mult } from "./game.js";
-export let gridStep = 0;
-export let halfStep = 0;
-
-export function setGridSize() {
-    const gameContainer = document.getElementById("game-container");
-    gridStep = gameContainer.getBoundingClientRect().width / 13;
-    halfStep = gridStep / 2;
-}
+import { bombTime, mult, gridStep, halfStep } from "./game.js";
 
 function horizontalFlame(size, x, y) {
     let flame = document.createElement('div')
@@ -33,6 +25,7 @@ function verticalFlame(size, x, y) {
 export class Bomb {
     constructor(x, y, power) {
         const size = mult * 50;
+
         // Align dropped bomb to grid
         this.x = (Math.floor(x / gridStep)) * gridStep + halfStep - size / 2;
         this.y = (Math.floor(y / gridStep)) * gridStep + halfStep - size / 2;

@@ -1,5 +1,6 @@
+import { gridStep, halfStep } from "./game.js";
 import { Player } from "./player.js";
-import { halfStep } from "./bomb.js";
+import { Wall } from "./walls.js";
 
 export function resizeGameContainer() {
     const gameContainer = document.getElementById("game-container");
@@ -23,6 +24,13 @@ export function resizeGameContainer() {
     return bounds
 }
 
+export function setGridSize() {
+    const gameContainer = document.getElementById("game-container");
+    const  gridStep = gameContainer.getBoundingClientRect().width / 13;
+    const halfStep = gridStep / 2;
+    return [gridStep, halfStep]
+}
+
 export function setUpGame(bounds) {
     // multiplier from game-container size scales things (speed, placements) 
     // to different sized windows
@@ -35,5 +43,17 @@ export function setUpGame(bounds) {
 
     const player = new Player(playerSize, playerSpeed, playerX, playerY);
 
-    return player
+    return [multiplier, player]
+}
+
+export function makeWalls() {
+    const walls = []
+    for (let i = 0; i < 6; i++) {
+        for (let j = 0; j < 5; j++) {
+            const x = gridStep * (1 + i * 2);
+            const y = gridStep * (1 + j * 2);
+            walls.push(new Wall(x, y, gridStep));
+        }
+    }
+    return walls
 }
