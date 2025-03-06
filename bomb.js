@@ -83,36 +83,36 @@ export class Bomb {
 
             // Stop flames where they hit walls
             if (this.mapX + i < 13 && nameMap[this.mapY][this.mapX + i] && (nameMap[this.mapY][this.mapX + i].startsWith('weakWall') || nameMap[this.mapY][this.mapX + i] == 'solidWall')) {                
-                xPlus = false;
-                if (nameMap[this.mapY][this.mapX + i].startsWith('weakWall')) {
+                if (xPlus && nameMap[this.mapY][this.mapX + i].startsWith('weakWall')) {
                     weakWalls.get(nameMap[this.mapY][this.mapX + i]).collapse();
                     weakWalls.delete(nameMap[this.mapY][this.mapX + i]);
                     nameMap[this.mapY][this.mapX + i] = "";
                 }
+                xPlus = false;
             };
             if (this.mapX - i >= 0 && nameMap[this.mapY][this.mapX - i] && (nameMap[this.mapY][this.mapX - i].startsWith('weakWall') || nameMap[this.mapY][this.mapX - i] == 'solidWall')) {
-                xMinus = false;
-                if (nameMap[this.mapY][this.mapX - i].startsWith('weakWall')) {
+                if (xMinus && nameMap[this.mapY][this.mapX - i].startsWith('weakWall')) {
                     weakWalls.get(nameMap[this.mapY][this.mapX - i]).collapse();
                     weakWalls.delete(nameMap[this.mapY][this.mapX - i]);
                     nameMap[this.mapY][this.mapX - i] = "";
                 }
+                xMinus = false;
             };
             if (this.mapY + i < 11 && nameMap[this.mapY + i][this.mapX] && (nameMap[this.mapY + i][this.mapX].startsWith('weakWall') || nameMap[this.mapY + i][this.mapX] == 'solidWall')) {
-                yPlus = false;
-                if (nameMap[this.mapY + i][this.mapX].startsWith('weakWall')) {
+                if (yPlus && nameMap[this.mapY + i][this.mapX].startsWith('weakWall')) {
                     weakWalls.get(nameMap[this.mapY + i][this.mapX]).collapse();
                     weakWalls.delete(nameMap[this.mapY + i][this.mapX]);
                     nameMap[this.mapY + i][this.mapX] = "";
                 }
+                yPlus = false;
             };
             if (this.mapY - i >= 0 && nameMap[this.mapY - i][this.mapX] && (nameMap[this.mapY - i][this.mapX].startsWith('weakWall') || nameMap[this.mapY - i][this.mapX] == 'solidWall')) {
-                yMinus = false;
-                if (nameMap[this.mapY - i][this.mapX].startsWith('weakWall')) {
+                if (yMinus && nameMap[this.mapY - i][this.mapX].startsWith('weakWall')) {
                     weakWalls.get(nameMap[this.mapY - i][this.mapX]).collapse();
                     weakWalls.delete(nameMap[this.mapY - i][this.mapX]);
                     nameMap[this.mapY - i][this.mapX] = "";
                 }
+                yMinus = false;
             };
 
             if (xPlus) horizontalFlame(this.size, this.x + gridStep * i, this.y);
