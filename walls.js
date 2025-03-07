@@ -14,12 +14,12 @@ class Wall {
         this.element.style.borderRadius = size / 10 + 'px';
 
         document.getElementById("game-container").appendChild(this.element);
-    }
+    };
 
     checkCollision(playerX, playerY, playerSize) {
         if (playerX + playerSize < this.x || playerX > this.x + this.size || playerY + playerSize < this.y || playerY > this.y + this.size) {
             // No collision: player is safely outside on at least one side, return input values
-            return [playerX, playerY]
+            return [playerX, playerY];
         } else {
             // find shortest direction out of collision
             const diffs = {
@@ -27,40 +27,40 @@ class Wall {
                 x2: (this.x + this.size) - playerX,   // this right to player left
                 y1: this.y - (playerY + playerSize),  // this top to player bottom
                 y2: (this.y + this.size) - playerY    // this bottom to player top
-            }
+            };
 
             // get key and value of item with lowest abs value
-            let [lowestItems] = Object.entries(diffs).sort(([, v1], [, v2]) => Math.abs(v1) - Math.abs(v2))
+            let [lowestItems] = Object.entries(diffs).sort(([, v1], [, v2]) => Math.abs(v1) - Math.abs(v2));
 
             // modify inputs to place player just outside wall
             if (lowestItems[0].startsWith('x')) {
-                return [playerX + lowestItems[1], playerY]
+                return [playerX + lowestItems[1], playerY];
             } else {
-                return [playerX, playerY + lowestItems[1]]
-            }
-        }
-    }
-}
+                return [playerX, playerY + lowestItems[1]];
+            };
+        };
+    };
+};
 
 export class SolidWall extends Wall {
     constructor(x, y, size) {
         super(x, y, size);
         this.wallType = "solid";
         this.element.classList.add("solid");
-    }
-}
+    };
+};
 
 export class WeakWall extends Wall {
     constructor(x, y, size) {
         super(x, y, size);
         this.wallType = "weak";
         this.element.classList.add("weak");
-    }
+    };
 
     collapse() {
-        this.element.style.backgroundColor = 'orange'
+        this.element.style.backgroundColor = 'orange';
         setTimeout(() => {
             this.element.remove();
-        }, 500)
-    }
-}
+        }, 500);
+    };
+};

@@ -1,13 +1,13 @@
-import { bombs, bombTime, mult, gridStep, halfStep, nameMap, weakWalls } from "./game.js";
+import { bombs, bombTime, mult, gridStep, halfStep, levelMap, weakWalls, flames } from "./game.js";
 
 function isWall(row, col) {
     return (
         row >= 0 && row <= 10 &&
         col >= 0 && col <= 12 &&
-        nameMap[row][col] &&
+        levelMap[row][col] &&
         (
-            nameMap[row][col].startsWith('weakWall') ||
-            nameMap[row][col] == 'solidWall'
+            levelMap[row][col].startsWith('weakWall') ||
+            levelMap[row][col] == 'solidWall'
         )
     );
 }
@@ -20,7 +20,15 @@ function horizontalFlame(size, x, y) {
     flame.style.left = `${x + (size / 2) - halfStep}px`;
     flame.style.top = `${y + (size / 2) - (halfStep / 2)}px`;
     document.getElementById("game-container").appendChild(flame);
-    setTimeout(() => { flame.remove() }, 500);
+
+    const col = Math.floor(x / gridStep);
+    const row = Math.floor(y / gridStep);
+    flames.set(`flameH${col}${row}`, flame)   // to map of flames
+
+    setTimeout(() => {
+        flame.remove()
+        flames.delete(`flameH${col}${row}`)
+    }, 500);
 }
 
 function verticalFlame(size, x, y) {
@@ -31,7 +39,15 @@ function verticalFlame(size, x, y) {
     flame.style.left = `${x + (size / 2) - (halfStep / 2)}px`;
     flame.style.top = `${y + (size / 2) - halfStep}px`;
     document.getElementById("game-container").appendChild(flame);
-    setTimeout(() => { flame.remove() }, 500);
+
+    const col = Math.floor(x / gridStep);
+    const row = Math.floor(y / gridStep);
+    flames.set(`flameV${col}${row}`, flame)   // to map of flames
+
+    setTimeout(() => {
+        flame.remove()
+        flames.delete(`flameV${col}${row}`)
+    }, 500);
 }
 
 export class Bomb {
@@ -126,12 +142,12 @@ export class Bomb {
     };
 
     tryToDestroy(row, col) {
-        let name = nameMap[row][col];
+        let name = levelMap[row][col];
         if (name.startsWith('weakWall')) {
             weakWalls.get(name).collapse();
             setTimeout(() => {
                 weakWalls.delete(name);
-                nameMap[row][col] = "";
+                levelMap[row][col] = "";
             }, 500);
         };
     };
