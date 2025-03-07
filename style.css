@@ -25,7 +25,9 @@ body {
 }
 
 .wall.weak {
-    background: rgb(199, 165, 130);
+    background-color: rgb(199, 165, 130);
+    background-image: url("browntiles01.svg");
+    background-size: cover;
 }
 
 .flame {
