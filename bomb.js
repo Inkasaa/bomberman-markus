@@ -27,10 +27,10 @@ export class Bomb {
         const size = mult * 50;
 
         // Align dropped bomb to grid
-        this.mapX = Math.floor(x / gridStep);
-        this.mapY = Math.floor(y / gridStep);
-        this.x = this.mapX * gridStep + halfStep - size / 2;
-        this.y = this.mapY * gridStep + halfStep - size / 2;
+        this.mapCol = Math.floor(x / gridStep);
+        this.mapRow = Math.floor(y / gridStep);
+        this.x = this.mapCol * gridStep + halfStep - size / 2;
+        this.y = this.mapRow * gridStep + halfStep - size / 2;
         this.size = size;
 
         this.owner = name;
@@ -45,7 +45,7 @@ export class Bomb {
         this.bounds = this.element.getBoundingClientRect();
 
         document.getElementById("game-container").appendChild(this.element);
-        bombs.set(`bomb${this.mapX.toString().padStart(2, '0')}${this.mapY.toString().padStart(2, '0')}`, this);  // add bomb to map for collision checks
+        bombs.set(`bomb${this.mapCol}${this.mapRow}`, this);  // add bomb to map for collision checks
 
         setTimeout(() => this.explode(), bombTime); // Explode after 2 seconds
     }
@@ -64,8 +64,8 @@ export class Bomb {
             /* TO DO
             if gridspot is occupied by:
             - level edge: don't draw, stop
-            - solid wall: don't draw, stop
-            - destructible wall: don't draw, stop, destroy wall
+            x solid wall: don't draw, stop
+            x weak wall: don't draw, stop, destroy wall
             - item: don't draw, stop, destroy item
             - bomb: don't draw, explode bomb (timeout to zero)
 
@@ -81,37 +81,25 @@ export class Bomb {
             Player and enemies would be handled in their collision detections
             */
 
-            // Stop flames where they hit walls
-            if (this.mapX + i < 13 && nameMap[this.mapY][this.mapX + i] && (nameMap[this.mapY][this.mapX + i].startsWith('weakWall') || nameMap[this.mapY][this.mapX + i] == 'solidWall')) {                
-                if (xPlus && nameMap[this.mapY][this.mapX + i].startsWith('weakWall')) {
-                    weakWalls.get(nameMap[this.mapY][this.mapX + i]).collapse();
-                    weakWalls.delete(nameMap[this.mapY][this.mapX + i]);
-                    nameMap[this.mapY][this.mapX + i] = "";
-                }
+            // Stop flames where they hit walls and destroy weak walls
+            if (xPlus && this.mapCol + i < 13 && nameMap[this.mapRow][this.mapCol + i] &&
+                (nameMap[this.mapRow][this.mapCol + i].startsWith('weakWall') || nameMap[this.mapRow][this.mapCol + i] == 'solidWall')) {
+                this.tryToDestroy(this.mapRow, this.mapCol + i);
                 xPlus = false;
             };
-            if (this.mapX - i >= 0 && nameMap[this.mapY][this.mapX - i] && (nameMap[this.mapY][this.mapX - i].startsWith('weakWall') || nameMap[this.mapY][this.mapX - i] == 'solidWall')) {
-                if (xMinus && nameMap[this.mapY][this.mapX - i].startsWith('weakWall')) {
-                    weakWalls.get(nameMap[this.mapY][this.mapX - i]).collapse();
-                    weakWalls.delete(nameMap[this.mapY][this.mapX - i]);
-                    nameMap[this.mapY][this.mapX - i] = "";
-                }
+            if (xMinus && this.mapCol - i >= 0 && nameMap[this.mapRow][this.mapCol - i] &&
+                (nameMap[this.mapRow][this.mapCol - i].startsWith('weakWall') || nameMap[this.mapRow][this.mapCol - i] == 'solidWall')) {
+                this.tryToDestroy(this.mapRow, this.mapCol - i);
                 xMinus = false;
             };
-            if (this.mapY + i < 11 && nameMap[this.mapY + i][this.mapX] && (nameMap[this.mapY + i][this.mapX].startsWith('weakWall') || nameMap[this.mapY + i][this.mapX] == 'solidWall')) {
-                if (yPlus && nameMap[this.mapY + i][this.mapX].startsWith('weakWall')) {
-                    weakWalls.get(nameMap[this.mapY + i][this.mapX]).collapse();
-                    weakWalls.delete(nameMap[this.mapY + i][this.mapX]);
-                    nameMap[this.mapY + i][this.mapX] = "";
-                }
+            if (yPlus && this.mapRow + i < 11 && nameMap[this.mapRow + i][this.mapCol] &&
+                (nameMap[this.mapRow + i][this.mapCol].startsWith('weakWall') || nameMap[this.mapRow + i][this.mapCol] == 'solidWall')) {
+                this.tryToDestroy(this.mapRow + i, this.mapCol);
                 yPlus = false;
             };
-            if (this.mapY - i >= 0 && nameMap[this.mapY - i][this.mapX] && (nameMap[this.mapY - i][this.mapX].startsWith('weakWall') || nameMap[this.mapY - i][this.mapX] == 'solidWall')) {
-                if (yMinus && nameMap[this.mapY - i][this.mapX].startsWith('weakWall')) {
-                    weakWalls.get(nameMap[this.mapY - i][this.mapX]).collapse();
-                    weakWalls.delete(nameMap[this.mapY - i][this.mapX]);
-                    nameMap[this.mapY - i][this.mapX] = "";
-                }
+            if (yMinus && this.mapRow - i >= 0 && nameMap[this.mapRow - i][this.mapCol] &&
+                (nameMap[this.mapRow - i][this.mapCol].startsWith('weakWall') || nameMap[this.mapRow - i][this.mapCol] == 'solidWall')) {
+                this.tryToDestroy(this.mapRow - i, this.mapCol);
                 yMinus = false;
             };
 
@@ -125,8 +113,20 @@ export class Bomb {
         setTimeout(() => {
             // Remove bomb after explosion effect
             this.element.remove();
-            bombs.delete(`bomb${this.mapX.toString().padStart(2, '0')}${this.mapY.toString().padStart(2, '0')}`)
+            bombs.delete(`bomb${this.mapCol}${this.mapRow}`)
         }, 500);
+    }
+
+    tryToDestroy(row, col) {
+        let name = nameMap[row][col];
+        if (name.startsWith('weakWall')) {
+            weakWalls.get(name).collapse();
+            setTimeout(() => {
+                weakWalls.delete(name);
+                nameMap[row][col] = "";
+            }, 500)
+
+        }
     }
 
     checkCollision(playerX, playerY, playerSize) {

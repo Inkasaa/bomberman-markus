@@ -78,7 +78,7 @@ export function makeWalls() {
 
         const x = gridStep * mapX;
         const y = gridStep * mapY;
-        const name = `weakWall${mapX.toString().padStart(2, '0')}${mapY.toString().padStart(2, '0')}`
+        const name = `weakWall${mapX}${mapY}`
         const newWeak = new WeakWall(x, y, gridStep)        
         weakWalls.set(name, newWeak);
         nameMap[mapY][mapX] = name

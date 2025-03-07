@@ -90,7 +90,7 @@ export class Player {
         // normalize speed for diagonal movement and different framerates
         let moveDistance = this.speed * slowDown * deltaTime;
 
-        // calculate new position
+        // calculate next position
         let newX = this.x;
         let newY = this.y;
         if (this.left) newX -= moveDistance;
@@ -98,7 +98,7 @@ export class Player {
         if (this.up) newY -= moveDistance;
         if (this.down) newY += moveDistance;
 
-        // find walls player would collide with
+        // solid wall collisions
         const collidingWalls = [];
         for (const wall of solidWalls) {
             if (wall.checkCollision(newX, newY, this.size).toString() != [newX, newY].toString()) {
@@ -107,6 +107,7 @@ export class Player {
             }
         }
 
+        // weak wall collisions
         for (const wall of weakWalls.values()) {
             if (wall.checkCollision(newX, newY, this.size).toString() != [newX, newY].toString()) {
                 collidingWalls.push(wall);
@@ -114,10 +115,12 @@ export class Player {
             }
         }
 
+        // adjust next coordinates based on collisions to walls
         for (const wall of collidingWalls) {
             [newX, newY] = wall.checkCollision(newX, newY, this.size);
         }
 
+        // bomb collisions
         const collidingBombs = [];
         for (const bomb of bombs.values()) {
             if (bomb.checkCollision(newX, newY, this.size).toString() != [newX, newY].toString()) {
@@ -128,6 +131,7 @@ export class Player {
             }
         }
 
+        // adjust next coordinates based on collisions to bombs
         for (const bomb of collidingBombs) {
             // No collision if bomb has owner
             if (!bomb.owner) {
@@ -135,9 +139,11 @@ export class Player {
             }            
         }
 
+        // set coordinates based on possible collisions to area boundaries
         this.x = Math.max(0, Math.min(newX, bounds.width - this.size));
         this.y = Math.max(0, Math.min(newY, bounds.height - this.size));
 
+        // apply movement
         this.element.style.transform = `translate(${this.x}px, ${this.y}px)`;
     }
 }

@@ -58,6 +58,9 @@ export class WeakWall extends Wall {
     }
 
     collapse() {
-        this.element.remove();
+        this.element.style.backgroundColor = 'orange'
+        setTimeout(() => {
+            this.element.remove();
+        }, 500)
     }
 }
