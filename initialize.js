@@ -15,21 +15,21 @@ export function resizeGameContainer() {
     } else {
         gameContainer.style.height = windowWidth * 0.8 * (11 / 13) + "px";
         gameContainer.style.width = windowWidth * 0.8 + "px";
-    }
+    };
 
     const bounds = gameContainer.getBoundingClientRect();
     gameContainer.style.left = (windowWidth - bounds.width) / 2 + 'px';
     gameContainer.style.top = (windowHeight - bounds.height) / 2 + 'px';
 
-    return bounds
-}
+    return bounds;
+};
 
 export function getGridSize() {
     const gameContainer = document.getElementById("game-container");
     const gridStep = gameContainer.getBoundingClientRect().width / 13;
     const halfStep = gridStep / 2;
-    return [gridStep, halfStep]
-}
+    return [gridStep, halfStep];
+};
 
 export function setUpGame(bounds) {
     // multiplier from game-container size scales things (speed, placements) 
@@ -43,15 +43,15 @@ export function setUpGame(bounds) {
 
     const player = new Player(playerSize, playerSpeed, playerX, playerY);
 
-    return [multiplier, player]
-}
+    return [multiplier, player];
+};
 
 export function levelMap() {
     // 11 rows and 13 columns
     let map = new Array(11);
     for (let i = 0; i < map.length; i++)  map[i] = new Array(13);
     return map;
-}
+};
 
 export function makeWalls() {
     for (let i = 0; i < 6; i++) {
@@ -60,11 +60,11 @@ export function makeWalls() {
             const mapY = (1 + j * 2);
             const x = gridStep * mapX;
             const y = gridStep * mapY;
-            const newSolid = new SolidWall(x, y, gridStep)
+            const newSolid = new SolidWall(x, y, gridStep);
             solidWalls.push(newSolid);
-            nameMap[mapY][mapX] = 'solidWall'
-        }
-    }
+            nameMap[mapY][mapX] = 'solidWall';
+        };
+    };
 
 
     while (weakWalls.size < 50) {
@@ -73,14 +73,14 @@ export function makeWalls() {
 
         // don't replace content or put anything in the top left and bottom right corners
         if (nameMap[mapY][mapX] || (mapX < 2 && mapY < 2) || (mapX > 10 && mapY > 9)) {
-            continue
-        }
+            continue;
+        };
 
         const x = gridStep * mapX;
         const y = gridStep * mapY;
-        const name = `weakWall${mapX}${mapY}`
-        const newWeak = new WeakWall(x, y, gridStep)        
+        const name = `weakWall${mapX}${mapY}`;
+        const newWeak = new WeakWall(x, y, gridStep);
         weakWalls.set(name, newWeak);
-        nameMap[mapY][mapX] = name
-    }
-}
+        nameMap[mapY][mapX] = name;
+    };
+};

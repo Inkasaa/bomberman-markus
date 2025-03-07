@@ -1,7 +1,19 @@
 import { bombs, bombTime, mult, gridStep, halfStep, nameMap, weakWalls } from "./game.js";
 
+function isWall(row, col) {
+    return (
+        row >= 0 && row <= 10 &&
+        col >= 0 && col <= 12 &&
+        nameMap[row][col] &&
+        (
+            nameMap[row][col].startsWith('weakWall') ||
+            nameMap[row][col] == 'solidWall'
+        )
+    );
+}
+
 function horizontalFlame(size, x, y) {
-    let flame = document.createElement('div')
+    let flame = document.createElement('div');
     flame.classList.add("flame");
     flame.style.width = `${gridStep}px`;
     flame.style.height = `${halfStep}px`;
@@ -12,7 +24,7 @@ function horizontalFlame(size, x, y) {
 }
 
 function verticalFlame(size, x, y) {
-    let flame = document.createElement('div')
+    let flame = document.createElement('div');
     flame.classList.add("flame");
     flame.style.width = `${halfStep}px`;
     flame.style.height = `${gridStep}px`;
@@ -48,7 +60,7 @@ export class Bomb {
         bombs.set(`bomb${this.mapCol}${this.mapRow}`, this);  // add bomb to map for collision checks
 
         setTimeout(() => this.explode(), bombTime); // Explode after 2 seconds
-    }
+    };
 
     explode() {
         this.element.style.backgroundColor = "orange";
@@ -57,7 +69,7 @@ export class Bomb {
         horizontalFlame(this.size, this.x, this.y);
         verticalFlame(this.size, this.x, this.y);
 
-        let [xPlus, xMinus, yPlus, yMinus] = [true, true, true, true];
+        let [colPlus, colMinus, rowPlus, rowMinus] = [true, true, true, true];
 
         for (let i = 1; i <= this.power; i++) {
 
@@ -67,7 +79,7 @@ export class Bomb {
             x solid wall: don't draw, stop
             x weak wall: don't draw, stop, destroy wall
             - item: don't draw, stop, destroy item
-            - bomb: don't draw, explode bomb (timeout to zero)
+            - bomb: ?, explode bomb (timeout to zero)
 
             - enemy: draw, continue, kill enemy
             - player: draw, continue, kill player
@@ -82,31 +94,27 @@ export class Bomb {
             */
 
             // Stop flames where they hit walls and destroy weak walls
-            if (xPlus && this.mapCol + i < 13 && nameMap[this.mapRow][this.mapCol + i] &&
-                (nameMap[this.mapRow][this.mapCol + i].startsWith('weakWall') || nameMap[this.mapRow][this.mapCol + i] == 'solidWall')) {
+            if (colPlus && isWall(this.mapRow, this.mapCol + i)) {
                 this.tryToDestroy(this.mapRow, this.mapCol + i);
-                xPlus = false;
+                colPlus = false;
             };
-            if (xMinus && this.mapCol - i >= 0 && nameMap[this.mapRow][this.mapCol - i] &&
-                (nameMap[this.mapRow][this.mapCol - i].startsWith('weakWall') || nameMap[this.mapRow][this.mapCol - i] == 'solidWall')) {
+            if (colMinus && isWall(this.mapRow, this.mapCol - i)) {
                 this.tryToDestroy(this.mapRow, this.mapCol - i);
-                xMinus = false;
+                colMinus = false;
             };
-            if (yPlus && this.mapRow + i < 11 && nameMap[this.mapRow + i][this.mapCol] &&
-                (nameMap[this.mapRow + i][this.mapCol].startsWith('weakWall') || nameMap[this.mapRow + i][this.mapCol] == 'solidWall')) {
+            if (rowPlus && isWall(this.mapRow + i, this.mapCol)) {
                 this.tryToDestroy(this.mapRow + i, this.mapCol);
-                yPlus = false;
+                rowPlus = false;
             };
-            if (yMinus && this.mapRow - i >= 0 && nameMap[this.mapRow - i][this.mapCol] &&
-                (nameMap[this.mapRow - i][this.mapCol].startsWith('weakWall') || nameMap[this.mapRow - i][this.mapCol] == 'solidWall')) {
+            if (rowMinus && isWall(this.mapRow - i, this.mapCol)) {
                 this.tryToDestroy(this.mapRow - i, this.mapCol);
-                yMinus = false;
+                rowMinus = false;
             };
 
-            if (xPlus) horizontalFlame(this.size, this.x + gridStep * i, this.y);
-            if (xMinus) horizontalFlame(this.size, this.x - gridStep * i, this.y);
-            if (yPlus) verticalFlame(this.size, this.x, this.y + gridStep * i);
-            if (yMinus) verticalFlame(this.size, this.x, this.y - gridStep * i);
+            if (colPlus) horizontalFlame(this.size, this.x + gridStep * i, this.y);
+            if (colMinus) horizontalFlame(this.size, this.x - gridStep * i, this.y);
+            if (rowPlus) verticalFlame(this.size, this.x, this.y + gridStep * i);
+            if (rowMinus) verticalFlame(this.size, this.x, this.y - gridStep * i);
         }
 
         // Create explosion effect
@@ -115,7 +123,7 @@ export class Bomb {
             this.element.remove();
             bombs.delete(`bomb${this.mapCol}${this.mapRow}`)
         }, 500);
-    }
+    };
 
     tryToDestroy(row, col) {
         let name = nameMap[row][col];
@@ -124,15 +132,14 @@ export class Bomb {
             setTimeout(() => {
                 weakWalls.delete(name);
                 nameMap[row][col] = "";
-            }, 500)
-
-        }
-    }
+            }, 500);
+        };
+    };
 
     checkCollision(playerX, playerY, playerSize) {
         if (playerX + playerSize < this.x || playerX > this.x + this.size || playerY + playerSize < this.y || playerY > this.y + this.size) {
             // No collision: player is safely outside on at least one side, return input values
-            return [playerX, playerY]
+            return [playerX, playerY];
         } else {
             // find shortest direction out of collision
             const diffs = {
@@ -150,7 +157,7 @@ export class Bomb {
                 return [playerX + lowestItems[1], playerY];
             } else {
                 return [playerX, playerY + lowestItems[1]];
-            }
-        }
-    }
+            };
+        };
+    };
 }

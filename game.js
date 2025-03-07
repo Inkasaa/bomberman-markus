@@ -20,7 +20,7 @@ let lastFrameTime = 0;
 window.addEventListener("keydown", function (e) {
     if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
         e.preventDefault();
-    }
+    };
 });
 
 addEventListener("DOMContentLoaded", function () {
@@ -30,7 +30,7 @@ addEventListener("DOMContentLoaded", function () {
     nameMap = levelMap()
     makeWalls();
 
-    lastFrameTime = this.performance.now() // initialize to current timestamp
+    lastFrameTime = this.performance.now(); // initialize to current timestamp
     gameLoop();
 
     function gameLoop(timestamp) {
@@ -38,9 +38,8 @@ addEventListener("DOMContentLoaded", function () {
         lastFrameTime = timestamp;
 
         player.movePlayer(deltaTime);
-        //console.log(bombs)
 
-        // requestAnimationFrame() always runs callback with 'timestamp' (milliseconds since the page loaded)
+        // requestAnimationFrame() always runs callback with 'timestamp' argument (milliseconds since the page loaded)
         requestAnimationFrame(gameLoop);
-    }
+    };
 });
