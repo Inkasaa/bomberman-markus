@@ -1,5 +1,8 @@
 import { Bomb } from "./bomb.js";
-import { bombTime, bombs, bounds, flames, solidWalls, weakWalls } from "./game.js";
+import { bombTime, bombs, bounds, flames, restartGame, solidWalls, timedEvents, weakWalls } from "./game.js";
+import { Timer } from "./timer.js";
+
+let timedCount = 0;
 
 export class Player {
     constructor(size, speed, x, y) {
@@ -45,7 +48,14 @@ export class Player {
         if (this.bombAmount > 0) {
             new Bomb(this.x + this.size / 2, this.y + this.size / 2, this.bombPower, 'player');
             this.bombAmount--;
-            setTimeout(() => this.bombAmount++, bombTime);
+
+            let countNow = timedCount;
+            const timedBombsBack = new Timer(() => {
+                this.bombAmount++;
+                timedEvents.delete(`bombsback${countNow}`);
+            }, bombTime);
+            timedEvents.set(`bombsback${countNow}`, timedBombsBack)
+            timedCount++;
         };
     };
 
@@ -90,7 +100,9 @@ export class Player {
         this.alive = false;
         this.lives--;
 
-        setTimeout(() => {
+        const countNow = timedCount;
+        const timedResurrection = new Timer(() => {
+
             if (this.lives > 0) {
                 this.x = this.startX;
                 this.y = this.startY;
@@ -99,11 +111,14 @@ export class Player {
                 this.alive = true;
                 // update counter too
             } else {
-                console.log("game over")
-                alert("Game Over")
-                // Reload screen?
+                alert("Game Over");
+                restartGame();
             };
-        }, 2000)
+
+            timedEvents.delete(`resurrection${countNow}`)            
+        }, 2000);
+        timedEvents.set(`resurrection${countNow}`, timedResurrection)
+        timedCount++;
     };
 
 

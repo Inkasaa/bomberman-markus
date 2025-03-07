@@ -1,4 +1,8 @@
-import { bombs, bombTime, mult, gridStep, halfStep, levelMap, weakWalls, flames } from "./game.js";
+import { bombs, bombTime, mult, gridStep, halfStep, levelMap, weakWalls, flames, timedEvents } from "./game.js";
+import { Timer } from "./timer.js";
+
+let flameCounter = 0;
+let timedCount = 0;
 
 function isWall(row, col) {
     return (
@@ -21,14 +25,17 @@ function horizontalFlame(size, x, y) {
     flame.style.top = `${y + (size / 2) - (halfStep / 2)}px`;
     document.getElementById("game-container").appendChild(flame);
 
-    const col = Math.floor(x / gridStep);
-    const row = Math.floor(y / gridStep);
-    flames.set(`flameH${col}${row}`, flame)   // to map of flames
+    flameCounter++
+    flames.set(`flameH${flameCounter}`, flame)   // to map of flames
 
-    setTimeout(() => {
-        flame.remove()
-        flames.delete(`flameH${col}${row}`)
+    const countNow = timedCount;
+    const timedFlame = new Timer(() => {
+        flame.remove();
+        flames.delete(`flameH${flameCounter}`);
+        timedEvents.delete(`flameH${countNow}`)
     }, 500);
+    timedEvents.set(`flameH${countNow}`, timedFlame)
+    timedCount++;
 }
 
 function verticalFlame(size, x, y) {
@@ -40,14 +47,17 @@ function verticalFlame(size, x, y) {
     flame.style.top = `${y + (size / 2) - halfStep}px`;
     document.getElementById("game-container").appendChild(flame);
 
-    const col = Math.floor(x / gridStep);
-    const row = Math.floor(y / gridStep);
-    flames.set(`flameV${col}${row}`, flame)   // to map of flames
+    flameCounter++
+    flames.set(`flameV${flameCounter}`, flame)   // to map of flames
 
-    setTimeout(() => {
-        flame.remove()
-        flames.delete(`flameV${col}${row}`)
+    const countNow = timedCount;
+    const timedFlame = new Timer(() => {
+        flame.remove();
+        flames.delete(`flameV${flameCounter}`);
+        timedEvents.delete(`flameV${countNow}`);
     }, 500);
+    timedEvents.set(`flameV${countNow}`, timedFlame);
+    timedCount++;
 }
 
 export class Bomb {
@@ -75,7 +85,13 @@ export class Bomb {
         document.getElementById("game-container").appendChild(this.element);
         bombs.set(`bomb${this.mapCol}${this.mapRow}`, this);  // add bomb to map for collision checks
 
-        setTimeout(() => this.explode(), bombTime); // Explode after 2 seconds
+        const countNow = timedCount;
+        const timedBomb = new Timer(() => {
+            this.explode();
+            timedEvents.delete(`bomb${countNow}`);
+        }, bombTime);
+        timedEvents.set(`bomb${countNow}`, timedBomb);
+        timedCount++;
     };
 
     explode() {
@@ -98,7 +114,7 @@ export class Bomb {
             - bomb: ?, explode bomb (timeout to zero)
 
             - enemy: draw, continue, kill enemy
-            - player: draw, continue, kill player
+            x player: draw, continue, kill player
 
             Edges, walls, items and bombs could be saved on a 2d array and checked that way quite fast.
             Something like:
@@ -133,22 +149,32 @@ export class Bomb {
             if (rowMinus) verticalFlame(this.size, this.x, this.y - gridStep * i);
         }
 
-        // Create explosion effect
-        setTimeout(() => {
+        // explosion effect
+        const countNow = timedCount;
+        const timedExplotion = new Timer(() => {
             // Remove bomb after explosion effect
             this.element.remove();
-            bombs.delete(`bomb${this.mapCol}${this.mapRow}`)
+            bombs.delete(`bomb${this.mapCol}${this.mapRow}`);
+            timedEvents.delete(`explosion${countNow}`); 
         }, 500);
+        timedEvents.set(`explosion${countNow}`, timedExplotion);
+        timedCount++;
     };
 
     tryToDestroy(row, col) {
         let name = levelMap[row][col];
         if (name.startsWith('weakWall')) {
             weakWalls.get(name).collapse();
-            setTimeout(() => {
+
+            const countNow = timedCount;
+            const timedDeleteWall = new Timer(() => {
                 weakWalls.delete(name);
                 levelMap[row][col] = "";
+                timedEvents.delete(`deleteWall${countNow}`)
             }, 500);
+
+            timedEvents.set(`deleteWall${countNow}`, timedDeleteWall);
+            timedCount++;
         };
     };
 
