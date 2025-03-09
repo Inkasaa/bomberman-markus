@@ -42,6 +42,12 @@ function togglePause() {
         for (const timed of timedEvents.values()) {
             timed.resume();
         }
+
+        // so player can't slide through walls during pause
+        player.left = false;
+        player.right = false;
+        player.up = false;
+        player.down = false;
     }
 };
 
@@ -67,13 +73,10 @@ addEventListener("DOMContentLoaded", function () {
     gameLoop();
 
     function gameLoop(timestamp) {
-        //console.log(timedEvents.size)
-        //console.log(timedEvents.keys())
 
         if (!paused) {
             let deltaTime = (timestamp - lastFrameTime) / 16.7; // use deltaTime to normalize speed for different refresh rates
             lastFrameTime = timestamp;
-
             player.movePlayer(deltaTime);
         }
 

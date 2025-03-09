@@ -63,7 +63,6 @@ export class WeakWall extends Wall {
     };
 
     collapse() {
-        //this.element.style.backgroundColor = 'orange';
         this.element.style.background = 'orange';
 
         const countNow = timedCount;
