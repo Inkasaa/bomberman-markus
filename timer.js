@@ -1,8 +1,8 @@
 
-// alternative to setTimeout() with pause and resume
+// alternative to setTimeout() with pause, resume and cancel
 export class Timer {
     constructor(callback, delay) {
-        var timerId, start, remaining = delay;
+        let timerId, start, remaining = delay;
 
         this.pause = function () {
             window.clearTimeout(timerId);
@@ -19,8 +19,8 @@ export class Timer {
         };
 
         this.cancel = function () {
-            window.clearTimeout(timerId); // Cancel the timer completely
-            timerId = null; // Reset the timerId
+            window.clearTimeout(timerId);
+            timerId = null;
         };
 
         this.resume();

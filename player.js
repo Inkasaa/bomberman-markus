@@ -196,7 +196,6 @@ export class Player {
             for (const flame of flames.values()) {
                 if (checkHit(playerBounds, flame)) {
                     this.die();
-                    console.log("death")
                     break;
                 };
             };

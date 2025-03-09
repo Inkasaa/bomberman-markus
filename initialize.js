@@ -54,6 +54,8 @@ export function makeLevelMap() {
 };
 
 export function makeWalls() {
+
+    // place solid walls in 6 * 5 grid
     for (let i = 0; i < 6; i++) {
         for (let j = 0; j < 5; j++) {
             const mapX = (1 + i * 2);
@@ -66,7 +68,7 @@ export function makeWalls() {
         };
     };
 
-
+    // place weak walls randomly
     while (weakWalls.size < 50) {
         const mapX = Math.floor(Math.random() * 13);
         const mapY = Math.floor(Math.random() * 11);
