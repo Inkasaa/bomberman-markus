@@ -9,6 +9,7 @@ function isWall(row, col) {
         row >= 0 && row <= 10 &&
         col >= 0 && col <= 12 &&
         levelMap[row][col] &&
+        typeof levelMap[row][col] == 'string' &&
         (
             levelMap[row][col].startsWith('weakWall') ||
             levelMap[row][col] == 'solidWall'
@@ -84,15 +85,26 @@ export class Bomb {
 
         document.getElementById("game-container").appendChild(this.element);
         bombs.set(`bomb${this.mapCol}${this.mapRow}`, this);  // add bomb to map for collision checks
+        levelMap[this.mapRow][this.mapCol] = ['bomb', this];  // store reference to level map
 
-        const countNow = timedCount;
+        /*         for (let i = 0; i < levelMap[0].length; i++) {
+                    console.log(levelMap[i])
+                }; */
+
+        this.countNow = timedCount;
         const timedBomb = new Timer(() => {
             this.explode();
-            timedEvents.delete(`bomb${countNow}`);
+            timedEvents.delete(`bomb${this.countNow}`);
         }, bombTime);
-        timedEvents.set(`bomb${countNow}`, timedBomb);
+        timedEvents.set(`bomb${this.countNow}`, timedBomb);
         timedCount++;
     };
+
+    explodeEarly() {
+        this.explode();
+        timedEvents.get(`bomb${this.countNow}`).cancel();
+        timedEvents.delete(`bomb${this.countNow}`); // deletes from timer map, but does not remove timer
+    }
 
     explode() {
         this.element.style.backgroundColor = "orange";
@@ -125,22 +137,51 @@ export class Bomb {
             Player and enemies would be handled in their collision detections
             */
 
-            // Stop flames where they hit walls and destroy weak walls
-            if (colPlus && isWall(this.mapRow, this.mapCol + i)) {
-                this.tryToDestroy(this.mapRow, this.mapCol + i);
-                colPlus = false;
+            // Stop flames where they hit walls and destroy weak walls or explode other bombs
+            if (colPlus) {
+                if (isWall(this.mapRow, this.mapCol + i)) {
+                    this.tryToDestroy(this.mapRow, this.mapCol + i);
+                    colPlus = false;
+                };
+                if (this.mapCol + i <= 12 && Array.isArray(levelMap[this.mapRow][this.mapCol + i]) && levelMap[this.mapRow][this.mapCol + i][0] == 'bomb') {
+                    const bomb = levelMap[this.mapRow][this.mapCol + i][1];
+                    levelMap[this.mapRow][this.mapCol + i] = '';
+                    bomb.explodeEarly();
+                }
             };
-            if (colMinus && isWall(this.mapRow, this.mapCol - i)) {
-                this.tryToDestroy(this.mapRow, this.mapCol - i);
-                colMinus = false;
+            if (colMinus) {
+                if (isWall(this.mapRow, this.mapCol - i)) {
+                    this.tryToDestroy(this.mapRow, this.mapCol - i);
+                    colMinus = false;
+                };
+                if (this.mapCol - i >= 0 && Array.isArray(levelMap[this.mapRow][this.mapCol - i]) && levelMap[this.mapRow][this.mapCol - i][0] == 'bomb') {
+                    const bomb = levelMap[this.mapRow][this.mapCol - i][1];
+                    levelMap[this.mapRow][this.mapCol - i] = '';
+                    bomb.explodeEarly();
+                }
+
             };
-            if (rowPlus && isWall(this.mapRow + i, this.mapCol)) {
-                this.tryToDestroy(this.mapRow + i, this.mapCol);
-                rowPlus = false;
+            if (rowPlus) {
+                if (isWall(this.mapRow + i, this.mapCol)) {
+                    this.tryToDestroy(this.mapRow + i, this.mapCol);
+                    rowPlus = false;
+                };
+                if (this.mapRow + i <= 10 && Array.isArray(levelMap[this.mapRow + i][this.mapCol]) && levelMap[this.mapRow + i][this.mapCol][0] == 'bomb') {
+                    const bomb = levelMap[this.mapRow + i][this.mapCol][1];
+                    levelMap[this.mapRow + i][this.mapCol] = '';
+                    bomb.explodeEarly();
+                }
             };
-            if (rowMinus && isWall(this.mapRow - i, this.mapCol)) {
-                this.tryToDestroy(this.mapRow - i, this.mapCol);
-                rowMinus = false;
+            if (rowMinus) {
+                if (isWall(this.mapRow - i, this.mapCol)) {
+                    this.tryToDestroy(this.mapRow - i, this.mapCol);
+                    rowMinus = false;
+                };
+                if (this.mapRow - i >= 0 && Array.isArray(levelMap[this.mapRow - i][this.mapCol]) && levelMap[this.mapRow - i][this.mapCol][0] == 'bomb') {
+                    const bomb = levelMap[this.mapRow - i][this.mapCol][1]
+                    levelMap[this.mapRow - i][this.mapCol] = '';
+                    bomb.explodeEarly();
+                }
             };
 
             if (colPlus) horizontalFlame(this.size, this.x + gridStep * i, this.y);
@@ -155,12 +196,13 @@ export class Bomb {
             // Remove bomb after explosion effect
             this.element.remove();
             bombs.delete(`bomb${this.mapCol}${this.mapRow}`);
-            timedEvents.delete(`explosion${countNow}`); 
+            timedEvents.delete(`explosion${countNow}`);
         }, 500);
-        timedEvents.set(`explosion${countNow}`, timedExplotion);
+        timedEvents.set(`explosion${countNow} `, timedExplotion);
         timedCount++;
     };
 
+    // Should we just store reference to map directly, and not name?
     tryToDestroy(row, col) {
         let name = levelMap[row][col];
         if (name.startsWith('weakWall')) {
@@ -170,10 +212,10 @@ export class Bomb {
             const timedDeleteWall = new Timer(() => {
                 weakWalls.delete(name);
                 levelMap[row][col] = "";
-                timedEvents.delete(`deleteWall${countNow}`)
+                timedEvents.delete(`deleteWall${countNow} `)
             }, 500);
 
-            timedEvents.set(`deleteWall${countNow}`, timedDeleteWall);
+            timedEvents.set(`deleteWall${countNow} `, timedDeleteWall);
             timedCount++;
         };
     };

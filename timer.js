@@ -18,6 +18,11 @@ export class Timer {
             timerId = window.setTimeout(callback, remaining);
         };
 
+        this.cancel = function () {
+            window.clearTimeout(timerId); // Cancel the timer completely
+            timerId = null; // Reset the timerId
+        };
+
         this.resume();
     };
 };
