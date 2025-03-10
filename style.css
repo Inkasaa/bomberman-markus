@@ -16,6 +16,12 @@ body {
     z-index: 10;
 }
 
+.enemy {
+    position: absolute;
+    background: rgb(182, 0, 100);
+    z-index: 9;
+}
+
 .wall {
     z-index: 1;
 }

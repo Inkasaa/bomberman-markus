@@ -1,4 +1,5 @@
-import { gridStep, halfStep, levelMap, solidWalls, weakWalls } from "./game.js";
+import { Enemy } from "./enemy.js";
+import { enemies, gridStep, halfStep, levelMap, mult, solidWalls, weakWalls } from "./game.js";
 import { Player } from "./player.js";
 import { SolidWall, WeakWall } from "./walls.js";
 
@@ -69,7 +70,7 @@ export function makeWalls() {
     };
 
     // place weak walls randomly
-    while (weakWalls.size < 50) {
+    while (weakWalls.size < 45) {
         const mapX = Math.floor(Math.random() * 13);
         const mapY = Math.floor(Math.random() * 11);
 
@@ -84,5 +85,23 @@ export function makeWalls() {
         const newWeak = new WeakWall(x, y, gridStep);
         weakWalls.set(name, newWeak);
         levelMap[mapY][mapX] = name;
+    };
+
+    // place enemies
+    while (enemies.size < 2) {
+        const mapX = Math.floor(Math.random() * 13);
+        const mapY = Math.floor(Math.random() * 11);
+
+        // don't replace content or put anything in the top left and bottom right corners
+        if (levelMap[mapY][mapX] || (mapX < 3 && mapY < 3) || (mapX > 9 && mapY > 8)) {
+            continue;
+        };
+
+        const x = gridStep * mapX;
+        const y = gridStep * mapY;
+        const name = `enemy${mapX}${mapY}`;
+        const newEnemy = new Enemy(55 * mult, 2 * mult, x, y);
+        enemies.set(name, newEnemy);
+        //levelMap[mapY][mapX] = name;  It's gonna move. Enemies have to be placed last
     };
 };
