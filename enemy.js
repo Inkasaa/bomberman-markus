@@ -13,6 +13,7 @@ export class Enemy {
         this.y = y + halfStep - size / 2;
 
         this.alive = true;
+        this.onBomb = false;
 
         this.element = document.createElement('div');
         this.element.id = `enemy${enemyCount}`;
@@ -29,6 +30,7 @@ export class Enemy {
         // coordinates for enemy
         this.prevSpot = [this.x, this.y];
         this.curr = [row, col];
+        this.next;
         this.direction = "spawn";
     };
 
@@ -44,18 +46,68 @@ export class Enemy {
         timedCount++;
     };
 
+    chooseDirection() {
 
+        // update current first            
+        this.curr = [Math.round((this.y + (this.size / 2) - halfStep) / gridStep), Math.round((this.x + (this.size / 2) - halfStep) / gridStep)]
+        this.prevSpot = [this.curr[1] * gridStep + halfStep - this.size / 2, this.curr[0] * gridStep + halfStep - this.size / 2];
+
+        // find directions with empty cells
+        let availableDirs = []
+        if (isEmpty(this.curr[0] - 1, this.curr[1])) availableDirs.push("up");
+        if (isEmpty(this.curr[0] + 1, this.curr[1])) availableDirs.push("down");
+        if (isEmpty(this.curr[0], this.curr[1] - 1)) availableDirs.push("left");
+        if (isEmpty(this.curr[0], this.curr[1] + 1)) availableDirs.push("right");
+
+        // don't go back the same way
+        if (availableDirs.length > 1) {
+            for (let i = 0; i < availableDirs.length; i++) {
+                if (availableDirs[i] == "left" && this.direction == "right") {
+                    availableDirs.splice(i, 1);
+                    break;
+                };
+                if (availableDirs[i] == "right" && this.direction == "left") {
+                    availableDirs.splice(i, 1);
+                    break;
+                };
+                if (availableDirs[i] == "up" && this.direction == "down") {
+                    availableDirs.splice(i, 1);
+                    break;
+                };
+                if (availableDirs[i] == "down" && this.direction == "up") {
+                    availableDirs.splice(i, 1);
+                    break;
+                };
+            };
+        };
+
+        if (availableDirs) {
+            this.direction = availableDirs[Math.floor(Math.random() * availableDirs.length)];
+
+            if (this.direction == "left") this.next = [this.curr[0], this.curr[1] - 1];
+            if (this.direction == "right") this.next = [this.curr[0], this.curr[1] + 1];
+            if (this.direction == "up") this.next = [this.curr[0] - 1, this.curr[1]];
+            if (this.direction == "down") this.next = [this.curr[0] + 1, this.curr[1]];
+        }
+    }
 
     moveEnemy(deltaTime) {
         if (this.alive) {
             let moveDistance = this.speed * deltaTime;
 
-            function isEmpty(row, col) {
-                return (
-                    row >= 0 && row <= 10 &&
-                    col >= 0 && col <= 12 &&
-                    !levelMap[row][col]
-                );
+            // make enemy change direction if bomb is dropped in its current square
+            if (!isEmpty(this.curr[0], this.curr[1])) {
+                if (!this.onBomb) {
+                    if (this.direction == "left") this.direction = 'right';
+                    else if (this.direction == "right") this.direction = 'left';
+                    else if (this.direction == "up") this.direction = 'down';
+                    else if (this.direction == "down") this.direction = 'up';
+                    this.onBomb = true;
+
+                    //this.chooseDirection();
+                }
+            } else {
+                this.onBomb = false;
             }
 
             // next position
@@ -64,48 +116,9 @@ export class Enemy {
             if (this.direction == "up") this.y -= moveDistance;
             if (this.direction == "down") this.y += moveDistance;
 
-
-            // recalculate direction when one grid step from previous spot??
-            if (this.direction == "spawn" || Math.abs(this.x - this.prevSpot[0]) >= gridStep || Math.abs(this.y - this.prevSpot[1]) >= gridStep) {
-
-                // update current first            
-                this.curr = [Math.round((this.y + (this.size / 2) - halfStep) / gridStep), Math.round((this.x + (this.size / 2) - halfStep) / gridStep)]
-                this.prevSpot = [this.curr[1] * gridStep + halfStep - this.size / 2, this.curr[0] * gridStep + halfStep - this.size / 2];
-                //this.prevSpot = [this.x, this.y];
-
-                // find directions with empty cells
-                let availableDirs = []
-                if (isEmpty(this.curr[0] - 1, this.curr[1])) availableDirs.push("up");
-                if (isEmpty(this.curr[0] + 1, this.curr[1])) availableDirs.push("down");
-                if (isEmpty(this.curr[0], this.curr[1] - 1)) availableDirs.push("left");
-                if (isEmpty(this.curr[0], this.curr[1] + 1)) availableDirs.push("right");
-
-                // don't go back the same way
-                if (availableDirs.length > 1) {
-                    for (let i = 0; i < availableDirs.length; i++) {
-                        if (availableDirs[i] == "left" && this.direction == "right") {
-                            availableDirs.splice(i, 1);
-                            break;
-                        };
-                        if (availableDirs[i] == "right" && this.direction == "left") {
-                            availableDirs.splice(i, 1);
-                            break;
-                        };
-                        if (availableDirs[i] == "up" && this.direction == "down") {
-                            availableDirs.splice(i, 1);
-                            break;
-                        };
-                        if (availableDirs[i] == "down" && this.direction == "up") {
-                            availableDirs.splice(i, 1);
-                            break;
-                        };
-                    };
-                };
-
-                if (availableDirs) {
-                    //if (this.direction) this.prevMove = this.direction;
-                    this.direction = availableDirs[Math.floor(Math.random() * availableDirs.length)];
-                }
+            // decide which way to go if at center of next square
+            if (!this.direction || this.direction == "spawn" || Math.abs(this.x - this.prevSpot[0]) >= gridStep || Math.abs(this.y - this.prevSpot[1]) >= gridStep) {
+                this.chooseDirection();
             };
 
             // apply movement
@@ -123,6 +136,14 @@ export class Enemy {
 
     };
 };
+
+function isEmpty(row, col) {
+    return (
+        row >= 0 && row <= 10 &&
+        col >= 0 && col <= 12 &&
+        !levelMap[row][col]
+    );
+}
 
 function checkHit(enemyBounds, flame) {
     const flameBounds = flame.getBoundingClientRect();
