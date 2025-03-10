@@ -1,5 +1,5 @@
 import { Bomb } from "./bomb.js";
-import { bombTime, bombs, bounds, flames, gridStep, levelMap, restartGame, solidWalls, timedEvents, weakWalls } from "./game.js";
+import { bombTime, bombs, bounds, flames, gridStep, halfStep, levelMap, restartGame, solidWalls, timedEvents, weakWalls } from "./game.js";
 import { Timer } from "./timer.js";
 
 let timedCount = 0;
@@ -9,10 +9,10 @@ export class Enemy {
     constructor(size, speed, x, y) {
         this.size = size;
         this.speed = speed;
-        this.startX = x;
-        this.startY = y;
-        this.x = x + (size / 4);
-        this.y = y + (size / 4);
+        this.x = x + halfStep - size / 2; // Top left corner
+        this.y = y + halfStep - size / 2;
+
+        this.alive = true;
 
         this.element = document.createElement('div');
         this.element.id = `enemy${enemyCount}`;
@@ -20,31 +20,26 @@ export class Enemy {
         this.element.style.width = `${size}px`;
         this.element.style.height = `${size}px`;
         this.element.style.borderRadius = `${size / 5}px`;
-        //this.element.style.position = 'absolute';
         this.element.style.transform = `translate(${this.x}px, ${this.y}px)`;
         document.getElementById("game-container").appendChild(this.element);
 
-        let col = Math.floor((x + size) / gridStep);
-        let row = Math.floor((y + size) / gridStep);
+        let col = Math.round(x / gridStep);
+        let row = Math.round(y / gridStep);
 
-        // coordinates for enemy: past, present and future
-        this.prevMove;
+        // coordinates for enemy
+        this.prevSpot = [this.x, this.y];
         this.curr = [row, col];
-        this.next;
-        this.direction;
-
-        /*         let directions = ["left", "right", "up", "down"];
-                this.direction = directions[Math.floor(Math.random() * 4)];
-                console.log("first direction is:", this.direction) */
+        this.direction = "spawn";
     };
 
     die() {
         this.element.style.background = 'red';
+        this.alive = false;
         const countNow = timedCount;
         const timedDeath = new Timer(() => {
-            this.element.delete();
+            this.element.remove();
             timedEvents.delete(`enemyDeath${countNow}`)
-        }, 2000);
+        }, 1000);
         timedEvents.set(`enemyDeath${countNow}`, timedDeath)
         timedCount++;
     };
@@ -52,72 +47,77 @@ export class Enemy {
 
 
     moveEnemy(deltaTime) {
+        if (this.alive) {
+            let moveDistance = this.speed * deltaTime;
 
-        let moveDistance = this.speed * deltaTime;
+            function isEmpty(row, col) {
+                return (
+                    row >= 0 && row <= 10 &&
+                    col >= 0 && col <= 12 &&
+                    !levelMap[row][col]
+                );
+            }
 
-        function isEmpty(row, col) {
-            return (
-                row >= 0 && row <= 10 &&
-                col >= 0 && col <= 12 &&
-                !levelMap[row][col]
-            );
-        }
-
-        // next position
-        if (this.direction == "left") this.x -= moveDistance;
-        if (this.direction == "right") this.x += moveDistance;
-        if (this.direction == "up") this.y -= moveDistance;
-        if (this.direction == "down") this.y += moveDistance;
+            // next position
+            if (this.direction == "left") this.x -= moveDistance;
+            if (this.direction == "right") this.x += moveDistance;
+            if (this.direction == "up") this.y -= moveDistance;
+            if (this.direction == "down") this.y += moveDistance;
 
 
-        // recalculate direction when moved to another cell
-        if (!this.prevMove || this.curr[0] != Math.floor(this.y / gridStep) || this.curr[1] != Math.floor(this.x  / gridStep)) {
+            // recalculate direction when one grid step from previous spot??
+            if (this.direction == "spawn" || Math.abs(this.x - this.prevSpot[0]) >= gridStep || Math.abs(this.y - this.prevSpot[1]) >= gridStep) {
 
-            // find directions with empty cells
-            let availableDirs = []
-            if (isEmpty(this.curr[0] - 1, this.curr[1])) availableDirs.push("left")
-            if (isEmpty(this.curr[0] + 1, this.curr[1])) availableDirs.push("right")
-            if (isEmpty(this.curr[0], this.curr[1] - 1)) availableDirs.push("up")
-            if (isEmpty(this.curr[0], this.curr[1] + 1)) availableDirs.push("down")
+                // update current first            
+                this.curr = [Math.round((this.y + (this.size / 2) - halfStep) / gridStep), Math.round((this.x + (this.size / 2) - halfStep) / gridStep)]
+                this.prevSpot = [this.curr[1] * gridStep + halfStep - this.size / 2, this.curr[0] * gridStep + halfStep - this.size / 2];
+                //this.prevSpot = [this.x, this.y];
 
-            // don't go back the same way
-            if (this.prevMove && availableDirs > 1) {
-                for (let i = 0; i < availableDirs.length; i++) {
-                    if (availableDirs[i] == "left" && this.prevMove == "right") {
-                        availableDirs.splice(i, 1);
-                        break;
-                    };
-                    if (availableDirs[i] == "right" && this.prevMove == "left") {
-                        availableDirs.splice(i, 1);
-                        break;
-                    };
-                    if (availableDirs[i] == "up" && this.prevMove == "down") {
-                        availableDirs.splice(i, 1);
-                        break;
-                    };
-                    if (availableDirs[i] == "down" && this.prevMove == "up") {
-                        availableDirs.splice(i, 1);
-                        break;
+                // find directions with empty cells
+                let availableDirs = []
+                if (isEmpty(this.curr[0] - 1, this.curr[1])) availableDirs.push("up");
+                if (isEmpty(this.curr[0] + 1, this.curr[1])) availableDirs.push("down");
+                if (isEmpty(this.curr[0], this.curr[1] - 1)) availableDirs.push("left");
+                if (isEmpty(this.curr[0], this.curr[1] + 1)) availableDirs.push("right");
+
+                // don't go back the same way
+                if (availableDirs.length > 1) {
+                    for (let i = 0; i < availableDirs.length; i++) {
+                        if (availableDirs[i] == "left" && this.direction == "right") {
+                            availableDirs.splice(i, 1);
+                            break;
+                        };
+                        if (availableDirs[i] == "right" && this.direction == "left") {
+                            availableDirs.splice(i, 1);
+                            break;
+                        };
+                        if (availableDirs[i] == "up" && this.direction == "down") {
+                            availableDirs.splice(i, 1);
+                            break;
+                        };
+                        if (availableDirs[i] == "down" && this.direction == "up") {
+                            availableDirs.splice(i, 1);
+                            break;
+                        };
                     };
                 };
+
+                if (availableDirs) {
+                    //if (this.direction) this.prevMove = this.direction;
+                    this.direction = availableDirs[Math.floor(Math.random() * availableDirs.length)];
+                }
             };
 
-            if (availableDirs) {
-                if (this.direction) this.prevMove = this.direction;
-                this.direction = availableDirs[Math.floor(Math.random() * availableDirs.length)];
-                this.curr = [Math.floor(this.y / gridStep), Math.floor(this.x / gridStep)]
-            }
-        };
+            // apply movement
+            if (this.direction) this.element.style.transform = `translate(${this.x}px, ${this.y}px)`;
 
-        // apply movement
-        if (this.direction) this.element.style.transform = `translate(${this.x}px, ${this.y}px)`;
-
-        // flames hit
-        let enemyBounds = this.element.getBoundingClientRect()
-        for (const flame of flames.values()) {
-            if (checkHit(enemyBounds, flame)) {
-                this.die();
-                break;
+            // flames hit
+            let enemyBounds = this.element.getBoundingClientRect()
+            for (const flame of flames.values()) {
+                if (checkHit(enemyBounds, flame)) {
+                    this.die();
+                    break;
+                };
             };
         };
 

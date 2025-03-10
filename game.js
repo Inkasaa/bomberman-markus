@@ -67,9 +67,8 @@ addEventListener("DOMContentLoaded", function () {
     //console.log(enemies)
 
     lastFrameTime = this.performance.now(); // initialize to current timestamp
-    gameLoop();
-
-    
+    requestAnimationFrame(gameLoop);
+    //gameLoop();    
 
     function gameLoop(timestamp) {
 

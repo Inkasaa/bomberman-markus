@@ -88,7 +88,7 @@ export function makeWalls() {
     };
 
     // place enemies
-    while (enemies.size < 2) {
+    while (enemies.size < 3) {
         const mapX = Math.floor(Math.random() * 13);
         const mapY = Math.floor(Math.random() * 11);
 
@@ -100,7 +100,7 @@ export function makeWalls() {
         const x = gridStep * mapX;
         const y = gridStep * mapY;
         const name = `enemy${mapX}${mapY}`;
-        const newEnemy = new Enemy(55 * mult, 2 * mult, x, y);
+        const newEnemy = new Enemy(55 * mult, 1.5 * mult, x, y);
         enemies.set(name, newEnemy);
         //levelMap[mapY][mapX] = name;  It's gonna move. Enemies have to be placed last
     };
