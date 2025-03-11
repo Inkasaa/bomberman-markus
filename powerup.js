@@ -3,17 +3,6 @@ import { Timer } from "./timer.js";
 
 let timedCount = 0;
 
-/* function pickUp(row, col) {
-    console.log("before:", powerUpMap[this.col][this.row]);
-    console.log(powerUpMap);
-
-    this.element.remove();
-    powerUpMap[this.col][this.row] = '';
-    powerups.delete(this.name);
-
-    console.log("after:", powerUpMap[this.col][this.row]);
-} */
-
 class PowerUp {
     constructor(x, y, size, nameOf, row, col) {
         this.x = x + halfStep - (size / 2);
@@ -22,10 +11,7 @@ class PowerUp {
         this.row = row;
         this.col = col;
 
-        console.log(row, col, this.row, this.col);
-
         this.name = nameOf;
-        this.active = false;    // inactive if hidden
 
         this.element = document.createElement("div");
         this.element.classList.add("powerup")
@@ -34,7 +20,6 @@ class PowerUp {
         this.element.style.height = `${size}px`;
         this.element.style.left = `${this.x}px`;
         this.element.style.top = `${this.y}px`;
-        //this.element.style.borderRadius = size / 10 + 'px';
 
         document.getElementById("game-container").appendChild(this.element);
     };
@@ -42,7 +27,6 @@ class PowerUp {
     checkCollision(playerX, playerY, playerSize) {
         return (!
             (
-                !this.active ||
                 playerX + playerSize < this.x ||
                 playerX > this.x + this.size ||
                 playerY + playerSize < this.y ||

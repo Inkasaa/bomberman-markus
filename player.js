@@ -1,5 +1,5 @@
 import { Bomb } from "./bomb.js";
-import { bombTime, bombs, bounds, enemies, flames, powerups, restartGame, solidWalls, timedEvents, weakWalls } from "./game.js";
+import { bombTime, bombs, bounds, enemies, finish, flames, nextLevel, powerups, restartGame, solidWalls, timedEvents, weakWalls } from "./game.js";
 import { Timer } from "./timer.js";
 
 let timedCount = 0;
@@ -15,8 +15,8 @@ export class Player {
 
         this.lives = 3;
         this.alive = true;
-        this.bombAmount = 1;
-        this.bombPower = 1;
+        this.bombAmount = 3;
+        this.bombPower = 2;
 
         this.element = document.createElement('div');
         this.element.id = "player";
@@ -45,7 +45,7 @@ export class Player {
     };
 
     dropBomb() {
-        if (this.bombAmount > 0) {
+        if (this.alive && this.bombAmount > 0) {
             new Bomb(this.x + this.size / 2, this.y + this.size / 2, this.bombPower, 'player');
             this.bombAmount--;
 
@@ -192,7 +192,7 @@ export class Player {
             this.element.style.transform = `translate(${this.x}px, ${this.y}px)`;
 
 
-            // Fatal and power-up collisions after movement 
+            // Fatal, power-up and finish collisions after movement 
 
             // flames hit
             let playerBounds = this.element.getBoundingClientRect()
@@ -219,11 +219,22 @@ export class Player {
                     }
                     if (pow.powerType == "flame") {
                         this.bombPower++;
-                    }                    
+                    }
                     pow.pickUp();
                     break;
                 };
             };
+
+            if (finish.active && finish.checkCollision(newX, newY, this.size)) {
+                this.alive = false;
+                const timedNextLevel = new Timer(() => {                    
+                    nextLevel();
+                    timedEvents.delete(`finishingTheLevel`)
+                }, 2500);
+                timedEvents.set(`finishingTheLevel`, timedNextLevel)
+                timedCount++;
+                finish.active = false;
+            }
         };
     };
 };

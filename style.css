@@ -64,6 +64,13 @@ body {
     background-size: cover;
 }
 
+.finish {
+    background-image: url("finishgrey.svg");
+    background-size: cover;
+    position: absolute;
+    z-index: 2;
+}
+
 #pause-menu {
     position: fixed;
     top: 50%;

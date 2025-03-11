@@ -1,5 +1,5 @@
 import { Enemy } from "./enemy.js";
-import { enemies, gridStep, halfStep, levelMap, mult, powerUpMap, powerups, solidWalls, weakWalls } from "./game.js";
+import { enemies, gridStep, halfStep, level, levelMap, mult, powerUpMap, powerups, solidWalls, weakWalls } from "./game.js";
 import { Player } from "./player.js";
 import { BombUp, FlameUp } from "./powerup.js";
 import { SolidWall, WeakWall } from "./walls.js";
@@ -123,7 +123,7 @@ export function makeWalls() {
     }
 
     // place enemies
-    while (enemies.size < 3) {
+    while (enemies.size < 1 + (level * 1.5)) {
         const mapX = Math.floor(Math.random() * 13);
         const mapY = Math.floor(Math.random() * 11);
 
@@ -135,7 +135,17 @@ export function makeWalls() {
         const x = gridStep * mapX;
         const y = gridStep * mapY;
         const name = `enemy${mapX}${mapY}`;
-        const newEnemy = new Enemy(55 * mult, 1.5 * mult, x, y);
+        const newEnemy = new Enemy(55 * mult, level * mult, x, y, name);
         enemies.set(name, newEnemy);
+        levelMap[mapY][mapX] = 'enemy';
+    };
+
+    // enemies were there only to stop them being placed on top of each other
+    for (let i = 0; i < levelMap.length; i++) {
+        for (let j = 0; j < levelMap[0].length; j++) {
+            if (levelMap[i][j] == 'enemy') {
+                levelMap[i][j] = null;
+            };
+        };
     };
 };

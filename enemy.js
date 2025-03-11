@@ -1,15 +1,17 @@
-import { flames, gridStep, halfStep, levelMap, timedEvents} from "./game.js";
+import { tryToActivateFinish } from "./finish.js";
+import { enemies, flames, gridStep, halfStep, levelMap, timedEvents} from "./game.js";
 import { Timer } from "./timer.js";
 
 let timedCount = 0;
 let enemyCount = 0;
 
 export class Enemy {
-    constructor(size, speed, x, y) {
+    constructor(size, speed, x, y, name) {
         this.size = size;
         this.speed = speed;
         this.x = x + halfStep - size / 2; // Top left corner
         this.y = y + halfStep - size / 2;
+        this.name = name;
 
         this.alive = true;
         this.onBomb = false;
@@ -40,6 +42,8 @@ export class Enemy {
         const timedDeath = new Timer(() => {
             this.element.remove();
             timedEvents.delete(`enemyDeath${countNow}`)
+            enemies.delete(this.name);
+            tryToActivateFinish();
         }, 1000);
         timedEvents.set(`enemyDeath${countNow}`, timedDeath)
         timedCount++;
