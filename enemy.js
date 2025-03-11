@@ -1,5 +1,4 @@
-import { Bomb } from "./bomb.js";
-import { bombTime, bombs, bounds, flames, gridStep, halfStep, levelMap, restartGame, solidWalls, timedEvents, weakWalls } from "./game.js";
+import { flames, gridStep, halfStep, levelMap, timedEvents} from "./game.js";
 import { Timer } from "./timer.js";
 
 let timedCount = 0;
