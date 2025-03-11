@@ -23,7 +23,7 @@ body {
 }
 
 .wall {
-    z-index: 1;
+    z-index: 3;
 }
 
 .wall.solid {
@@ -39,7 +39,7 @@ body {
 .flame {
     position: absolute;
     background: rgb(255, 234, 0);
-    z-index: 3;
+    z-index: 1;
 }
 
 .bomb {
@@ -47,6 +47,21 @@ body {
     background: rgb(0, 0, 0);
     border-radius: 50%;
     z-index: 4;
+}
+
+.powerup {
+    position: absolute;
+    z-index: 2;
+}
+
+.bombup {
+    background-image: url("bombup.svg");
+    background-size: cover;
+}
+
+.flameup {
+    background-image: url("flameup.svg");
+    background-size: cover;
 }
 
 #pause-menu {

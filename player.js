@@ -1,5 +1,5 @@
 import { Bomb } from "./bomb.js";
-import { bombTime, bombs, bounds, enemies, flames, restartGame, solidWalls, timedEvents, weakWalls } from "./game.js";
+import { bombTime, bombs, bounds, enemies, flames, powerups, restartGame, solidWalls, timedEvents, weakWalls } from "./game.js";
 import { Timer } from "./timer.js";
 
 let timedCount = 0;
@@ -15,8 +15,8 @@ export class Player {
 
         this.lives = 3;
         this.alive = true;
-        this.bombAmount = 3;
-        this.bombPower = 2;
+        this.bombAmount = 1;
+        this.bombPower = 1;
 
         this.element = document.createElement('div');
         this.element.id = "player";
@@ -115,7 +115,7 @@ export class Player {
                 restartGame();
             };
 
-            timedEvents.delete(`resurrection${countNow}`)            
+            timedEvents.delete(`resurrection${countNow}`)
         }, 2000);
         timedEvents.set(`resurrection${countNow}`, timedResurrection)
         timedCount++;
@@ -192,7 +192,7 @@ export class Player {
             this.element.style.transform = `translate(${this.x}px, ${this.y}px)`;
 
 
-            // Fatal collisions after movement 
+            // Fatal and power-up collisions after movement 
 
             // flames hit
             let playerBounds = this.element.getBoundingClientRect()
@@ -207,6 +207,20 @@ export class Player {
             for (const enemy of enemies.values()) {
                 if (checkHit(playerBounds, enemy.element)) {
                     this.die();
+                    break;
+                };
+            };
+
+            // power-ups hit
+            for (const pow of powerups.values()) {
+                if (checkHit(playerBounds, pow.element)) {
+                    if (pow.powerType == "bomb") {
+                        this.bombAmount++;
+                    }
+                    if (pow.powerType == "flame") {
+                        this.bombPower++;
+                    }                    
+                    pow.pickUp();
                     break;
                 };
             };

@@ -5,6 +5,7 @@ export let mult = 1.0;
 export let gridStep = 0;
 export let halfStep = 0;
 export let levelMap;                    // for placing elements, wall collapses
+export let powerUpMap;                  // for placing elements, wall collapses
 
 export const solidWalls = [];           // for player collisions
 export const weakWalls = new Map();     // for player collisions
@@ -13,6 +14,7 @@ export const bombTime = 2500;
 export const flames = new Map();        // for player collisions
 export const timedEvents = new Map();
 export const enemies = new Map();        // for player collisions
+export const powerups = new Map();        // for player collisions
 
 let player;
 let paused = false;
@@ -61,7 +63,8 @@ addEventListener("DOMContentLoaded", function () {
     bounds = resizeGameContainer();
     [gridStep, halfStep] = getGridSize();
     [mult, player] = setUpGame(bounds);
-    levelMap = makeLevelMap()
+    levelMap = makeLevelMap();
+    powerUpMap = makeLevelMap();
     makeWalls();
 
     //console.log(enemies)
