@@ -75,7 +75,7 @@ export function makeWalls() {
         const mapY = Math.floor(Math.random() * 11);
 
         // don't replace content or put anything in the top left and bottom right corners
-        if (levelMap[mapY][mapX] || (mapX < 2 && mapY < 2) || (mapX > 10 && mapY > 9)) {
+        if (levelMap[mapY][mapX] || (mapX < 2 && mapY < 2) || (mapX > 10 && mapY > 8)) {
             continue;
         };
 
@@ -93,7 +93,7 @@ export function makeWalls() {
         const mapY = Math.floor(Math.random() * 11);
 
         // don't replace content or put anything in the top left and bottom right corners
-        if (levelMap[mapY][mapX] || (mapX < 3 && mapY < 3) || (mapX > 9 && mapY > 8)) {
+        if (levelMap[mapY][mapX] || (mapX < 3 && mapY < 3) || (mapX > 9 && mapY > 7)) {
             continue;
         };
 
