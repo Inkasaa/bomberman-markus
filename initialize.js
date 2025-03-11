@@ -1,4 +1,5 @@
-import { gridStep, halfStep, levelMap, solidWalls, weakWalls } from "./game.js";
+import { Enemy } from "./enemy.js";
+import { enemies, gridStep, halfStep, levelMap, mult, solidWalls, weakWalls } from "./game.js";
 import { Player } from "./player.js";
 import { SolidWall, WeakWall } from "./walls.js";
 
@@ -36,7 +37,7 @@ export function setUpGame(bounds) {
     // to different sized windows
     const multiplier = bounds.width / 1000;
 
-    const playerSpeed = 7 * multiplier;
+    const playerSpeed = 4.5 * multiplier;
     const playerSize = 55 * multiplier;
     const playerX = halfStep - (playerSize / 2); // put player to top left    
     const playerY = halfStep - (playerSize / 2);
@@ -69,12 +70,12 @@ export function makeWalls() {
     };
 
     // place weak walls randomly
-    while (weakWalls.size < 50) {
+    while (weakWalls.size < 45) {
         const mapX = Math.floor(Math.random() * 13);
         const mapY = Math.floor(Math.random() * 11);
 
         // don't replace content or put anything in the top left and bottom right corners
-        if (levelMap[mapY][mapX] || (mapX < 2 && mapY < 2) || (mapX > 10 && mapY > 9)) {
+        if (levelMap[mapY][mapX] || (mapX < 2 && mapY < 2) || (mapX > 10 && mapY > 8)) {
             continue;
         };
 
@@ -84,5 +85,23 @@ export function makeWalls() {
         const newWeak = new WeakWall(x, y, gridStep);
         weakWalls.set(name, newWeak);
         levelMap[mapY][mapX] = name;
+    };
+
+    // place enemies
+    while (enemies.size < 3) {
+        const mapX = Math.floor(Math.random() * 13);
+        const mapY = Math.floor(Math.random() * 11);
+
+        // don't replace content or put anything in the top left and bottom right corners
+        if (levelMap[mapY][mapX] || (mapX < 3 && mapY < 3) || (mapX > 9 && mapY > 7)) {
+            continue;
+        };
+
+        const x = gridStep * mapX;
+        const y = gridStep * mapY;
+        const name = `enemy${mapX}${mapY}`;
+        const newEnemy = new Enemy(55 * mult, 1.5 * mult, x, y);
+        enemies.set(name, newEnemy);
+        //levelMap[mapY][mapX] = name;  It's gonna move. Enemies have to be placed last
     };
 };

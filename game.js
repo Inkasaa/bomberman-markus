@@ -4,14 +4,15 @@ export let bounds;
 export let mult = 1.0;
 export let gridStep = 0;
 export let halfStep = 0;
-export let levelMap;
+export let levelMap;                    // for placing elements, wall collapses
 
-export const solidWalls = [];
-export const weakWalls = new Map();
-export const bombs = new Map();
-export const bombTime = 2000;
-export const flames = new Map();
+export const solidWalls = [];           // for player collisions
+export const weakWalls = new Map();     // for player collisions
+export const bombs = new Map();         // for player collisions
+export const bombTime = 2500;
+export const flames = new Map();        // for player collisions
 export const timedEvents = new Map();
+export const enemies = new Map();        // for player collisions
 
 let player;
 let paused = false;
@@ -42,12 +43,6 @@ function togglePause() {
         for (const timed of timedEvents.values()) {
             timed.resume();
         }
-
-        // so player can't slide through walls during pause
-        player.left = false;
-        player.right = false;
-        player.up = false;
-        player.down = false;
     }
 };
 
@@ -69,15 +64,23 @@ addEventListener("DOMContentLoaded", function () {
     levelMap = makeLevelMap()
     makeWalls();
 
+    //console.log(enemies)
+
     lastFrameTime = this.performance.now(); // initialize to current timestamp
-    gameLoop();
+    requestAnimationFrame(gameLoop);
+    //gameLoop();    
 
     function gameLoop(timestamp) {
 
-        if (!paused) {
-            let deltaTime = (timestamp - lastFrameTime) / 16.7; // use deltaTime to normalize speed for different refresh rates
-            lastFrameTime = timestamp;
+        let deltaTime = (timestamp - lastFrameTime) / 16.7; // use deltaTime to normalize speed for different refresh rates
+        lastFrameTime = timestamp;
+
+        if (!paused) {                        
             player.movePlayer(deltaTime);
+
+            for (const en of enemies.values()){
+                en.moveEnemy(deltaTime);
+            }
         }
 
         // requestAnimationFrame() always runs callback with 'timestamp' argument (milliseconds since the page loaded)

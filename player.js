@@ -1,5 +1,5 @@
 import { Bomb } from "./bomb.js";
-import { bombTime, bombs, bounds, flames, restartGame, solidWalls, timedEvents, weakWalls } from "./game.js";
+import { bombTime, bombs, bounds, enemies, flames, restartGame, solidWalls, timedEvents, weakWalls } from "./game.js";
 import { Timer } from "./timer.js";
 
 let timedCount = 0;
@@ -191,6 +191,9 @@ export class Player {
             // apply movement
             this.element.style.transform = `translate(${this.x}px, ${this.y}px)`;
 
+
+            // Fatal collisions after movement 
+
             // flames hit
             let playerBounds = this.element.getBoundingClientRect()
             for (const flame of flames.values()) {
@@ -199,16 +202,24 @@ export class Player {
                     break;
                 };
             };
+
+            // enemies hit
+            for (const enemy of enemies.values()) {
+                if (checkHit(playerBounds, enemy.element)) {
+                    this.die();
+                    break;
+                };
+            };
         };
     };
 };
 
-function checkHit(playerBounds, flame) {
-    const flameBounds = flame.getBoundingClientRect();
+function checkHit(playerBounds, other) {
+    const otherBounds = other.getBoundingClientRect();
 
     // No hit (false) if player is safely outside on at least one side
-    return !(playerBounds.right < flameBounds.left ||
-        playerBounds.left > flameBounds.right ||
-        playerBounds.bottom < flameBounds.top ||
-        playerBounds.top > flameBounds.bottom);
+    return !(playerBounds.right < otherBounds.left ||
+        playerBounds.left > otherBounds.right ||
+        playerBounds.bottom < otherBounds.top ||
+        playerBounds.top > otherBounds.bottom);
 };
