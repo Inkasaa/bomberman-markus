@@ -1,5 +1,5 @@
 import { Bomb } from "./bomb.js";
-import { bombTime, bombs, bounds, enemies, flames, restartGame, solidWalls, timedEvents, weakWalls } from "./game.js";
+import { bombTime, bombs, bounds, enemies, finish, flames, nextLevel, powerups, restartGame, solidWalls, timedEvents, weakWalls } from "./game.js";
 import { Timer } from "./timer.js";
 
 let timedCount = 0;
@@ -45,7 +45,7 @@ export class Player {
     };
 
     dropBomb() {
-        if (this.bombAmount > 0) {
+        if (this.alive && this.bombAmount > 0) {
             new Bomb(this.x + this.size / 2, this.y + this.size / 2, this.bombPower, 'player');
             this.bombAmount--;
 
@@ -115,7 +115,7 @@ export class Player {
                 restartGame();
             };
 
-            timedEvents.delete(`resurrection${countNow}`)            
+            timedEvents.delete(`resurrection${countNow}`)
         }, 2000);
         timedEvents.set(`resurrection${countNow}`, timedResurrection)
         timedCount++;
@@ -192,7 +192,7 @@ export class Player {
             this.element.style.transform = `translate(${this.x}px, ${this.y}px)`;
 
 
-            // Fatal collisions after movement 
+            // Fatal, power-up and finish collisions after movement 
 
             // flames hit
             let playerBounds = this.element.getBoundingClientRect()
@@ -210,6 +210,31 @@ export class Player {
                     break;
                 };
             };
+
+            // power-ups hit
+            for (const pow of powerups.values()) {
+                if (checkHit(playerBounds, pow.element)) {
+                    if (pow.powerType == "bomb") {
+                        this.bombAmount++;
+                    }
+                    if (pow.powerType == "flame") {
+                        this.bombPower++;
+                    }
+                    pow.pickUp();
+                    break;
+                };
+            };
+
+            if (finish.active && finish.checkCollision(newX, newY, this.size)) {
+                this.alive = false;
+                const timedNextLevel = new Timer(() => {                    
+                    nextLevel();
+                    timedEvents.delete(`finishingTheLevel`)
+                }, 2500);
+                timedEvents.set(`finishingTheLevel`, timedNextLevel)
+                timedCount++;
+                finish.active = false;
+            }
         };
     };
 };

@@ -1,6 +1,7 @@
 import { Enemy } from "./enemy.js";
-import { enemies, gridStep, halfStep, levelMap, mult, solidWalls, weakWalls } from "./game.js";
+import { enemies, gridStep, halfStep, level, levelMap, mult, powerUpMap, powerups, solidWalls, weakWalls } from "./game.js";
 import { Player } from "./player.js";
+import { BombUp, FlameUp } from "./powerup.js";
 import { SolidWall, WeakWall } from "./walls.js";
 
 export function resizeGameContainer() {
@@ -87,8 +88,42 @@ export function makeWalls() {
         levelMap[mapY][mapX] = name;
     };
 
+    // place bomb powerups inside weak walls
+    while (powerups.size < 5) {
+        const mapX = Math.floor(Math.random() * 13);
+        const mapY = Math.floor(Math.random() * 11);
+
+        if (levelMap[mapY][mapX] && typeof levelMap[mapY][mapX] == 'string' && levelMap[mapY][mapX].startsWith('weakWall')) {
+            const x = gridStep * mapX;
+            const y = gridStep * mapY;
+            const name = `bombUp${mapX}${mapY}`;
+            const newBombUp = new BombUp(x, y, gridStep * 0.9, name, mapY, mapX);
+            powerups.set(name, newBombUp)
+            powerUpMap[mapY][mapX] = [name, newBombUp];
+        };
+    }
+
+    // place flame powerups inside weak walls
+    while (powerups.size < 10) {
+        const mapX = Math.floor(Math.random() * 13);
+        const mapY = Math.floor(Math.random() * 11);
+
+        if (levelMap[mapY][mapX] &&
+            typeof levelMap[mapY][mapX] == 'string' &&
+            levelMap[mapY][mapX].startsWith('weakWall') &&
+            !powerUpMap[mapY][mapX]
+        ) {
+            const x = gridStep * mapX;
+            const y = gridStep * mapY;
+            const name = `flameUp${mapX}${mapY}`;
+            const newFlameUp = new FlameUp(x, y, gridStep * 0.9, name, mapY, mapX);
+            powerups.set(name, newFlameUp)
+            powerUpMap[mapY][mapX] = [name, newFlameUp];
+        };
+    }
+
     // place enemies
-    while (enemies.size < 3) {
+    while (enemies.size < 1 + (level * 1.5)) {
         const mapX = Math.floor(Math.random() * 13);
         const mapY = Math.floor(Math.random() * 11);
 
@@ -100,8 +135,17 @@ export function makeWalls() {
         const x = gridStep * mapX;
         const y = gridStep * mapY;
         const name = `enemy${mapX}${mapY}`;
-        const newEnemy = new Enemy(55 * mult, 1.5 * mult, x, y);
+        const newEnemy = new Enemy(55 * mult, level * mult, x, y, name);
         enemies.set(name, newEnemy);
-        //levelMap[mapY][mapX] = name;  It's gonna move. Enemies have to be placed last
+        levelMap[mapY][mapX] = 'enemy';
+    };
+
+    // enemies were there only to stop them being placed on top of each other
+    for (let i = 0; i < levelMap.length; i++) {
+        for (let j = 0; j < levelMap[0].length; j++) {
+            if (levelMap[i][j] == 'enemy') {
+                levelMap[i][j] = null;
+            };
+        };
     };
 };

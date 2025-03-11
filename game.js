@@ -1,3 +1,4 @@
+import { Finish } from "./finish.js";
 import { resizeGameContainer, getGridSize, setUpGame, makeWalls, makeLevelMap } from "./initialize.js";
 
 export let bounds;
@@ -5,18 +6,22 @@ export let mult = 1.0;
 export let gridStep = 0;
 export let halfStep = 0;
 export let levelMap;                    // for placing elements, wall collapses
+export let powerUpMap;                  // for placing elements, wall collapses
 
-export const solidWalls = [];           // for player collisions
+export let solidWalls = [];           // for player collisions
 export const weakWalls = new Map();     // for player collisions
 export const bombs = new Map();         // for player collisions
 export const bombTime = 2500;
 export const flames = new Map();        // for player collisions
 export const timedEvents = new Map();
 export const enemies = new Map();        // for player collisions
+export const powerups = new Map();        // for player collisions
+export let finish;
 
 let player;
 let paused = false;
 let lastFrameTime = 0;
+export let level = 1;
 
 // Prevent default behavior for arrow keys to avoid page scrolling. Notice 'window'
 window.addEventListener("keydown", function (e) {
@@ -27,6 +32,23 @@ window.addEventListener("keydown", function (e) {
 
 export function restartGame() {
     location.reload(); // Simple restart by reloading the page
+};
+
+export function nextLevel() {
+    document.getElementById("game-container").replaceChildren();
+    //document.getElementById("game-container").innerHTML = "";
+    //document.onkeydown = null;
+
+    level++;
+    solidWalls = [];
+    weakWalls.clear();
+    bombs.clear();
+    flames.clear();
+    timedEvents.clear();
+    enemies.clear();
+    powerups.clear();
+
+    startSequence();
 };
 
 function togglePause() {
@@ -57,18 +79,19 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("restart-btn").addEventListener("click", restartGame);
 });
 
-addEventListener("DOMContentLoaded", function () {
+function startSequence(){
     bounds = resizeGameContainer();
     [gridStep, halfStep] = getGridSize();
     [mult, player] = setUpGame(bounds);
-    levelMap = makeLevelMap()
+    levelMap = makeLevelMap();
+    powerUpMap = makeLevelMap();
     makeWalls();
+    finish = new Finish(gridStep * 12, gridStep * 10, gridStep);
+}
 
-    //console.log(enemies)
-
-    lastFrameTime = this.performance.now(); // initialize to current timestamp
+function runGame(){
+    lastFrameTime = window.performance.now(); // initialize to current timestamp
     requestAnimationFrame(gameLoop);
-    //gameLoop();    
 
     function gameLoop(timestamp) {
 
@@ -86,4 +109,9 @@ addEventListener("DOMContentLoaded", function () {
         // requestAnimationFrame() always runs callback with 'timestamp' argument (milliseconds since the page loaded)
         requestAnimationFrame(gameLoop);
     };
+}
+
+addEventListener("DOMContentLoaded", function () {
+    startSequence();
+    runGame();
 });

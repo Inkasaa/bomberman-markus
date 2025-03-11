@@ -1,4 +1,4 @@
-import { bombs, bombTime, mult, gridStep, halfStep, levelMap, weakWalls, flames, timedEvents } from "./game.js";
+import { bombs, bombTime, mult, gridStep, halfStep, levelMap, weakWalls, flames, timedEvents, powerUpMap } from "./game.js";
 import { Timer } from "./timer.js";
 
 let flameCounter = 0;
@@ -24,6 +24,16 @@ function isBomb(row, col) {
         levelMap[row][col] &&
         Array.isArray(levelMap[row][col]) &&
         levelMap[row][col][0] == 'bomb'
+    );
+}
+
+function isPowerUp(row, col) {
+    return (
+        row >= 0 && row <= 10 &&
+        col >= 0 && col <= 12 &&
+        powerUpMap[row][col] &&
+        Array.isArray(powerUpMap[row][col]) &&
+        (powerUpMap[row][col][0].startsWith('bombUp') || powerUpMap[row][col][0].startsWith('flameUp'))
     );
 }
 
@@ -126,69 +136,77 @@ export class Bomb {
         let [colPlus, colMinus, rowPlus, rowMinus] = [true, true, true, true];
         for (let i = 1; i <= this.power; i++) {
 
-            /* TO DO
-            if gridspot is occupied by:
-            - level edge: don't draw, stop
-            x solid wall: don't draw, stop
-            x weak wall: don't draw, stop, destroy wall
-            - item: don't draw, stop, destroy item
-            x bomb: ?, explode bomb
-
-            - enemy: draw, continue, kill enemy
-            x player: draw, continue, kill player
-
-            Edges, walls, items and bombs could be saved on a 2d array and checked that way quite fast.
-            Something like:
-            if (level[3][11] == 'wallSolid' || level[3][11] == 'wallDest' || level[3][11] == 'item') {
-                // stop drawing this direction, somehow destroy if necessary
-            }
-
-            Player and enemies would be handled in their collision detections
-            */
-
             // In four directions: Stop flames at walls, destroy weak walls, explode other bombs
             if (colPlus) {
+                let foundWall = false;
                 if (isWall(this.mapRow, this.mapCol + i)) {
                     this.tryToDestroy(this.mapRow, this.mapCol + i);
                     colPlus = false;
+                    foundWall = true;
                 };
                 if (isBomb(this.mapRow, this.mapCol + i)) {
                     const bomb = levelMap[this.mapRow][this.mapCol + i][1];
                     levelMap[this.mapRow][this.mapCol + i] = '';
                     bomb.explodeEarly();
                 }
+                if (!foundWall && isPowerUp(this.mapRow, this.mapCol + i)) {
+                    const powerUp = powerUpMap[this.mapRow][this.mapCol + i][1];
+                    powerUp.burn();
+                    colPlus = false;
+                }
             };
             if (colMinus) {
+                let foundWall = false;
                 if (isWall(this.mapRow, this.mapCol - i)) {
                     this.tryToDestroy(this.mapRow, this.mapCol - i);
                     colMinus = false;
+                    foundWall = true;
                 };
                 if (isBomb(this.mapRow, this.mapCol - i)) {
                     const bomb = levelMap[this.mapRow][this.mapCol - i][1];
                     levelMap[this.mapRow][this.mapCol - i] = '';
                     bomb.explodeEarly();
                 }
+                if (!foundWall && isPowerUp(this.mapRow, this.mapCol - i)) {
+                    const powerUp = powerUpMap[this.mapRow][this.mapCol - i][1];
+                    powerUp.burn();
+                    colMinus = false;
+                }
             };
             if (rowPlus) {
+                let foundWall = false;
                 if (isWall(this.mapRow + i, this.mapCol)) {
                     this.tryToDestroy(this.mapRow + i, this.mapCol);
                     rowPlus = false;
+                    foundWall = true;
                 };
                 if (isBomb(this.mapRow + i, this.mapCol)) {
                     const bomb = levelMap[this.mapRow + i][this.mapCol][1];
                     levelMap[this.mapRow + i][this.mapCol] = '';
                     bomb.explodeEarly();
                 }
+                if (!foundWall && isPowerUp(this.mapRow + i, this.mapCol)) {
+                    const powerUp = powerUpMap[this.mapRow + i][this.mapCol][1];
+                    powerUp.burn();
+                    rowPlus = false;
+                }
             };
             if (rowMinus) {
+                let foundWall = false;
                 if (isWall(this.mapRow - i, this.mapCol)) {
                     this.tryToDestroy(this.mapRow - i, this.mapCol);
                     rowMinus = false;
+                    foundWall = true;
                 };
                 if (isBomb(this.mapRow - i, this.mapCol)) {
                     const bomb = levelMap[this.mapRow - i][this.mapCol][1]
                     levelMap[this.mapRow - i][this.mapCol] = '';
                     bomb.explodeEarly();
+                }
+                if (!foundWall && isPowerUp(this.mapRow - i, this.mapCol)) {
+                    const powerUp = powerUpMap[this.mapRow - i][this.mapCol][1];
+                    powerUp.burn();
+                    rowMinus = false;
                 }
             };
 
