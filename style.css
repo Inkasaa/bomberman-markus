@@ -18,7 +18,10 @@ body {
 
 .enemy {
     position: absolute;
-    background: rgb(182, 0, 100);
+    background-image: url("enemy.png");
+    background-size: contain; /* Ensure the image is fully visible */
+    background-position: center; /* Center the image within the element */
+    background-repeat: no-repeat; /* Prevent the image from repeating */
     z-index: 9;
 }
 

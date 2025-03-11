@@ -33,20 +33,29 @@ export class Enemy {
         this.curr = [row, col];
         this.next;
         this.direction = "spawn";
-    };
+    }skull
 
     die() {
-        this.element.style.background = 'red';
+        // Correctly set the background image when the enemy dies
+        this.element.style.backgroundImage = 'url("enemyDead2.png")';  // Ensure the URL is wrapped in quotes
+        this.element.style.backgroundSize = 'contain';  // Ensure the image fits within the element
+        this.element.style.backgroundPosition = 'center';  // Center the image within the element
+        this.element.style.backgroundRepeat = 'no-repeat';  // Prevent the image from repeating
+    
+        // Mark the enemy as dead
         this.alive = false;
+    
+        // Set a timer for removing the enemy from the game
         const countNow = timedCount;
         const timedDeath = new Timer(() => {
-            this.element.remove();
-            timedEvents.delete(`enemyDeath${countNow}`)
-            enemies.delete(this.name);
-            tryToActivateFinish();
-        }, 1000);
-        timedEvents.set(`enemyDeath${countNow}`, timedDeath)
-        timedCount++;
+            this.element.remove();  // Remove the enemy element from the DOM
+            timedEvents.delete(`enemyDeath${countNow}`);  // Clean up timed events
+            enemies.delete(this.name);  // Remove from the enemies collection
+            tryToActivateFinish();  // Check if the game should finish
+        }, 1000);  // 1 second delay before removal
+    
+        timedEvents.set(`enemyDeath${countNow}`, timedDeath);  // Add the death event to the timer list
+        timedCount++;  // Increment the timed count to track events
     };
 
     chooseDirection() {
