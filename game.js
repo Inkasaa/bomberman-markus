@@ -9,7 +9,7 @@ export let levelMap;                    // for placing elements, wall collapses
 export const solidWalls = [];           // for player collisions
 export const weakWalls = new Map();     // for player collisions
 export const bombs = new Map();         // for player collisions
-export const bombTime = 2000;
+export const bombTime = 2500;
 export const flames = new Map();        // for player collisions
 export const timedEvents = new Map();
 export const enemies = new Map();        // for player collisions

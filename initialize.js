@@ -37,7 +37,7 @@ export function setUpGame(bounds) {
     // to different sized windows
     const multiplier = bounds.width / 1000;
 
-    const playerSpeed = 7 * multiplier;
+    const playerSpeed = 4.5 * multiplier;
     const playerSize = 55 * multiplier;
     const playerX = halfStep - (playerSize / 2); // put player to top left    
     const playerY = halfStep - (playerSize / 2);
