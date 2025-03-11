@@ -95,14 +95,22 @@ export class Enemy {
         if (this.alive) {
             let moveDistance = this.speed * deltaTime;
 
-            // make enemy change direction if bomb is dropped in its current square
-            if (!isEmpty(this.curr[0], this.curr[1])) {
+            // make enemy change direction if bomb is dropped in its way
+            if (this.next && !isEmpty(this.next[0], this.next[1])) {
                 if (!this.onBomb) {
+
+                    [this.curr, this.next] = [this.next, this.curr];
+                    let topLeftX = (this.curr[1] * gridStep) + halfStep - (this.size/2);
+                    let topLeftY = (this.curr[0] * gridStep) + halfStep - (this.size/2);
+                    this.prevSpot = [topLeftX, topLeftY];
+
                     if (this.direction == "left") this.direction = 'right';
                     else if (this.direction == "right") this.direction = 'left';
                     else if (this.direction == "up") this.direction = 'down';
                     else if (this.direction == "down") this.direction = 'up';
                     this.onBomb = true;
+
+                    
 
                     //this.chooseDirection();
                 }
