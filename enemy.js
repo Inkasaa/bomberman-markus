@@ -33,21 +33,24 @@ export class Enemy {
         this.curr = [row, col];
         this.next;
         this.direction = "spawn";
-    };
+    } skull
 
     die() {
         this.element.style.background = 'red';
         enemyDeath.play();
         this.alive = false;
+
+        // Set a timer for removing the enemy from the game
         const countNow = timedCount;
         const timedDeath = new Timer(() => {
-            this.element.remove();
-            timedEvents.delete(`enemyDeath${countNow}`)
-            enemies.delete(this.name);
-            tryToActivateFinish();
-        }, 1000);
-        timedEvents.set(`enemyDeath${countNow}`, timedDeath)
-        timedCount++;
+            this.element.remove();  // Remove the enemy element from the DOM
+            timedEvents.delete(`enemyDeath${countNow}`);  // Clean up timed events
+            enemies.delete(this.name);  // Remove from the enemies collection
+            tryToActivateFinish();  // Check if the game should finish
+        }, 1000);  // 1 second delay before removal
+
+        timedEvents.set(`enemyDeath${countNow}`, timedDeath);  // Add the death event to the timer list
+        timedCount++;  // Increment the timed count to track events
     };
 
     chooseDirection() {
@@ -104,8 +107,8 @@ export class Enemy {
                 if (!this.onBomb) {
 
                     [this.curr, this.next] = [this.next, this.curr];
-                    let topLeftX = (this.curr[1] * gridStep) + halfStep - (this.size/2);
-                    let topLeftY = (this.curr[0] * gridStep) + halfStep - (this.size/2);
+                    let topLeftX = (this.curr[1] * gridStep) + halfStep - (this.size / 2);
+                    let topLeftY = (this.curr[0] * gridStep) + halfStep - (this.size / 2);
                     this.prevSpot = [topLeftX, topLeftY];
 
                     if (this.direction == "left") this.direction = 'right';
@@ -114,7 +117,7 @@ export class Enemy {
                     else if (this.direction == "down") this.direction = 'up';
                     this.onBomb = true;
 
-                    
+
 
                     //this.chooseDirection();
                 }

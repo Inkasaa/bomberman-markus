@@ -14,7 +14,7 @@ class Wall {
         this.element.style.height = `${size}px`;
         this.element.style.left = `${x}px`;
         this.element.style.top = `${y}px`;
-        this.element.style.borderRadius = size / 10 + 'px';
+        //this.element.style.borderRadius = size / 10 + 'px';
 
         document.getElementById("game-container").appendChild(this.element);
     };
