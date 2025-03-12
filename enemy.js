@@ -1,5 +1,5 @@
 import { tryToActivateFinish } from "./finish.js";
-import { enemies, flames, gridStep, halfStep, levelMap, timedEvents} from "./game.js";
+import { enemies, flames, gridStep, halfStep, levelMap, timedEvents, enemyDeath } from "./game.js";
 import { Timer } from "./timer.js";
 
 let timedCount = 0;
@@ -36,6 +36,7 @@ export class Enemy {
     }skull
 
     die() {
+<<<<<<< HEAD
         // Correctly set the background image when the enemy dies
         this.element.style.backgroundImage = 'url("enemyDead2.png")';  // Ensure the URL is wrapped in quotes
         this.element.style.backgroundSize = 'contain';  // Ensure the image fits within the element
@@ -43,6 +44,10 @@ export class Enemy {
         this.element.style.backgroundRepeat = 'no-repeat';  // Prevent the image from repeating
     
         // Mark the enemy as dead
+=======
+        this.element.style.background = 'red';
+        enemyDeath.play();
+>>>>>>> 06dc3c2d48e93ba823a8568b6d64fc2ab473c451
         this.alive = false;
     
         // Set a timer for removing the enemy from the game

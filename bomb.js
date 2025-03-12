@@ -1,4 +1,4 @@
-import { bombs, bombTime, mult, gridStep, halfStep, levelMap, weakWalls, flames, timedEvents, powerUpMap } from "./game.js";
+import { bombs, bombTime, mult, gridStep, halfStep, levelMap, weakWalls, flames, timedEvents, powerUpMap, explosion, wallBreak, placeBomb, tickingBomb } from "./game.js";
 import { Timer } from "./timer.js";
 
 let flameCounter = 0;
@@ -107,6 +107,12 @@ export class Bomb {
         bombs.set(`bomb${this.mapCol}${this.mapRow}`, this);  // add bomb to map for collision checks
         levelMap[this.mapRow][this.mapCol] = ['bomb', this];  // store reference to level map
 
+        // Play sound when bomb is dropped
+        placeBomb.play();
+
+        // Start ticking sound
+        tickingBomb.play();
+
         this.countNow = timedCount;
         const timedBomb = new Timer(() => {
             this.explode();
@@ -127,6 +133,26 @@ export class Bomb {
 
     explode() {
         this.element.style.backgroundColor = "orange";
+        explosion.play();
+
+        // Stop ticking sound when bomb explodes
+        tickingBomb.pause();
+        tickingBomb.currentTime = 0; // Reset for next use
+
+        // Check if any weak walls will be destroyed
+        let willBreakWall = false;
+        for (let i = 1; i <= this.power; i++) {
+            if (isWeakWall(this.mapRow, this.mapCol + i) || 
+                isWeakWall(this.mapRow, this.mapCol - i) || 
+                isWeakWall(this.mapRow + i, this.mapCol) || 
+                isWeakWall(this.mapRow - i, this.mapCol)) {
+                willBreakWall = true;
+                break; // No need to check further once we know a wall will break
+            }
+        }
+        if (willBreakWall) {
+            setTimeout(() => wallBreak.play(), 100); // Play wall break sound once if any weak wall is hit
+        }
 
         // Draw flames of explosion in the middle
         horizontalFlame(this.size, this.x, this.y);
@@ -268,4 +294,15 @@ export class Bomb {
             };
         };
     };
+}
+
+// Helper function to check for weak walls
+function isWeakWall(row, col) {
+    return (
+        row >= 0 && row <= 10 &&
+        col >= 0 && col <= 12 &&
+        levelMap[row][col] &&
+        typeof levelMap[row][col] === 'string' &&
+        levelMap[row][col].startsWith('weakWall')
+    );
 }

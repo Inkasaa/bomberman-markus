@@ -1,5 +1,5 @@
 import { Bomb } from "./bomb.js";
-import { bombTime, bombs, bounds, enemies, finish, flames, nextLevel, powerups, restartGame, solidWalls, timedEvents, weakWalls } from "./game.js";
+import { bombTime, bombs, bounds, enemies, finish, flames, nextLevel, powerups, solidWalls, timedEvents, weakWalls, walkingSound, playerDeath, playerDeath2, playerBombDeath, flameUp, bombUp, finishLevel } from "./game.js";
 import { Timer } from "./timer.js";
 
 let timedCount = 0;
@@ -13,10 +13,10 @@ export class Player {
         this.x = x;
         this.y = y;
 
-        this.lives = 3;
+        this.lives = 5;
         this.alive = true;
-        this.bombAmount = 3;
-        this.bombPower = 2;
+        this.bombAmount = 1;
+        this.bombPower = 1;
 
         this.element = document.createElement('div');
         this.element.id = "player";
@@ -42,6 +42,7 @@ export class Player {
         // bind move() and stop() to this instance (instead of document) with arrow functions
         document.addEventListener('keydown', (event) => this.move(event));
         document.addEventListener('keyup', (event) => this.stop(event));
+        this.isMoving = false;
     };
 
     dropBomb() {
@@ -100,6 +101,10 @@ export class Player {
         this.alive = false;
         this.lives--;
 
+        // Stop walking sound when player dies
+        walkingSound.pause();
+        walkingSound.currentTime = 0;
+
         const countNow = timedCount;
         const timedResurrection = new Timer(() => {
 
@@ -111,8 +116,13 @@ export class Player {
                 this.alive = true;
                 // update counter too
             } else {
-                alert("Game Over");
-                restartGame();
+                //document.getElementById("game-over-menu").style.display = "block";
+                const gameOverMenu = document.getElementById("game-over-menu");
+                const gifs = ["images/loser1.gif", "images/loser2.gif"];
+                const randomGif = gifs[Math.floor(Math.random() * gifs.length)];
+                gameOverMenu.style.background = `rgba(0, 0, 0, 0.8) url("${randomGif}") no-repeat center center`;
+                gameOverMenu.style.backgroundSize = "cover";
+                gameOverMenu.style.display = "block";
             };
 
             timedEvents.delete(`resurrection${countNow}`)
@@ -120,8 +130,6 @@ export class Player {
         timedEvents.set(`resurrection${countNow}`, timedResurrection)
         timedCount++;
     };
-
-
 
     movePlayer(deltaTime) {
         if (this.alive) {
@@ -191,13 +199,23 @@ export class Player {
             // apply movement
             this.element.style.transform = `translate(${this.x}px, ${this.y}px)`;
 
+            // Walking sound logic
+            const wasMoving = this.isMoving;
+            this.isMoving = this.left || this.right || this.up || this.down;
+            if (this.isMoving && !wasMoving) {
+                walkingSound.play(); 
+            } else if (!this.isMoving && wasMoving) {
+                walkingSound.pause(); 
+                walkingSound.currentTime = 0;
+            }
 
             // Fatal, power-up and finish collisions after movement 
 
             // flames hit
-            let playerBounds = this.element.getBoundingClientRect()
+            let playerBounds = this.element.getBoundingClientRect();
             for (const flame of flames.values()) {
                 if (checkHit(playerBounds, flame)) {
+                    playerBombDeath.play();
                     this.die();
                     break;
                 };
@@ -206,6 +224,13 @@ export class Player {
             // enemies hit
             for (const enemy of enemies.values()) {
                 if (checkHit(playerBounds, enemy.element)) {
+                    if (window.deathSound === 0) {
+                        playerDeath.play();
+                        window.deathSound = 1;
+                     } else {
+                        playerDeath2.play();
+                        window.deathSound = 0;
+                    }
                     this.die();
                     break;
                 };
@@ -214,27 +239,31 @@ export class Player {
             // power-ups hit
             for (const pow of powerups.values()) {
                 if (checkHit(playerBounds, pow.element)) {
-                    if (pow.powerType == "bomb") {
+                    if (pow.powerType === "bomb") {
                         this.bombAmount++;
+                        flameUp.play();
                     }
-                    if (pow.powerType == "flame") {
+                    if (pow.powerType === "flame") {
                         this.bombPower++;
+                        bombUp.play()
                     }
                     pow.pickUp();
                     break;
                 };
             };
 
+            // finish hit
             if (finish.active && finish.checkCollision(newX, newY, this.size)) {
                 this.alive = false;
+                finishLevel.play();
                 const timedNextLevel = new Timer(() => {                    
                     nextLevel();
-                    timedEvents.delete(`finishingTheLevel`)
-                }, 2500);
-                timedEvents.set(`finishingTheLevel`, timedNextLevel)
+                    timedEvents.delete(`finishingTheLevel`);
+                }, 4000);
+                timedEvents.set(`finishingTheLevel`, timedNextLevel);
                 timedCount++;
                 finish.active = false;
-            }
+            };
         };
     };
 };
