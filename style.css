@@ -14,6 +14,7 @@ body {
 }
 
 #player {
+    will-change: transform; /* to own layer => GPU acceleration */
     position: absolute;
     background: rgb(143, 176, 199);
     z-index: 10;
@@ -21,6 +22,7 @@ body {
 
 .enemy {
     position: absolute;
+    will-change: transform; /* to own layer => GPU acceleration */
     background-image: url("enemy.png");
     background-size: contain; /* Ensure the image is fully visible */
     background-position: center; /* Center the image within the element */
