@@ -192,3 +192,26 @@ body {
 #game-over-menu button:hover {
     background: #ddd;
 }
+
+.textbar{
+    display: flex;
+    flex-direction: row;
+    /* justify-content: space-around; */
+    position: absolute;
+    /* background-color: #ddd; */
+    font-family: monospace;
+    justify-content: space-around;
+}
+
+.infobox {
+    flex: 1; /* Equal width for all */
+    background-color: #474747;
+    border-style: solid;
+    border-color: #ececec;
+    text-align: left;
+    color: white;
+    border-radius: 5px;
+
+    display: flex;
+    align-items: center;
+}
