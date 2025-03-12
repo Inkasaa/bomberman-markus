@@ -46,14 +46,25 @@ body {
 
 .flame {
     position: absolute;
-    background: rgb(255, 234, 0);
+    /* background-color: rgb(255, 234, 0); */
     z-index: 1;
+}
+.flame.horizontal {
+    background-image: url("/images/flamehor.svg");
+    background-size: cover;
+}
+
+.flame.vertical {
+    background-image: url("/images/flamevert.svg");
+    background-size: cover;
 }
 
 .bomb {
     position: absolute;
-    background: rgb(0, 0, 0);
-    border-radius: 50%;
+    /* background-color: rgb(0, 0, 0); */
+    /* border-radius: 50%; */
+    background-image: url("/images/bomb.svg");
+    background-size: cover;
     z-index: 4;
 }
 
