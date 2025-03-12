@@ -201,4 +201,3 @@ function runGame(){
         requestAnimationFrame(gameLoop);
     };
 };
-// Useless comment
