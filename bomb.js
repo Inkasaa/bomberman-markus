@@ -4,6 +4,10 @@ import { Timer } from "./timer.js";
 let flameCounter = 0;
 let timedCount = 0;
 
+function isEdge(row, col) {
+    return (row < 0 || row > 10 || col < 0 || col > 12);
+};
+
 function isWall(row, col) {
     return (
         row >= 0 && row <= 10 &&
@@ -15,7 +19,7 @@ function isWall(row, col) {
             levelMap[row][col] == 'solidWall'
         )
     );
-}
+};
 
 function isBomb(row, col) {
     return (
@@ -40,6 +44,7 @@ function isPowerUp(row, col) {
 function horizontalFlame(size, x, y) {
     let flame = document.createElement('div');
     flame.classList.add("flame");
+    flame.classList.add("horizontal");
     flame.style.width = `${gridStep}px`;
     flame.style.height = `${halfStep}px`;
     flame.style.left = `${x + (size / 2) - halfStep}px`;
@@ -57,11 +62,14 @@ function horizontalFlame(size, x, y) {
     }, 500);
     timedEvents.set(`flameH${countNow}`, timedFlame)
     timedCount++;
+
+    return flame;
 }
 
 function verticalFlame(size, x, y) {
     let flame = document.createElement('div');
     flame.classList.add("flame");
+    flame.classList.add("vertical");
     flame.style.width = `${halfStep}px`;
     flame.style.height = `${gridStep}px`;
     flame.style.left = `${x + (size / 2) - (halfStep / 2)}px`;
@@ -79,11 +87,13 @@ function verticalFlame(size, x, y) {
     }, 500);
     timedEvents.set(`flameV${countNow}`, timedFlame);
     timedCount++;
+
+    return flame;
 }
 
 export class Bomb {
     constructor(x, y, power, name) {
-        const size = mult * 50;
+        const size = mult * 60;
 
         // Align dropped bomb to grid
         this.mapCol = Math.floor(x / gridStep);
@@ -132,7 +142,9 @@ export class Bomb {
     }
 
     explode() {
-        this.element.style.backgroundColor = "orange";
+        //this.element.style.backgroundColor = "orange";
+        this.element.style.backgroundImage = "url('images/bomborange.svg')";
+
         explosion.play();
 
         // Stop ticking sound when bomb explodes
@@ -142,9 +154,9 @@ export class Bomb {
         // Check if any weak walls will be destroyed
         let willBreakWall = false;
         for (let i = 1; i <= this.power; i++) {
-            if (isWeakWall(this.mapRow, this.mapCol + i) || 
-                isWeakWall(this.mapRow, this.mapCol - i) || 
-                isWeakWall(this.mapRow + i, this.mapCol) || 
+            if (isWeakWall(this.mapRow, this.mapCol + i) ||
+                isWeakWall(this.mapRow, this.mapCol - i) ||
+                isWeakWall(this.mapRow + i, this.mapCol) ||
                 isWeakWall(this.mapRow - i, this.mapCol)) {
                 willBreakWall = true;
                 break; // No need to check further once we know a wall will break
@@ -160,6 +172,7 @@ export class Bomb {
 
         // Draw more flames in four directions 
         let [colPlus, colMinus, rowPlus, rowMinus] = [true, true, true, true];
+        let [lastLeft, lastRight, lastUp, lastDown] = [undefined, undefined, undefined, undefined];
         for (let i = 1; i <= this.power; i++) {
 
             // In four directions: Stop flames at walls, destroy weak walls, explode other bombs
@@ -180,6 +193,9 @@ export class Bomb {
                     powerUp.burn();
                     colPlus = false;
                 }
+                if (isEdge(this.mapRow, this.mapCol + i)){
+                    colPlus = false;
+                }
             };
             if (colMinus) {
                 let foundWall = false;
@@ -196,6 +212,9 @@ export class Bomb {
                 if (!foundWall && isPowerUp(this.mapRow, this.mapCol - i)) {
                     const powerUp = powerUpMap[this.mapRow][this.mapCol - i][1];
                     powerUp.burn();
+                    colMinus = false;
+                }
+                if (isEdge(this.mapRow, this.mapCol - i)){
                     colMinus = false;
                 }
             };
@@ -216,6 +235,9 @@ export class Bomb {
                     powerUp.burn();
                     rowPlus = false;
                 }
+                if (isEdge(this.mapRow + i, this.mapCol)){
+                    rowPlus = false;
+                }
             };
             if (rowMinus) {
                 let foundWall = false;
@@ -234,13 +256,30 @@ export class Bomb {
                     powerUp.burn();
                     rowMinus = false;
                 }
+                if (isEdge(this.mapRow - i, this.mapCol)){
+                    rowMinus = false;
+                }
             };
 
             // draw flames if still allowed
-            if (colPlus) horizontalFlame(this.size, this.x + gridStep * i, this.y);
-            if (colMinus) horizontalFlame(this.size, this.x - gridStep * i, this.y);
-            if (rowPlus) verticalFlame(this.size, this.x, this.y + gridStep * i);
-            if (rowMinus) verticalFlame(this.size, this.x, this.y - gridStep * i);
+            if (colPlus) lastRight = horizontalFlame(this.size, this.x + gridStep * i, this.y);
+            if (colMinus) lastLeft = horizontalFlame(this.size, this.x - gridStep * i, this.y);
+            if (rowPlus) lastDown =verticalFlame(this.size, this.x, this.y + gridStep * i);
+            if (rowMinus) lastUp = verticalFlame(this.size, this.x, this.y - gridStep * i);
+
+            // Cut off tip of flame at the end
+            if (colPlus && lastRight && i == this.power) {
+                lastRight.style.clipPath = `inset(0 ${15 * mult}px 0 0)`;
+            }
+            if (colMinus && lastLeft && i == this.power) {
+                lastLeft.style.clipPath = `inset(0 0 0 ${15 * mult}px)`;
+            }
+            if (rowPlus && lastDown && i == this.power) {
+                lastDown.style.clipPath = `inset(0 0 ${15 * mult}px 0)`;
+            }
+            if (rowMinus && lastUp && i == this.power) {
+                lastUp.style.clipPath = `inset(${15 * mult}px 0 0 0)`;
+            }
         }
 
         // delay deleting bomb for a bit

@@ -42,7 +42,7 @@ class PowerUp {
     }
 
     burn() {
-        this.element.style.backgroundImage = `url("burn.svg")`;
+        this.element.style.backgroundImage = `url("images/burn.svg")`;
         const countNow = timedCount;
         const timedCollapse = new Timer(() => {
             this.pickUp();

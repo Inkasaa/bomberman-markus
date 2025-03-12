@@ -33,13 +33,13 @@ export class Enemy {
         this.curr = [row, col];
         this.next;
         this.direction = "spawn";
-    }skull
+    } skull
 
     die() {
         this.element.style.background = 'red';
         enemyDeath.play();
         this.alive = false;
-    
+
         // Set a timer for removing the enemy from the game
         const countNow = timedCount;
         const timedDeath = new Timer(() => {
@@ -48,7 +48,7 @@ export class Enemy {
             enemies.delete(this.name);  // Remove from the enemies collection
             tryToActivateFinish();  // Check if the game should finish
         }, 1000);  // 1 second delay before removal
-    
+
         timedEvents.set(`enemyDeath${countNow}`, timedDeath);  // Add the death event to the timer list
         timedCount++;  // Increment the timed count to track events
     };
@@ -107,8 +107,8 @@ export class Enemy {
                 if (!this.onBomb) {
 
                     [this.curr, this.next] = [this.next, this.curr];
-                    let topLeftX = (this.curr[1] * gridStep) + halfStep - (this.size/2);
-                    let topLeftY = (this.curr[0] * gridStep) + halfStep - (this.size/2);
+                    let topLeftX = (this.curr[1] * gridStep) + halfStep - (this.size / 2);
+                    let topLeftY = (this.curr[0] * gridStep) + halfStep - (this.size / 2);
                     this.prevSpot = [topLeftX, topLeftY];
 
                     if (this.direction == "left") this.direction = 'right';
@@ -117,7 +117,7 @@ export class Enemy {
                     else if (this.direction == "down") this.direction = 'up';
                     this.onBomb = true;
 
-                    
+
 
                     //this.chooseDirection();
                 }

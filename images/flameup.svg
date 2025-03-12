@@ -25,13 +25,13 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
      inkscape:zoom="3.4671998"
-     inkscape:cx="162.52308"
+     inkscape:cx="93.591376"
      inkscape:cy="104.55123"
-     inkscape:window-width="2240"
+     inkscape:window-width="1920"
      inkscape:window-height="1122"
      inkscape:window-x="0"
      inkscape:window-y="25"
-     inkscape:window-maximized="1"
+     inkscape:window-maximized="0"
      inkscape:current-layer="layer1" />
   <defs
      id="defs1">
@@ -56,7 +56,7 @@
        x2="38.586842"
        y2="90.970367"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="translate(0,0.52916667)" />
+       gradientTransform="matrix(1.0004406,0,0,0.98980906,-0.0175095,2.0582888)" />
   </defs>
   <g
      inkscape:label="Layer 1"
@@ -83,8 +83,8 @@
        transform="matrix(0.83863681,0,0,0.83863681,-65.416795,32.13873)" />
     <path
        id="path4"
-       style="fill:url(#linearGradient5);stroke:#000000;stroke-width:2;stroke-dasharray:none;stroke-opacity:1"
-       d="m 21.898156,51.620871 c 0,0 -4.654933,15.892886 -4.654933,24.062389 0,12.279668 10.073576,22.499873 22.499919,22.499918 12.426343,-4.5e-5 22.499918,-10.64126 22.499918,-22.499918 0,-7.660857 -3.662898,-22.688802 -3.662898,-22.688802 L 52.519309,65.127809 45.368121,48.950008 39.36159,60.320254 34.118162,48.950008 27.882699,64.059463 Z"
+       style="fill:url(#linearGradient5);stroke:#575377;stroke-width:2.98533;stroke-dasharray:none;stroke-opacity:1"
+       d="m 21.890294,52.629321 c 0,0 -4.656984,15.730922 -4.656984,23.817171 0,12.154526 10.078014,22.270578 22.509832,22.270622 12.431818,-4.4e-5 22.509831,-10.532815 22.509831,-22.270622 0,-7.582786 -3.664512,-22.457582 -3.664512,-22.457582 l -6.063523,12.0097 -7.154339,-16.012933 -6.009177,11.254372 -5.245738,-11.254372 -6.23821,14.955475 z"
        sodipodi:nodetypes="cscsccccccc" />
   </g>
 </svg>
