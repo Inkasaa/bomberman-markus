@@ -20,7 +20,7 @@ export let finish;
 
 // Sound effects
 export const walkingSound = new Audio ("sfx/walkingSound.mp3");
-walkingSound.volume = 0.5;
+walkingSound.volume = 0.8;
 walkingSound.loop = true;
 // export const enemyWalking = new Audio ("sfx/enemyWalking.mp3");
 // enemyWalking.volume = 0.5;
@@ -44,6 +44,8 @@ wallBreak.volume = 0.4;
 export const flameUp = new Audio("sfx/flameUp.mp3");
 export const bombUp = new Audio("sfx/bombUp.mp3");
 export const finishLevel = new Audio("sfx/finishLevel.mp3");
+export const menuMusic = new Audio("sfx/menuMusic.mp3");
+menuMusic.loop = true;
 
 // Background music for each level
 export const levelMusic = [
@@ -146,9 +148,11 @@ document.addEventListener("DOMContentLoaded", () => {
     // Start menu
     const startMenu = document.getElementById("start-menu");
     startMenu.style.display = "block";
+    menuMusic.play();
 
     document.getElementById("start-btn").addEventListener("click", () => {
-        startMenu.style.display = "none"; 
+        startMenu.style.display = "none";
+        menuMusic.pause();
         startSequence();
         runGame();      
     });
