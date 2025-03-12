@@ -1,5 +1,5 @@
 import { Bomb } from "./bomb.js";
-import { bombTime, bombs, bounds, enemies, finish, flames, nextLevel, powerups, solidWalls, timedEvents, weakWalls, walkingSound, playerDeath, playerDeath2, playerBombDeath, flameUp, bombUp, finishLevel } from "./game.js";
+import { bombTime, bombs, bounds, enemies, finish, flames, nextLevel, powerups, solidWalls, timedEvents, weakWalls, walkingSound, playerDeath, playerDeath2, playerBombDeath, flameUp, bombUp, finishLevel, levelMap } from "./game.js";
 import { Timer } from "./timer.js";
 
 let timedCount = 0;
@@ -104,10 +104,10 @@ export class Player {
         // Stop walking sound when player dies
         walkingSound.pause();
         walkingSound.currentTime = 0;
+        levelMap[0][0] = 'player';  // make sure enemies don't walk over player
 
         const countNow = timedCount;
         const timedResurrection = new Timer(() => {
-
             if (this.lives > 0) {
                 this.x = this.startX;
                 this.y = this.startY;
@@ -124,10 +124,20 @@ export class Player {
                 gameOverMenu.style.backgroundSize = "cover";
                 gameOverMenu.style.display = "block";
             };
-
             timedEvents.delete(`resurrection${countNow}`)
         }, 2000);
+
+        // Block enemies for 1 second after resurrection
+        const timedEnemyBlock = new Timer(() => {
+            if (this.lives > 0) {
+                levelMap[0][0] = '';
+            }
+            timedEvents.delete(`enemyBlock${countNow}`)
+        }, 3000);
+
+
         timedEvents.set(`resurrection${countNow}`, timedResurrection)
+        timedEvents.set(`enemyBlock${countNow}`, timedEnemyBlock)
         timedCount++;
     };
 

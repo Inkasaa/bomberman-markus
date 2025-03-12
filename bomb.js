@@ -4,6 +4,10 @@ import { Timer } from "./timer.js";
 let flameCounter = 0;
 let timedCount = 0;
 
+function isEdge(row, col) {
+    return (row < 0 || row > 10 || col < 0 || col > 12);
+};
+
 function isWall(row, col) {
     return (
         row >= 0 && row <= 10 &&
@@ -15,7 +19,7 @@ function isWall(row, col) {
             levelMap[row][col] == 'solidWall'
         )
     );
-}
+};
 
 function isBomb(row, col) {
     return (
@@ -142,9 +146,9 @@ export class Bomb {
         // Check if any weak walls will be destroyed
         let willBreakWall = false;
         for (let i = 1; i <= this.power; i++) {
-            if (isWeakWall(this.mapRow, this.mapCol + i) || 
-                isWeakWall(this.mapRow, this.mapCol - i) || 
-                isWeakWall(this.mapRow + i, this.mapCol) || 
+            if (isWeakWall(this.mapRow, this.mapCol + i) ||
+                isWeakWall(this.mapRow, this.mapCol - i) ||
+                isWeakWall(this.mapRow + i, this.mapCol) ||
                 isWeakWall(this.mapRow - i, this.mapCol)) {
                 willBreakWall = true;
                 break; // No need to check further once we know a wall will break
@@ -180,6 +184,9 @@ export class Bomb {
                     powerUp.burn();
                     colPlus = false;
                 }
+                if (isEdge(this.mapRow, this.mapCol + i)){
+                    colPlus = false;
+                }
             };
             if (colMinus) {
                 let foundWall = false;
@@ -196,6 +203,9 @@ export class Bomb {
                 if (!foundWall && isPowerUp(this.mapRow, this.mapCol - i)) {
                     const powerUp = powerUpMap[this.mapRow][this.mapCol - i][1];
                     powerUp.burn();
+                    colMinus = false;
+                }
+                if (isEdge(this.mapRow, this.mapCol - i)){
                     colMinus = false;
                 }
             };
@@ -216,6 +226,9 @@ export class Bomb {
                     powerUp.burn();
                     rowPlus = false;
                 }
+                if (isEdge(this.mapRow + i, this.mapCol)){
+                    rowPlus = false;
+                }
             };
             if (rowMinus) {
                 let foundWall = false;
@@ -232,6 +245,9 @@ export class Bomb {
                 if (!foundWall && isPowerUp(this.mapRow - i, this.mapCol)) {
                     const powerUp = powerUpMap[this.mapRow - i][this.mapCol][1];
                     powerUp.burn();
+                    rowMinus = false;
+                }
+                if (isEdge(this.mapRow - i, this.mapCol)){
                     rowMinus = false;
                 }
             };

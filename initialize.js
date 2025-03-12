@@ -70,6 +70,28 @@ export function makeWalls() {
         };
     };
 
+    // put solid walls around play area
+    const yVals = [-1, 11];
+    for (let i = 0; i < 15; i++) {
+        for (const yVal of yVals) {
+            const mapX = i - 1;
+            const mapY = yVal;
+            const x = gridStep * mapX;
+            const y = gridStep * mapY;
+            new SolidWall(x, y, gridStep);
+        }
+    };
+    const xVals = [-1, 13];
+    for (let i = 0; i < 11; i++) {
+        for (const xVal of xVals) {
+            const mapX = xVal
+            const mapY = i;
+            const x = gridStep * mapX;
+            const y = gridStep * mapY;
+            new SolidWall(x, y, gridStep);
+        }
+    };
+
     // place weak walls randomly
     while (weakWalls.size < 45) {
         const mapX = Math.floor(Math.random() * 13);
