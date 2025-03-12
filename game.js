@@ -95,8 +95,8 @@ export function nextLevel() {
     document.getElementById("game-container").replaceChildren();
     level++;
 
-    // score is how many seconds short of 5 minutes the level took
-    score = (fiveMinutes - (window.performance.now() - pausedTime)) / 1000;
+    // add to score how many seconds short of 5 minutes the level took
+    score += (fiveMinutes - (window.performance.now() - pausedTime)) / 1000;
     updateScoreInfo(score);
     pausedTime = window.performance.now(); // resets level clock  
     solidWalls = [];
@@ -167,7 +167,7 @@ export function updateLivesInfo(lives) {
     livesinfo.textContent = `Lives: ${lives}`
 }
 
-export function updateScoreInfo(score) {
+function updateScoreInfo(score) {
     if (score < 0) score = 0;
     scoreinfo.textContent = `Score: ${Math.round(score)}`
 }
