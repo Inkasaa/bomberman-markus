@@ -1,23 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game of the Year</title>
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
+    <div id="start-menu">
+        <h1>Bomberman</h1>
+        <button id="start-btn">Start Game</button>
+    </div>
     <div id="pause-menu">
+        <h1>Pause</h1>
         <button id="continue-btn">Continue</button>
         <button id="restart-btn">Restart</button>
     </div>
-
+    <div id="game-over-menu">
+        <h1>Game Over</h1>
+        <button id="restart-btn-game-over">Restart</button>
+    </div>
     <div id="game-container"></div>
-
-    <!-- module, so imports/exports work -->
     <script type="module" src="game.js"></script>
 </body>
-
 </html>

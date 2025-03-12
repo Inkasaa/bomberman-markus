@@ -1,4 +1,4 @@
-import { bombs, bombTime, mult, gridStep, halfStep, levelMap, weakWalls, flames, timedEvents, powerUpMap, explosion, wallBreak } from "./game.js";
+import { bombs, bombTime, mult, gridStep, halfStep, levelMap, weakWalls, flames, timedEvents, powerUpMap, explosion, wallBreak, placeBomb, tickingBomb } from "./game.js";
 import { Timer } from "./timer.js";
 
 let flameCounter = 0;
@@ -107,6 +107,12 @@ export class Bomb {
         bombs.set(`bomb${this.mapCol}${this.mapRow}`, this);  // add bomb to map for collision checks
         levelMap[this.mapRow][this.mapCol] = ['bomb', this];  // store reference to level map
 
+        // Play sound when bomb is dropped
+        placeBomb.play();
+
+        // Start ticking sound
+        tickingBomb.play();
+
         this.countNow = timedCount;
         const timedBomb = new Timer(() => {
             this.explode();
@@ -128,6 +134,10 @@ export class Bomb {
     explode() {
         this.element.style.backgroundColor = "orange";
         explosion.play();
+
+        // Stop ticking sound when bomb explodes
+        tickingBomb.pause();
+        tickingBomb.currentTime = 0; // Reset for next use
 
         // Check if any weak walls will be destroyed
         let willBreakWall = false;

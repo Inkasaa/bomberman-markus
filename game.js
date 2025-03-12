@@ -19,6 +19,9 @@ export const powerups = new Map();        // for player collisions
 export let finish;
 
 // Sound effects
+export const walkingSound = new Audio ("sfx/walkingSound.mp3");
+walkingSound.volume = 0.5;
+walkingSound.loop = true;
 export const playerDeath = new Audio("sfx/playerDeath.mp3");
 playerDeath.volume = 0.3;
 export const playerDeath2 = new Audio("sfx/playerDeath2.mp3");
@@ -30,6 +33,9 @@ export const enemyDeath = new Audio("sfx/enemyDeath.mp3");
 enemyDeath.volume = 0.3;
 export const explosion = new Audio("sfx/explosion.mp3");
 explosion.volume = 0.6;
+export const placeBomb = new Audio("sfx/placeBomb.mp3");
+export const tickingBomb = new Audio("sfx/tickingBomb.mp3");
+tickingBomb.loop = true;
 export const wallBreak = new Audio("sfx/wallBreak.mp3");
 wallBreak.volume = 0.4;
 export const flameUp = new Audio("sfx/flameUp.mp3");
@@ -47,7 +53,7 @@ export const levelMusic = [
 
 // Set all music to loop
 levelMusic.forEach(track => {
-    track.loop = true; // Loops indefinitely
+    track.loop = true; // Loops infinitely
     track.volume = 0.5;
 });
 
@@ -71,8 +77,7 @@ export function restartGame() {
 
 export function nextLevel() {
     if (level >= 5) {
-        alert("Game Complete!");
-        restartGame();
+        window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
         return;
     }
 
@@ -131,8 +136,23 @@ document.addEventListener("keydown", (event) => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
+    // Pause menu
     document.getElementById("continue-btn").addEventListener("click", togglePause);
     document.getElementById("restart-btn").addEventListener("click", restartGame);
+
+    // Start menu
+    const startMenu = document.getElementById("start-menu");
+    startMenu.style.display = "block";
+
+    document.getElementById("start-btn").addEventListener("click", () => {
+        startMenu.style.display = "none"; 
+        startSequence();
+        runGame();      
+    });
+    document.getElementById("restart-btn-game-over").addEventListener("click", () => {
+        document.getElementById("game-over-menu").style.display = "none";
+        restartGame();
+    });
 });
 
 function startSequence(){
@@ -173,9 +193,4 @@ function runGame(){
         // requestAnimationFrame() always runs callback with 'timestamp' argument (milliseconds since the page loaded)
         requestAnimationFrame(gameLoop);
     };
-}
-
-addEventListener("DOMContentLoaded", function () {
-    startSequence();
-    runGame();
-});
+};

@@ -1,6 +1,8 @@
 body {
     margin: 0;
     height: 100vh;
+    background: #000 url("images/bomberman.webp") no-repeat center center;
+    background-size: contain;
 }
 
 #game-container {
@@ -32,7 +34,7 @@ body {
 
 .wall.weak {
     background-color: rgb(199, 165, 130);
-    background-image: url("browntiles01.svg");
+    background-image: url("/images/weakwall.svg");
     background-size: cover;
 }
 
@@ -55,20 +57,55 @@ body {
 }
 
 .bombup {
-    background-image: url("bombup.svg");
+    background-image: url("/images/bombup.svg");
     background-size: cover;
 }
 
 .flameup {
-    background-image: url("flameup.svg");
+    background-image: url("/images/flameup.svg");
     background-size: cover;
 }
 
 .finish {
-    background-image: url("finishgrey.svg");
+    background-image: url("/images/finishgrey.svg");
     background-size: cover;
     position: absolute;
     z-index: 2;
+}
+
+#start-menu {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+    z-index: 30;
+    border-radius: 10px;
+    display: none;
+}
+
+#start-menu h1 {
+    margin: 0;
+    font-size: 2em;
+    text-shadow: 2px 2px 4px #000;
+    
+}
+
+#start-menu button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 1.2em;
+    background: #fff;
+    color: #000;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+#start-menu button:hover {
+    background: #ddd;
 }
 
 #pause-menu {
@@ -76,15 +113,65 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(255, 255, 255, 0.8);
     padding: 20px;
     border-radius: 10px;
     display: none;
     z-index: 20;
+    width: 300px;
+    height: 200px;
+    text-align: center;
 }
 
 #pause-menu button {
     display: block;
-    margin: 10px;
-    padding: 10px;
+    margin: 15px auto;
+    padding: 12px 24px; 
+    font-size: 1.1em;
+    background: #fff;
+    color: #000;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+
+#game-over-menu {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.8) url("images/loser1.gif") no-repeat center center;
+    background-size: cover;
+    padding: 30px;
+    border-radius: 20px;
+    display: none;
+    z-index: 20;
+    width: 480px;
+    height: 480px;
+    color: #fff;
+    text-align: center;
+}
+
+#game-over-menu h1 {
+    position: relative;
+    margin: 0px;
+    font-size: 3em;
+    text-shadow: 2px 2px 4px #000;
+}
+
+#game-over-menu button {
+    display: block;
+    margin: 390px auto;
+    padding: 12px 24px;
+    font-size: 1.2em;
+    background: #fff;
+    color: #000;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+#game-over-menu button:hover {
+    background: #ddd;
 }
