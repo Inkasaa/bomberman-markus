@@ -193,7 +193,7 @@ export class Bomb {
                     powerUp.burn();
                     colPlus = false;
                 }
-                if (isEdge(this.mapRow, this.mapCol + i)){
+                if (isEdge(this.mapRow, this.mapCol + i)) {
                     colPlus = false;
                 }
             };
@@ -214,7 +214,7 @@ export class Bomb {
                     powerUp.burn();
                     colMinus = false;
                 }
-                if (isEdge(this.mapRow, this.mapCol - i)){
+                if (isEdge(this.mapRow, this.mapCol - i)) {
                     colMinus = false;
                 }
             };
@@ -235,7 +235,7 @@ export class Bomb {
                     powerUp.burn();
                     rowPlus = false;
                 }
-                if (isEdge(this.mapRow + i, this.mapCol)){
+                if (isEdge(this.mapRow + i, this.mapCol)) {
                     rowPlus = false;
                 }
             };
@@ -256,7 +256,7 @@ export class Bomb {
                     powerUp.burn();
                     rowMinus = false;
                 }
-                if (isEdge(this.mapRow - i, this.mapCol)){
+                if (isEdge(this.mapRow - i, this.mapCol)) {
                     rowMinus = false;
                 }
             };
@@ -264,7 +264,7 @@ export class Bomb {
             // draw flames if still allowed
             if (colPlus) lastRight = horizontalFlame(this.size, this.x + gridStep * i, this.y);
             if (colMinus) lastLeft = horizontalFlame(this.size, this.x - gridStep * i, this.y);
-            if (rowPlus) lastDown =verticalFlame(this.size, this.x, this.y + gridStep * i);
+            if (rowPlus) lastDown = verticalFlame(this.size, this.x, this.y + gridStep * i);
             if (rowMinus) lastUp = verticalFlame(this.size, this.x, this.y - gridStep * i);
 
             // Cut off tip of flame at the end
@@ -294,18 +294,19 @@ export class Bomb {
     };
 
     tryToDestroy(row, col) {
-        let name = levelMap[row][col];
-        if (name.startsWith('weakWall')) {
-            weakWalls.get(name).collapse();
+        if (levelMap[row][col] && typeof levelMap[row][col] == 'string') {
+            let name = levelMap[row][col];
+            if (name.startsWith('weakWall')) {
+                weakWalls.get(name).collapse();
+                const timedDeleteWall = new Timer(() => {
+                    weakWalls.delete(name);
+                    levelMap[row][col] = "";
+                    timedEvents.delete(`deleteWall${this.countNow}`)
+                }, 500);
 
-            const timedDeleteWall = new Timer(() => {
-                weakWalls.delete(name);
-                levelMap[row][col] = "";
-                timedEvents.delete(`deleteWall${this.countNow}`)
-            }, 500);
-
-            timedEvents.set(`deleteWall${this.countNow}`, timedDeleteWall);
-            timedCount++;
+                timedEvents.set(`deleteWall${this.countNow}`, timedDeleteWall);
+                timedCount++;
+            };
         };
     };
 

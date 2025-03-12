@@ -104,7 +104,8 @@ export function makeWalls() {
 
         const x = gridStep * mapX;
         const y = gridStep * mapY;
-        const name = `weakWall${mapX}${mapY}`;
+        //const name = `weakWall${mapX}${mapY}`;
+        const name = `weakWall${String(mapX).padStart(2, '0')}${String(mapY).padStart(2, '0')}`;
         const newWeak = new WeakWall(x, y, gridStep);
         weakWalls.set(name, newWeak);
         levelMap[mapY][mapX] = name;
@@ -198,7 +199,7 @@ export function makeTextBar() {
         let info = document.createElement('div');
         info.classList.add("infobox");
         info.style.margin = `${pad * mult}px`;
-        info.style.padding = `${pad * mult}px`;    
+        info.style.padding = `${pad * mult}px`;
         info.style.borderWidth = `${mult * 2}`;
         info.style.borderRadius = `${pad * mult}px`;
         info.id = ids[i];

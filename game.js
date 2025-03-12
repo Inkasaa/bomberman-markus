@@ -119,6 +119,7 @@ export function nextLevel() {
 
     startSequence();
     updateLevelInfo(level);
+    updateLivesInfo(player.lives);
 };
 
 function togglePause() {
@@ -228,7 +229,7 @@ document.addEventListener("DOMContentLoaded", () => {
         startMenu.style.display = "none";
         startSequence();
         [levelinfo, livesinfo, scoreinfo, timeinfo] = makeTextBar();
-        livesinfo.textContent = `Lives: ${player.lives}`
+        updateLivesInfo(player.lives);
         runGame();
     });
 
