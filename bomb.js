@@ -267,6 +267,7 @@ export class Bomb {
             if (rowPlus) lastDown =verticalFlame(this.size, this.x, this.y + gridStep * i);
             if (rowMinus) lastUp = verticalFlame(this.size, this.x, this.y - gridStep * i);
 
+            // Cut off tip of flame at the end
             if (colPlus && lastRight && i == this.power) {
                 lastRight.style.clipPath = `inset(0 ${15 * mult}px 0 0)`;
             }

@@ -115,7 +115,11 @@ export function makeWalls() {
         const mapX = Math.floor(Math.random() * 13);
         const mapY = Math.floor(Math.random() * 11);
 
-        if (levelMap[mapY][mapX] && typeof levelMap[mapY][mapX] == 'string' && levelMap[mapY][mapX].startsWith('weakWall')) {
+        if (levelMap[mapY][mapX] &&
+            typeof levelMap[mapY][mapX] == 'string' &&
+            levelMap[mapY][mapX].startsWith('weakWall') &&
+            !powerUpMap[mapY][mapX]
+        ) {
             const x = gridStep * mapX;
             const y = gridStep * mapY;
             const name = `bombUp${mapX}${mapY}`;
