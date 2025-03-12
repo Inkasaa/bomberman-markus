@@ -1,5 +1,5 @@
 import { Bomb } from "./bomb.js";
-import { bombTime, bombs, bounds, enemies, finish, flames, nextLevel, powerups, restartGame, solidWalls, timedEvents, weakWalls } from "./game.js";
+import { bombTime, bombs, bounds, enemies, finish, flames, nextLevel, powerups, restartGame, solidWalls, timedEvents, weakWalls, playerDeath, playerDeath2, playerBombDeath, flameUp, bombUp, finishLevel } from "./game.js";
 import { Timer } from "./timer.js";
 
 let timedCount = 0;
@@ -15,8 +15,8 @@ export class Player {
 
         this.lives = 3;
         this.alive = true;
-        this.bombAmount = 3;
-        this.bombPower = 2;
+        this.bombAmount = 1;
+        this.bombPower = 1;
 
         this.element = document.createElement('div');
         this.element.id = "player";
@@ -195,9 +195,10 @@ export class Player {
             // Fatal, power-up and finish collisions after movement 
 
             // flames hit
-            let playerBounds = this.element.getBoundingClientRect()
+            let playerBounds = this.element.getBoundingClientRect();
             for (const flame of flames.values()) {
                 if (checkHit(playerBounds, flame)) {
+                    playerBombDeath.play();
                     this.die();
                     break;
                 };
@@ -206,6 +207,13 @@ export class Player {
             // enemies hit
             for (const enemy of enemies.values()) {
                 if (checkHit(playerBounds, enemy.element)) {
+                    if (window.deathSound === 0) {
+                        playerDeath.play();
+                        window.deathSound = 1;
+                     } else {
+                        playerDeath2.play();
+                        window.deathSound = 0;
+                    }
                     this.die();
                     break;
                 };
@@ -214,27 +222,31 @@ export class Player {
             // power-ups hit
             for (const pow of powerups.values()) {
                 if (checkHit(playerBounds, pow.element)) {
-                    if (pow.powerType == "bomb") {
+                    if (pow.powerType === "bomb") {
                         this.bombAmount++;
+                        flameUp.play();
                     }
-                    if (pow.powerType == "flame") {
+                    if (pow.powerType === "flame") {
                         this.bombPower++;
+                        bombUp.play()
                     }
                     pow.pickUp();
                     break;
                 };
             };
 
+            // finish hit
             if (finish.active && finish.checkCollision(newX, newY, this.size)) {
                 this.alive = false;
+                finishLevel.play();
                 const timedNextLevel = new Timer(() => {                    
                     nextLevel();
-                    timedEvents.delete(`finishingTheLevel`)
-                }, 2500);
-                timedEvents.set(`finishingTheLevel`, timedNextLevel)
+                    timedEvents.delete(`finishingTheLevel`);
+                }, 4000);
+                timedEvents.set(`finishingTheLevel`, timedNextLevel);
                 timedCount++;
                 finish.active = false;
-            }
+            };
         };
     };
 };

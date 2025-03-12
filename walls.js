@@ -64,6 +64,7 @@ export class WeakWall extends Wall {
 
     collapse() {
         this.element.style.background = 'orange';
+        //wallBreak.play();
 
         const countNow = timedCount;
         const timedCollapse = new Timer(() => {

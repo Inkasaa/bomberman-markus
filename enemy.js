@@ -1,5 +1,5 @@
 import { tryToActivateFinish } from "./finish.js";
-import { enemies, flames, gridStep, halfStep, levelMap, timedEvents} from "./game.js";
+import { enemies, flames, gridStep, halfStep, levelMap, timedEvents, enemyDeath} from "./game.js";
 import { Timer } from "./timer.js";
 
 let timedCount = 0;
@@ -37,6 +37,7 @@ export class Enemy {
 
     die() {
         this.element.style.background = 'red';
+        enemyDeath.play();
         this.alive = false;
         const countNow = timedCount;
         const timedDeath = new Timer(() => {
