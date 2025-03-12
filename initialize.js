@@ -1,5 +1,5 @@
 import { Enemy } from "./enemy.js";
-import { enemies, gridStep, halfStep, level, levelMap, mult, powerUpMap, powerups, solidWalls, weakWalls } from "./game.js";
+import { bounds, enemies, gridStep, halfStep, level, levelMap, mult, powerUpMap, powerups, solidWalls, weakWalls } from "./game.js";
 import { Player } from "./player.js";
 import { BombUp, FlameUp } from "./powerup.js";
 import { SolidWall, WeakWall } from "./walls.js";
@@ -175,3 +175,40 @@ export function makeWalls() {
         };
     };
 };
+
+export function makeTextBar() {
+    const gameArea = document.getElementById("game-container").getBoundingClientRect();
+    //console.log(gameArea.left, gameArea.top, gameArea.right);
+
+    // one bar to contain all text
+    const pad = 10;
+    let textbar = document.createElement('div');
+    textbar.classList.add("textbar");
+    textbar.style.height = `${gridStep - pad * 2 * mult}px`;
+    textbar.style.width = `${gridStep * 13 - pad * 2 * mult}px`;
+    textbar.style.left = `${gameArea.left}px`;
+    textbar.style.top = `${gameArea.top - gridStep}px`;
+    textbar.style.padding = `${pad * mult}px`;
+
+    // four smaller bits to display info
+    const infos = [];
+    const ids = ["levelinfo", "livesinfo", "scoreinfo", "timeinfo"];
+    const placeholders = ["Level: 1", "Lives: X", "Score: 0", "time runneth"]
+    for (let i = 0; i < 4; i++) {
+        let info = document.createElement('div');
+        info.classList.add("infobox");
+        info.style.margin = `${pad * mult}px`;
+        info.style.padding = `${pad * mult}px`;    
+        info.style.borderWidth = `${mult * 2}`;
+        info.style.borderRadius = `${pad * mult}px`;
+        info.id = ids[i];
+        info.textContent = placeholders[i];
+        textbar.appendChild(info);
+        infos.push(info);
+    }
+
+    infos[3].style.justifyContent = "center";
+    document.body.appendChild(textbar);
+
+    return infos;
+}

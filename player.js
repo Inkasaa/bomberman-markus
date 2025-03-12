@@ -1,5 +1,5 @@
 import { Bomb } from "./bomb.js";
-import { bombTime, bombs, bounds, enemies, finish, flames, nextLevel, powerups, solidWalls, timedEvents, weakWalls, walkingSound, playerDeath, playerDeath2, playerBombDeath, flameUp, bombUp, finishLevel, levelMap } from "./game.js";
+import { bombTime, bombs, bounds, enemies, finish, flames, nextLevel, powerups, solidWalls, timedEvents, weakWalls, walkingSound, playerDeath, playerDeath2, playerBombDeath, flameUp, bombUp, finishLevel, levelMap, updateLivesInfo } from "./game.js";
 import { Timer } from "./timer.js";
 
 let timedCount = 0;
@@ -16,7 +16,7 @@ export class Player {
         this.lives = 5;
         this.alive = true;
         this.bombAmount = 1;
-        this.bombPower = 1;
+        this.bombPower = 2;
 
         this.element = document.createElement('div');
         this.element.id = "player";
@@ -100,6 +100,7 @@ export class Player {
         this.element.style.background = 'red';
         this.alive = false;
         this.lives--;
+        updateLivesInfo(this.lives);
 
         // Stop walking sound when player dies
         walkingSound.pause();
@@ -134,7 +135,6 @@ export class Player {
             }
             timedEvents.delete(`enemyBlock${countNow}`)
         }, 3000);
-
 
         timedEvents.set(`resurrection${countNow}`, timedResurrection)
         timedEvents.set(`enemyBlock${countNow}`, timedEnemyBlock)

@@ -1,5 +1,5 @@
 import { Finish } from "./finish.js";
-import { resizeGameContainer, getGridSize, setUpGame, makeWalls, makeLevelMap } from "./initialize.js";
+import { resizeGameContainer, getGridSize, setUpGame, makeWalls, makeLevelMap, makeTextBar } from "./initialize.js";
 
 export let bounds;
 export let mult = 1.0;
@@ -18,8 +18,16 @@ export const enemies = new Map();        // for player collisions
 export const powerups = new Map();        // for player collisions
 export let finish;
 
+let levelinfo;
+let livesinfo;
+let scoreinfo;
+let timeinfo;
+const fiveMinutes = 300000;
+let score = 0;
+let pausedTime = 0;
+
 // Sound effects
-export const walkingSound = new Audio ("sfx/walkingSound.mp3");
+export const walkingSound = new Audio("sfx/walkingSound.mp3");
 walkingSound.volume = 0.5;
 walkingSound.loop = true;
 // export const enemyWalking = new Audio ("sfx/enemyWalking.mp3");
@@ -85,9 +93,12 @@ export function nextLevel() {
     }
 
     document.getElementById("game-container").replaceChildren();
-    //document.getElementById("game-container").innerHTML = "";
-    //document.onkeydown = null;
     level++;
+
+    // add to score how many seconds short of 5 minutes the level took
+    score += (fiveMinutes - (window.performance.now() - pausedTime)) / 1000;
+    updateScoreInfo(score);
+    pausedTime = window.performance.now(); // resets level clock  
     solidWalls = [];
     weakWalls.clear();
     bombs.clear();
@@ -107,6 +118,7 @@ export function nextLevel() {
     }
 
     startSequence();
+    updateLevelInfo(level);
 };
 
 function togglePause() {
@@ -121,6 +133,7 @@ function togglePause() {
         if (currentMusic) {
             currentMusic.pause();
         }
+        pausedTime -= window.performance.now(); // stored for unpausing 
     } else {
         pauseMenu.style.display = "none";
         for (const timed of timedEvents.values()) {
@@ -129,6 +142,7 @@ function togglePause() {
         if (currentMusic) {
             currentMusic.play();
         }
+        pausedTime += window.performance.now(); // this is used to display time
     }
 };
 
@@ -138,27 +152,27 @@ document.addEventListener("keydown", (event) => {
     }
 });
 
-document.addEventListener("DOMContentLoaded", () => {
-    // Pause menu
-    document.getElementById("continue-btn").addEventListener("click", togglePause);
-    document.getElementById("restart-btn").addEventListener("click", restartGame);
+function updateTimeInfo(time) {
+    let totalSeconds = Math.floor(time / 1000);
+    let minutes = Math.floor(totalSeconds / 60); // Get minutes
+    let seconds = totalSeconds % 60; // Get seconds
+    timeinfo.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+}
 
-    // Start menu
-    const startMenu = document.getElementById("start-menu");
-    startMenu.style.display = "block";
+function updateLevelInfo(level) {
+    levelinfo.textContent = `Level: ${level}`
+}
 
-    document.getElementById("start-btn").addEventListener("click", () => {
-        startMenu.style.display = "none"; 
-        startSequence();
-        runGame();      
-    });
-    document.getElementById("restart-btn-game-over").addEventListener("click", () => {
-        document.getElementById("game-over-menu").style.display = "none";
-        restartGame();
-    });
-});
+export function updateLivesInfo(lives) {
+    livesinfo.textContent = `Lives: ${lives}`
+}
 
-function startSequence(){
+function updateScoreInfo(score) {
+    if (score < 0) score = 0;
+    scoreinfo.textContent = `Score: ${Math.round(score)}`
+}
+
+function startSequence() {
     bounds = resizeGameContainer();
     [gridStep, halfStep] = getGridSize();
     [mult, player] = setUpGame(bounds);
@@ -176,8 +190,10 @@ function startSequence(){
     currentMusic.play();
 }
 
-function runGame(){
-    lastFrameTime = window.performance.now(); // initialize to current timestamp
+function runGame() {
+    const now = window.performance.now();
+    pausedTime = now;
+    lastFrameTime = now; // initialize to current timestamp
     requestAnimationFrame(gameLoop);
 
     function gameLoop(timestamp) {
@@ -185,10 +201,11 @@ function runGame(){
         let deltaTime = (timestamp - lastFrameTime) / 16.7; // use deltaTime to normalize speed for different refresh rates
         lastFrameTime = timestamp;
 
-        if (!paused) {                        
+        if (!paused) {
+            updateTimeInfo(timestamp - pausedTime);
             player.movePlayer(deltaTime);
 
-            for (const en of enemies.values()){
+            for (const en of enemies.values()) {
                 en.moveEnemy(deltaTime);
             }
         }
@@ -197,4 +214,26 @@ function runGame(){
         requestAnimationFrame(gameLoop);
     };
 };
-// Useless comment
+
+document.addEventListener("DOMContentLoaded", () => {
+    // Pause menu
+    document.getElementById("continue-btn").addEventListener("click", togglePause);
+    document.getElementById("restart-btn").addEventListener("click", restartGame);
+
+    // Start menu
+    const startMenu = document.getElementById("start-menu");
+    startMenu.style.display = "block";
+
+    document.getElementById("start-btn").addEventListener("click", () => {
+        startMenu.style.display = "none";
+        startSequence();
+        [levelinfo, livesinfo, scoreinfo, timeinfo] = makeTextBar();
+        livesinfo.textContent = `Lives: ${player.lives}`
+        runGame();
+    });
+
+    document.getElementById("restart-btn-game-over").addEventListener("click", () => {
+        document.getElementById("game-over-menu").style.display = "none";
+        restartGame();
+    });
+});
