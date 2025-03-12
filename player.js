@@ -1,5 +1,5 @@
 import { Bomb } from "./bomb.js";
-import { bombTime, bombs, bounds, enemies, finish, flames, nextLevel, powerups, restartGame, solidWalls, timedEvents, weakWalls, walkingSound, playerDeath, playerDeath2, playerBombDeath, flameUp, bombUp, finishLevel } from "./game.js";
+import { bombTime, bombs, bounds, enemies, finish, flames, nextLevel, powerups, solidWalls, timedEvents, weakWalls, walkingSound, playerDeath, playerDeath2, playerBombDeath, flameUp, bombUp, finishLevel } from "./game.js";
 import { Timer } from "./timer.js";
 
 let timedCount = 0;
