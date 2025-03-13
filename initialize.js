@@ -124,7 +124,7 @@ export function makeWalls() {
             const x = gridStep * mapX;
             const y = gridStep * mapY;
             const name = `bombUp${mapX}${mapY}`;
-            const newBombUp = new BombUp(x, y, gridStep * 0.9, name, mapY, mapX);
+            const newBombUp = new BombUp(x, y, gridStep * 1.0, name, mapY, mapX);
             powerups.set(name, newBombUp)
             powerUpMap[mapY][mapX] = [name, newBombUp];
         };
@@ -143,7 +143,7 @@ export function makeWalls() {
             const x = gridStep * mapX;
             const y = gridStep * mapY;
             const name = `flameUp${mapX}${mapY}`;
-            const newFlameUp = new FlameUp(x, y, gridStep * 0.9, name, mapY, mapX);
+            const newFlameUp = new FlameUp(x, y, gridStep * 1.0, name, mapY, mapX);
             powerups.set(name, newFlameUp)
             powerUpMap[mapY][mapX] = [name, newFlameUp];
         };
@@ -204,6 +204,7 @@ export function makeTextBar() {
         info.style.borderRadius = `${pad * mult}px`;
         info.id = ids[i];
         info.textContent = placeholders[i];
+        info.style.fontSize = `${20*mult}px`;
         textbar.appendChild(info);
         infos.push(info);
     }

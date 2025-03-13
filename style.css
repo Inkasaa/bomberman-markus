@@ -8,9 +8,10 @@ body {
 #game-container {
     position: absolute;
     background: #eee;
-    background-image: url("/images/greengrass.jpg");
+    /* background-image: url("/images/greengrass.jpg"); */
+    background-image: url("/images/bluegrass.jpg");
     /* overflow: hidden; */
-    z-index: 0;
+    z-index: -1;
 }
 
 #player {
@@ -42,7 +43,7 @@ body {
 
 .wall.weak {
     background-color: rgb(199, 165, 130);
-    background-image: url("/images/weakwall.svg");
+    background-image: url("/images/weakwall02.svg");
     background-size: cover;
 }
 
@@ -55,10 +56,20 @@ body {
     background-image: url("/images/flamehor.svg");
     background-size: cover;
 }
+.flame.horizontal.ends {
+    background-image: url("/images/flameendsh.svg");
+    background-size: cover;
+    z-index: 0;
+}
 
 .flame.vertical {
     background-image: url("/images/flamevert.svg");
     background-size: cover;
+}
+.flame.vertical.ends {
+    background-image: url("/images/flameendsv.svg");
+    background-size: cover;
+    z-index: 0;
 }
 
 .bomb {

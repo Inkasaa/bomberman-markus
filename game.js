@@ -22,9 +22,9 @@ let levelinfo;
 let livesinfo;
 let scoreinfo;
 let timeinfo;
-const fiveMinutes = 300000;
+const twoMinutes = 120000;
 let score = 0;
-let pausedTime = 0;
+let timeToSubtract = 0;
 
 // Sound effects
 export const walkingSound = new Audio("sfx/walkingSound.mp3");
@@ -96,9 +96,9 @@ export function nextLevel() {
     level++;
 
     // add to score how many seconds short of 5 minutes the level took
-    score += (fiveMinutes - (window.performance.now() - pausedTime)) / 1000;
+    score += ((twoMinutes - (window.performance.now() - timeToSubtract)) / 1000) * player.lives * level;
     updateScoreInfo(score);
-    pausedTime = window.performance.now(); // resets level clock  
+    timeToSubtract = window.performance.now(); // resets level clock  
     solidWalls = [];
     weakWalls.clear();
     bombs.clear();
@@ -134,7 +134,7 @@ function togglePause() {
         if (currentMusic) {
             currentMusic.pause();
         }
-        pausedTime -= window.performance.now(); // stored for unpausing 
+        timeToSubtract -= window.performance.now(); // stored for unpausing 
     } else {
         pauseMenu.style.display = "none";
         for (const timed of timedEvents.values()) {
@@ -143,7 +143,7 @@ function togglePause() {
         if (currentMusic) {
             currentMusic.play();
         }
-        pausedTime += window.performance.now(); // this is used to display time
+        timeToSubtract += window.performance.now(); // this is used to display time
     }
 };
 
@@ -193,7 +193,7 @@ function startSequence() {
 
 function runGame() {
     const now = window.performance.now();
-    pausedTime = now;
+    timeToSubtract = now;
     lastFrameTime = now; // initialize to current timestamp
     requestAnimationFrame(gameLoop);
 
@@ -203,7 +203,7 @@ function runGame() {
         lastFrameTime = timestamp;
 
         if (!paused) {
-            updateTimeInfo(timestamp - pausedTime);
+            updateTimeInfo(timestamp - timeToSubtract);
             player.movePlayer(deltaTime);
 
             for (const en of enemies.values()) {

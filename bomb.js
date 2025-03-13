@@ -42,53 +42,67 @@ function isPowerUp(row, col) {
 }
 
 function horizontalFlame(size, x, y) {
-    let flame = document.createElement('div');
-    flame.classList.add("flame");
-    flame.classList.add("horizontal");
-    flame.style.width = `${gridStep}px`;
-    flame.style.height = `${halfStep}px`;
-    flame.style.left = `${x + (size / 2) - halfStep}px`;
-    flame.style.top = `${y + (size / 2) - (halfStep / 2)}px`;
-    document.getElementById("game-container").appendChild(flame);
+    const twoflames = [];
+    for (let i = 0; i < 2; i++) {
+        let flame = document.createElement('div');
+        flame.classList.add("flame");
+        flame.classList.add("horizontal");
+        if (i == 0) flame.classList.add("ends");
+        flame.style.width = `${gridStep}px`;
+        flame.style.height = `${halfStep}px`;
+        flame.style.left = `${x + (size / 2) - halfStep}px`;
+        flame.style.top = `${y + (size / 2) - (halfStep / 2)}px`;
+        document.getElementById("game-container").appendChild(flame);
 
-    flameCounter++
-    flames.set(`flameH${flameCounter}`, flame)   // to map of flames
+        flameCounter++
+        flames.set(`flameH${flameCounter}${i}`, flame)   // to map of flames
+        twoflames.push(flame);
+    }
 
     const countNow = timedCount;
     const timedFlame = new Timer(() => {
-        flame.remove();
-        flames.delete(`flameH${flameCounter}`);
+        twoflames[0].remove();
+        twoflames[1].remove();
+        flames.delete(`flameH${flameCounter}0`);
+        flames.delete(`flameH${flameCounter}1`);
         timedEvents.delete(`flameH${countNow}`)
     }, 500);
     timedEvents.set(`flameH${countNow}`, timedFlame)
     timedCount++;
 
-    return flame;
+    return twoflames[1];
 }
 
 function verticalFlame(size, x, y) {
-    let flame = document.createElement('div');
-    flame.classList.add("flame");
-    flame.classList.add("vertical");
-    flame.style.width = `${halfStep}px`;
-    flame.style.height = `${gridStep}px`;
-    flame.style.left = `${x + (size / 2) - (halfStep / 2)}px`;
-    flame.style.top = `${y + (size / 2) - halfStep}px`;
-    document.getElementById("game-container").appendChild(flame);
+    const twoflames = [];
+    for (let i = 0; i < 2; i++) {
+        let flame = document.createElement('div');
+        flame.classList.add("flame");
+        flame.classList.add("vertical");
+        if (i == 0) flame.classList.add("ends");
+        flame.style.width = `${halfStep}px`;
+        flame.style.height = `${gridStep}px`;
+        flame.style.left = `${x + (size / 2) - (halfStep / 2)}px`;
+        flame.style.top = `${y + (size / 2) - halfStep}px`;
+        document.getElementById("game-container").appendChild(flame);
 
-    flameCounter++
-    flames.set(`flameV${flameCounter}`, flame)   // to map of flames
+        flameCounter++
+        flames.set(`flameV${flameCounter}${i}`, flame)   // to map of flames
+        twoflames.push(flame);
+    }
 
     const countNow = timedCount;
     const timedFlame = new Timer(() => {
-        flame.remove();
-        flames.delete(`flameV${flameCounter}`);
+        twoflames[0].remove();
+        twoflames[1].remove();
+        flames.delete(`flameV${flameCounter}0`);
+        flames.delete(`flameV${flameCounter}1`);
         timedEvents.delete(`flameV${countNow}`);
     }, 500);
     timedEvents.set(`flameV${countNow}`, timedFlame);
     timedCount++;
 
-    return flame;
+    return twoflames[1];
 }
 
 export class Bomb {
@@ -269,16 +283,16 @@ export class Bomb {
 
             // Cut off tip of flame at the end
             if (colPlus && lastRight && i == this.power) {
-                lastRight.style.clipPath = `inset(0 ${15 * mult}px 0 0)`;
+                lastRight.style.clipPath = `inset(0 ${20 * mult}px 0 0)`;
             }
             if (colMinus && lastLeft && i == this.power) {
-                lastLeft.style.clipPath = `inset(0 0 0 ${15 * mult}px)`;
+                lastLeft.style.clipPath = `inset(0 0 0 ${20 * mult}px)`;
             }
             if (rowPlus && lastDown && i == this.power) {
-                lastDown.style.clipPath = `inset(0 0 ${15 * mult}px 0)`;
+                lastDown.style.clipPath = `inset(0 0 ${20 * mult}px 0)`;
             }
             if (rowMinus && lastUp && i == this.power) {
-                lastUp.style.clipPath = `inset(${15 * mult}px 0 0 0)`;
+                lastUp.style.clipPath = `inset(${20 * mult}px 0 0 0)`;
             }
         }
 
