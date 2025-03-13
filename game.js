@@ -71,6 +71,8 @@ levelMusic.forEach(track => {
 
 let player;
 let paused = false;
+let finished = false;
+let scoreTime = 0;
 let lastFrameTime = 0;
 export let level = 1;
 let currentMusic = null;
@@ -86,6 +88,11 @@ export function restartGame() {
     location.reload();
 };
 
+export function toggleFinished (){
+    finished = !finished;
+    scoreTime = window.performance.now() - timeToSubtract;
+}
+
 export function nextLevel() {
     if (level >= 5) {
         window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
@@ -93,11 +100,12 @@ export function nextLevel() {
     }
 
     document.getElementById("game-container").replaceChildren();
-    level++;
 
-    // add to score how many seconds short of 5 minutes the level took
-    score += ((twoMinutes - (window.performance.now() - timeToSubtract)) / 1000) * player.lives * level;
+    let scoreAddition = ((twoMinutes - (scoreTime - timeToSubtract)) / 1000) * player.lives * level;
+    if (scoreAddition > 0) score += scoreAddition;
     updateScoreInfo(score);
+
+    level++;
     timeToSubtract = window.performance.now(); // resets level clock  
     solidWalls = [];
     weakWalls.clear();
@@ -120,6 +128,7 @@ export function nextLevel() {
     startSequence();
     updateLevelInfo(level);
     updateLivesInfo(player.lives);
+    toggleFinished ();
 };
 
 function togglePause() {
@@ -203,7 +212,8 @@ function runGame() {
         lastFrameTime = timestamp;
 
         if (!paused) {
-            updateTimeInfo(timestamp - timeToSubtract);
+            if (!finished) updateTimeInfo(timestamp - timeToSubtract);
+
             player.movePlayer(deltaTime);
 
             for (const en of enemies.values()) {

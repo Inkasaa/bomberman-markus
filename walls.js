@@ -34,7 +34,7 @@ class Wall {
             // get key and value of item with lowest abs value
             let fromSmallest = Object.entries(diffs).sort(([, v1], [, v2]) => Math.abs(v1) - Math.abs(v2));
 
-            // smoothly slip around corner
+            // slip around corner smoothly
             if (
                 slowDown == 1 &&    // one button down
                 collisions == 1 &&  // one wall hit
