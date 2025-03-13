@@ -106,12 +106,12 @@ function verticalFlame(size, x, y) {
 }
 
 export class Bomb {
-    constructor(x, y, power, name) {
+    constructor(row, col, power, name) {
         const size = mult * 60;
 
         // Align dropped bomb to grid
-        this.mapCol = Math.floor(x / gridStep);
-        this.mapRow = Math.floor(y / gridStep);
+        this.mapCol = col;
+        this.mapRow = row;
         this.x = this.mapCol * gridStep + halfStep - size / 2;
         this.y = this.mapRow * gridStep + halfStep - size / 2;
         this.size = size;

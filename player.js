@@ -1,5 +1,5 @@
 import { Bomb } from "./bomb.js";
-import { bombTime, bombs, bounds, enemies, finish, flames, nextLevel, powerups, solidWalls, timedEvents, weakWalls, walkingSound, playerDeath, playerDeath2, playerBombDeath, flameUp, bombUp, finishLevel, levelMap, updateLivesInfo } from "./game.js";
+import { bombTime, bombs, bounds, enemies, finish, flames, nextLevel, powerups, solidWalls, timedEvents, weakWalls, walkingSound, playerDeath, playerDeath2, playerBombDeath, flameUp, bombUp, finishLevel, levelMap, updateLivesInfo, gridStep } from "./game.js";
 import { Timer } from "./timer.js";
 
 let timedCount = 0;
@@ -46,12 +46,17 @@ export class Player {
     };
 
     dropBomb() {
-        if (this.alive && this.bombAmount > 0) {
-            new Bomb(this.x + this.size / 2, this.y + this.size / 2, this.bombPower, 'player');
+        const row = Math.floor((this.y + this.size / 2) / gridStep);
+        const col = Math.floor((this.x + this.size / 2) / gridStep);
+
+        if (this.alive && this.bombAmount > 0 && !levelMap[row][col]) {
+            levelMap[row][col] = 'bomb';
+            new Bomb(row, col, this.bombPower, 'player');
             this.bombAmount--;
 
             let countNow = timedCount;
             const timedBombsBack = new Timer(() => {
+                levelMap[row][col] = '';
                 this.bombAmount++;
                 timedEvents.delete(`bombsback${countNow}`);
             }, bombTime);
