@@ -1,4 +1,4 @@
-import { enemies, finish } from "./game.js";
+import { enemies, finish, mult } from "./game.js";
 
 export class Finish {
     constructor(x, y, size) {
@@ -19,12 +19,12 @@ export class Finish {
     };
 
     checkCollision(playerX, playerY, playerSize) {
-        // is player is fully inside finish square
+        // is player is fully inside finish square, with some generosity added
         return (
-            playerX > this.x &&
-            playerX + playerSize < this.x + this.size &&
-            playerY > this.y &&
-            playerY + playerSize < this.y + this.size
+            playerX + (5 * mult) >= this.x &&
+            playerX + playerSize - (5 * mult) <= this.x + this.size &&
+            playerY + (5 * mult) >= this.y &&
+            playerY + playerSize - (5 * mult) <= this.y + this.size
         )
     };
 

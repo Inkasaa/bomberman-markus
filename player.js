@@ -1,5 +1,5 @@
 import { Bomb } from "./bomb.js";
-import { bombTime, bombs, bounds, enemies, finish, flames, nextLevel, powerups, solidWalls, timedEvents, weakWalls, walkingSound, playerDeath, playerDeath2, playerBombDeath, flameUp, bombUp, finishLevel, levelMap, updateLivesInfo } from "./game.js";
+import { bombTime, bombs, bounds, enemies, finish, flames, nextLevel, powerups, solidWalls, timedEvents, weakWalls, walkingSound, playerDeath, playerDeath2, playerBombDeath, flameUp, bombUp, finishLevel, levelMap, updateLivesInfo, gridStep, toggleFinished } from "./game.js";
 import { Timer } from "./timer.js";
 
 let timedCount = 0;
@@ -46,8 +46,11 @@ export class Player {
     };
 
     dropBomb() {
-        if (this.alive && this.bombAmount > 0) {
-            new Bomb(this.x + this.size / 2, this.y + this.size / 2, this.bombPower, 'player');
+        const row = Math.floor((this.y + this.size / 2) / gridStep);
+        const col = Math.floor((this.x + this.size / 2) / gridStep);
+
+        if (this.alive && this.bombAmount > 0 && !levelMap[row][col]) {
+            new Bomb(row, col, this.bombPower, 'player');
             this.bombAmount--;
 
             let countNow = timedCount;
@@ -164,7 +167,7 @@ export class Player {
             // solid wall collisions
             const collidingWalls = [];
             for (const wall of solidWalls) {
-                if (wall.checkCollision(newX, newY, this.size).toString() != [newX, newY].toString()) {
+                if (wall.checkCollision(newX, newY, this.size, slowDown).toString() != [newX, newY].toString()) {
                     collidingWalls.push(wall);
                     if (collidingWalls.length == 1) break; // Can't collide with more than one solid wall
                 };
@@ -172,7 +175,7 @@ export class Player {
 
             // weak wall collisions
             for (const wall of weakWalls.values()) {
-                if (wall.checkCollision(newX, newY, this.size).toString() != [newX, newY].toString()) {
+                if (wall.checkCollision(newX, newY, this.size, slowDown).toString() != [newX, newY].toString()) {
                     collidingWalls.push(wall);
                     if (collidingWalls.length === 3) break; // Can't collide with more than three walls
                 };
@@ -180,7 +183,7 @@ export class Player {
 
             // adjust next coordinates based on collisions to walls
             for (const wall of collidingWalls) {
-                [newX, newY] = wall.checkCollision(newX, newY, this.size);
+                [newX, newY] = wall.checkCollision(newX, newY, this.size, slowDown, collidingWalls.length);
             };
 
             // bomb collisions
@@ -266,6 +269,7 @@ export class Player {
             if (finish.active && finish.checkCollision(newX, newY, this.size)) {
                 this.alive = false;
                 finishLevel.play();
+                toggleFinished();
                 const timedNextLevel = new Timer(() => {                    
                     nextLevel();
                     timedEvents.delete(`finishingTheLevel`);
