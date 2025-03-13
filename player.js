@@ -50,13 +50,11 @@ export class Player {
         const col = Math.floor((this.x + this.size / 2) / gridStep);
 
         if (this.alive && this.bombAmount > 0 && !levelMap[row][col]) {
-            levelMap[row][col] = 'bomb';
             new Bomb(row, col, this.bombPower, 'player');
             this.bombAmount--;
 
             let countNow = timedCount;
             const timedBombsBack = new Timer(() => {
-                levelMap[row][col] = '';
                 this.bombAmount++;
                 timedEvents.delete(`bombsback${countNow}`);
             }, bombTime);

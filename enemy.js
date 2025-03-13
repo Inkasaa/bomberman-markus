@@ -115,11 +115,8 @@ export class Enemy {
                     else if (this.direction == "right") this.direction = 'left';
                     else if (this.direction == "up") this.direction = 'down';
                     else if (this.direction == "down") this.direction = 'up';
+                    
                     this.onBomb = true;
-
-
-
-                    //this.chooseDirection();
                 }
             } else {
                 this.onBomb = false;
