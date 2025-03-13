@@ -63,7 +63,8 @@ export class WeakWall extends Wall {
     };
 
     collapse() {
-        this.element.style.background = 'orange';
+        //this.element.style.background = 'orange';
+        this.element.style.backgroundImage = 'url("/images/burningwall.svg")';
         //wallBreak.play();
 
         const countNow = timedCount;
