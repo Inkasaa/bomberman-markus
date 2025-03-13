@@ -1,4 +1,4 @@
-import { timedEvents } from "./game.js";
+import { gridStep, timedEvents } from "./game.js";
 import { Timer } from "./timer.js";
 
 class Wall {
@@ -14,12 +14,11 @@ class Wall {
         this.element.style.height = `${size}px`;
         this.element.style.left = `${x}px`;
         this.element.style.top = `${y}px`;
-        //this.element.style.borderRadius = size / 10 + 'px';
 
         document.getElementById("game-container").appendChild(this.element);
     };
 
-    checkCollision(playerX, playerY, playerSize) {
+    checkCollision(playerX, playerY, playerSize, slowDown = 1, collisions = 2) {
         if (playerX + playerSize < this.x || playerX > this.x + this.size || playerY + playerSize < this.y || playerY > this.y + this.size) {
             // No collision: player is safely outside on at least one side, return input values
             return [playerX, playerY];
@@ -33,7 +32,26 @@ class Wall {
             };
 
             // get key and value of item with lowest abs value
-            let [lowestItems] = Object.entries(diffs).sort(([, v1], [, v2]) => Math.abs(v1) - Math.abs(v2));
+            let fromSmallest = Object.entries(diffs).sort(([, v1], [, v2]) => Math.abs(v1) - Math.abs(v2));
+
+            // smoothly slip around corner
+            if (
+                slowDown == 1 &&    // one button down
+                collisions == 1 &&  // one wall hit
+                fromSmallest[1] &&
+                Math.abs(fromSmallest[1][1]) < gridStep * 0.25 &&   // second smallest value is small = close to corner
+                fromSmallest[0][0].startsWith('x') != fromSmallest[1][0].startsWith('x')
+            ) {
+
+                if (fromSmallest[0][0].startsWith('x')) {
+                    return [playerX + fromSmallest[0][1] * 1.1, playerY + fromSmallest[1][1] * 1.1];
+                } else {
+                    return [playerX + fromSmallest[1][1] * 1.1, playerY + fromSmallest[0][1] * 1.1];
+                }
+            }
+
+
+            let lowestItems = fromSmallest[0];
 
             // modify inputs to place player just outside wall
             if (lowestItems[0].startsWith('x')) {

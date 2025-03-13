@@ -167,7 +167,7 @@ export class Player {
             // solid wall collisions
             const collidingWalls = [];
             for (const wall of solidWalls) {
-                if (wall.checkCollision(newX, newY, this.size).toString() != [newX, newY].toString()) {
+                if (wall.checkCollision(newX, newY, this.size, slowDown).toString() != [newX, newY].toString()) {
                     collidingWalls.push(wall);
                     if (collidingWalls.length == 1) break; // Can't collide with more than one solid wall
                 };
@@ -175,7 +175,7 @@ export class Player {
 
             // weak wall collisions
             for (const wall of weakWalls.values()) {
-                if (wall.checkCollision(newX, newY, this.size).toString() != [newX, newY].toString()) {
+                if (wall.checkCollision(newX, newY, this.size, slowDown).toString() != [newX, newY].toString()) {
                     collidingWalls.push(wall);
                     if (collidingWalls.length === 3) break; // Can't collide with more than three walls
                 };
@@ -183,7 +183,7 @@ export class Player {
 
             // adjust next coordinates based on collisions to walls
             for (const wall of collidingWalls) {
-                [newX, newY] = wall.checkCollision(newX, newY, this.size);
+                [newX, newY] = wall.checkCollision(newX, newY, this.size, slowDown, collidingWalls.length);
             };
 
             // bomb collisions
