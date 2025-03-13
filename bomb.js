@@ -184,117 +184,69 @@ export class Bomb {
         horizontalFlame(this.size, this.x, this.y);
         verticalFlame(this.size, this.x, this.y);
 
-        // Draw more flames in four directions 
-        let [colPlus, colMinus, rowPlus, rowMinus] = [true, true, true, true];
+        // Draw more flames in four directions
+        const fourDirs = [
+            { name: 'right', going: true, coords: undefined },
+            { name: 'left', going: true, coords: undefined },
+            { name: 'down', going: true, coords: undefined },
+            { name: 'up', going: true, coords: undefined },
+        ];
         let [lastLeft, lastRight, lastUp, lastDown] = [undefined, undefined, undefined, undefined];
+
         for (let i = 1; i <= this.power; i++) {
+            // In four directions: Stop flames at walls and edges, destroy weak walls, explode other bombs
+            for (let j = 0; j < 4; j++) {
+                if (fourDirs[j].name == 'right') fourDirs[j].coords = [this.mapRow, this.mapCol + i];
+                if (fourDirs[j].name == 'left') fourDirs[j].coords = [this.mapRow, this.mapCol - i];
+                if (fourDirs[j].name == 'down') fourDirs[j].coords = [this.mapRow + i, this.mapCol];
+                if (fourDirs[j].name == 'up') fourDirs[j].coords = [this.mapRow - i, this.mapCol];
 
-            // In four directions: Stop flames at walls, destroy weak walls, explode other bombs
-            if (colPlus) {
-                let foundWall = false;
-                if (isWall(this.mapRow, this.mapCol + i)) {
-                    this.tryToDestroy(this.mapRow, this.mapCol + i);
-                    colPlus = false;
-                    foundWall = true;
+                if (fourDirs[j].going) {
+                    let foundWall = false;
+                    const dirRow = fourDirs[j].coords[0];
+                    const dirCol = fourDirs[j].coords[1];
+
+                    if (isWall(dirRow, dirCol)) {
+                        this.tryToDestroy(dirRow, dirCol);
+                        fourDirs[j].going = false;
+                        foundWall = true;
+                    };
+                    if (isEdge(dirRow, dirCol)) {
+                        fourDirs[j].going = false;
+                    };
+                    if (isBomb(dirRow, dirCol)) {
+                        const bomb = levelMap[dirRow][dirCol][1];
+                        levelMap[dirRow][dirCol] = '';
+                        bomb.explodeEarly();
+                    };
+                    if (!foundWall && isPowerUp(dirRow, dirCol)) {
+                        const powerUp = powerUpMap[dirRow][dirCol][1];
+                        powerUp.burn();
+                        fourDirs[j].going = false;
+                    };
                 };
-                if (isBomb(this.mapRow, this.mapCol + i)) {
-                    const bomb = levelMap[this.mapRow][this.mapCol + i][1];
-                    levelMap[this.mapRow][this.mapCol + i] = '';
-                    bomb.explodeEarly();
-                }
-                if (!foundWall && isPowerUp(this.mapRow, this.mapCol + i)) {
-                    const powerUp = powerUpMap[this.mapRow][this.mapCol + i][1];
-                    powerUp.burn();
-                    colPlus = false;
-                }
-                if (isEdge(this.mapRow, this.mapCol + i)) {
-                    colPlus = false;
-                }
-            };
-            if (colMinus) {
-                let foundWall = false;
-                if (isWall(this.mapRow, this.mapCol - i)) {
-                    this.tryToDestroy(this.mapRow, this.mapCol - i);
-                    colMinus = false;
-                    foundWall = true;
-                };
-                if (isBomb(this.mapRow, this.mapCol - i)) {
-                    const bomb = levelMap[this.mapRow][this.mapCol - i][1];
-                    levelMap[this.mapRow][this.mapCol - i] = '';
-                    bomb.explodeEarly();
-                }
-                if (!foundWall && isPowerUp(this.mapRow, this.mapCol - i)) {
-                    const powerUp = powerUpMap[this.mapRow][this.mapCol - i][1];
-                    powerUp.burn();
-                    colMinus = false;
-                }
-                if (isEdge(this.mapRow, this.mapCol - i)) {
-                    colMinus = false;
-                }
-            };
-            if (rowPlus) {
-                let foundWall = false;
-                if (isWall(this.mapRow + i, this.mapCol)) {
-                    this.tryToDestroy(this.mapRow + i, this.mapCol);
-                    rowPlus = false;
-                    foundWall = true;
-                };
-                if (isBomb(this.mapRow + i, this.mapCol)) {
-                    const bomb = levelMap[this.mapRow + i][this.mapCol][1];
-                    levelMap[this.mapRow + i][this.mapCol] = '';
-                    bomb.explodeEarly();
-                }
-                if (!foundWall && isPowerUp(this.mapRow + i, this.mapCol)) {
-                    const powerUp = powerUpMap[this.mapRow + i][this.mapCol][1];
-                    powerUp.burn();
-                    rowPlus = false;
-                }
-                if (isEdge(this.mapRow + i, this.mapCol)) {
-                    rowPlus = false;
-                }
-            };
-            if (rowMinus) {
-                let foundWall = false;
-                if (isWall(this.mapRow - i, this.mapCol)) {
-                    this.tryToDestroy(this.mapRow - i, this.mapCol);
-                    rowMinus = false;
-                    foundWall = true;
-                };
-                if (isBomb(this.mapRow - i, this.mapCol)) {
-                    const bomb = levelMap[this.mapRow - i][this.mapCol][1]
-                    levelMap[this.mapRow - i][this.mapCol] = '';
-                    bomb.explodeEarly();
-                }
-                if (!foundWall && isPowerUp(this.mapRow - i, this.mapCol)) {
-                    const powerUp = powerUpMap[this.mapRow - i][this.mapCol][1];
-                    powerUp.burn();
-                    rowMinus = false;
-                }
-                if (isEdge(this.mapRow - i, this.mapCol)) {
-                    rowMinus = false;
-                }
             };
 
-            // draw flames if still allowed
-            if (colPlus) lastRight = horizontalFlame(this.size, this.x + gridStep * i, this.y);
-            if (colMinus) lastLeft = horizontalFlame(this.size, this.x - gridStep * i, this.y);
-            if (rowPlus) lastDown = verticalFlame(this.size, this.x, this.y + gridStep * i);
-            if (rowMinus) lastUp = verticalFlame(this.size, this.x, this.y - gridStep * i);
+            // if still going, draw flames and save the most recent
+            if (fourDirs[0].going) lastRight = horizontalFlame(this.size, this.x + gridStep * i, this.y);
+            if (fourDirs[1].going) lastLeft = horizontalFlame(this.size, this.x - gridStep * i, this.y);
+            if (fourDirs[2].going) lastDown = verticalFlame(this.size, this.x, this.y + gridStep * i);
+            if (fourDirs[3].going) lastUp = verticalFlame(this.size, this.x, this.y - gridStep * i);
 
-            // Cut off tip of flame at the end
-            if (colPlus && lastRight && i == this.power) {
+            // Cut off tip of full flame at the end to reveal rounded end
+            if (fourDirs[0].going && lastRight && i == this.power) {
                 lastRight.style.clipPath = `inset(0 ${20 * mult}px 0 0)`;
             }
-            if (colMinus && lastLeft && i == this.power) {
+            if (fourDirs[1].going && lastLeft && i == this.power) {
                 lastLeft.style.clipPath = `inset(0 0 0 ${20 * mult}px)`;
             }
-            if (rowPlus && lastDown && i == this.power) {
+            if (fourDirs[2].going && lastDown && i == this.power) {
                 lastDown.style.clipPath = `inset(0 0 ${20 * mult}px 0)`;
             }
-            if (rowMinus && lastUp && i == this.power) {
+            if (fourDirs[3].going && lastUp && i == this.power) {
                 lastUp.style.clipPath = `inset(${20 * mult}px 0 0 0)`;
             }
-        }
+        };
 
         // delay deleting bomb for a bit
         const timedExplotion = new Timer(() => {
