@@ -64,12 +64,11 @@ export class Player {
     };
 
     // Handle sprite direction change based on movement
-    updateSpriteDirection() {
-        console.log("updating sprite", this.left, this.right)
-
-        if (this.left) {
+    updateSpriteDirection(key) {
+        if (key == 'ArrowLeft') {
             this.element.style.backgroundImage = "url('/images/nalleLeft.png')";
-        } else if (this.right) {
+        }
+        if (key == 'ArrowRight') {
             this.element.style.backgroundImage = "url('/images/nalleRight.png')";
         }
     }
@@ -89,7 +88,7 @@ export class Player {
                 this.down = true;
                 break;
         };
-        this.updateSpriteDirection(); // Update the sprite if player moves left or right
+        this.updateSpriteDirection(event.key); // Update the sprite if player moves left or right    
     };
 
     stop(event) {
@@ -159,7 +158,6 @@ export class Player {
     movePlayer(deltaTime) {
 
         if (this.alive) {
-            //this.updateSpriteDirection(); // Update the sprite if player moves left or right
 
             // diagonal movement slowdown factor
             let slowDown = 1;
