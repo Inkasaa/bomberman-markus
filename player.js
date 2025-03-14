@@ -63,6 +63,16 @@ export class Player {
         };
     };
 
+    // Handle sprite direction change based on movement
+    updateSpriteDirection(key) {
+        if (key == 'ArrowLeft') {
+            this.element.style.backgroundImage = "url('/images/nalleLeft.png')";
+        }
+        if (key == 'ArrowRight') {
+            this.element.style.backgroundImage = "url('/images/nalleRight.png')";
+        }
+    }
+
     move(event) {
         switch (event.key) {
             case "ArrowLeft":
@@ -78,6 +88,7 @@ export class Player {
                 this.down = true;
                 break;
         };
+        this.updateSpriteDirection(event.key); // Update the sprite if player moves left or right    
     };
 
     stop(event) {
@@ -145,6 +156,7 @@ export class Player {
     };
 
     movePlayer(deltaTime) {
+
         if (this.alive) {
 
             // diagonal movement slowdown factor
@@ -216,9 +228,9 @@ export class Player {
             const wasMoving = this.isMoving;
             this.isMoving = this.left || this.right || this.up || this.down;
             if (this.isMoving && !wasMoving) {
-                walkingSound.play(); 
+                walkingSound.play();
             } else if (!this.isMoving && wasMoving) {
-                walkingSound.pause(); 
+                walkingSound.pause();
                 walkingSound.currentTime = 0;
             }
 
@@ -240,7 +252,7 @@ export class Player {
                     if (window.deathSound === 0) {
                         playerDeath.play();
                         window.deathSound = 1;
-                     } else {
+                    } else {
                         playerDeath2.play();
                         window.deathSound = 0;
                     }
@@ -270,7 +282,7 @@ export class Player {
                 this.alive = false;
                 finishLevel.play();
                 toggleFinished();
-                const timedNextLevel = new Timer(() => {                    
+                const timedNextLevel = new Timer(() => {
                     nextLevel();
                     timedEvents.delete(`finishingTheLevel`);
                 }, 4000);
