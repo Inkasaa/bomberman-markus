@@ -36,7 +36,7 @@ export class Enemy {
     } skull
 
     die() {
-        this.element.style.background = 'red';
+        this.element.style.backgroundImage = 'url("enemyDead.png")';
         enemyDeath.play();
         this.alive = false;
 

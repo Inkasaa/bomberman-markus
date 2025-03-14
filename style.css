@@ -16,8 +16,10 @@ body {
 
 #player {
     will-change: transform; /* to own layer => GPU acceleration */
-    position: absolute;
-    background: rgb(143, 176, 199);
+    background-image: url("/images/nalleRight.png");
+    background-size: contain; /* Ensure the image is fully visible */
+    background-position: center; /* Center the image within the element */
+    background-repeat: no-repeat; /* Prevent the image from repeating */
     z-index: 10;
 }
 
@@ -25,9 +27,9 @@ body {
     position: absolute;
     will-change: transform; /* to own layer => GPU acceleration */
     background-image: url("enemy.png");
-    background-size: contain; /* Ensure the image is fully visible */
-    background-position: center; /* Center the image within the element */
-    background-repeat: no-repeat; /* Prevent the image from repeating */
+   background-size: contain; /* Ensure the image is fully visible */
+   background-position: center; /* Center the image within the element */
+   background-repeat: no-repeat; /* Prevent the image from repeating */
     z-index: 9;
 }
 
