@@ -1,4 +1,4 @@
-import { gridStep, timedEvents } from "./game.js";
+import { gridStep, mult, timedEvents } from "./game.js";
 import { Timer } from "./timer.js";
 
 class Wall {
@@ -34,19 +34,19 @@ class Wall {
             // get key and value of item with lowest abs value
             let fromSmallest = Object.entries(diffs).sort(([, v1], [, v2]) => Math.abs(v1) - Math.abs(v2));
 
-            // slip around corner smoothly
+            // slip around corner
             if (
                 slowDown == 1 &&    // one button down
                 collisions == 1 &&  // one wall hit
                 fromSmallest[1] &&
-                Math.abs(fromSmallest[1][1]) < gridStep * 0.25 &&   // second smallest value is small = close to corner
+                Math.abs(fromSmallest[1][1]) < gridStep * 0.3 &&   // second smallest value is small = close to corner
                 fromSmallest[0][0].startsWith('x') != fromSmallest[1][0].startsWith('x')
             ) {
-
+                // don't move the player the full distance out of the wall, for smoothness
                 if (fromSmallest[0][0].startsWith('x')) {
-                    return [playerX + fromSmallest[0][1] * 1.1, playerY + fromSmallest[1][1] * 1.1];
+                    return [playerX + Math.sign(fromSmallest[0][1]) * mult * 2, playerY + Math.sign(fromSmallest[1][1]) * mult * 2];
                 } else {
-                    return [playerX + fromSmallest[1][1] * 1.1, playerY + fromSmallest[0][1] * 1.1];
+                    return [playerX + Math.sign(fromSmallest[1][1]) * mult * 2, playerY + Math.sign(fromSmallest[0][1]) * mult * 2];
                 }
             }
 

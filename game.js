@@ -72,6 +72,7 @@ levelMusic.forEach(track => {
 let player;
 let paused = false;
 let finished = false;
+let gameRunning = false;
 let scoreTime = 0;
 let lastFrameTime = 0;
 export let level = 1;
@@ -132,27 +133,29 @@ export function nextLevel() {
 };
 
 function togglePause() {
-    paused = !paused;
-    const pauseMenu = document.getElementById("pause-menu");
-
-    if (paused) {
-        pauseMenu.style.display = "block";
-        for (const timed of timedEvents.values()) {
-            timed.pause();
+    if (gameRunning){
+        paused = !paused;
+        const pauseMenu = document.getElementById("pause-menu");
+    
+        if (paused) {
+            pauseMenu.style.display = "block";
+            for (const timed of timedEvents.values()) {
+                timed.pause();
+            }
+            if (currentMusic) {
+                currentMusic.pause();
+            }
+            timeToSubtract -= window.performance.now(); // stored for unpausing 
+        } else {
+            pauseMenu.style.display = "none";
+            for (const timed of timedEvents.values()) {
+                timed.resume();
+            }
+            if (currentMusic) {
+                currentMusic.play();
+            }
+            timeToSubtract += window.performance.now(); // this is used to display time
         }
-        if (currentMusic) {
-            currentMusic.pause();
-        }
-        timeToSubtract -= window.performance.now(); // stored for unpausing 
-    } else {
-        pauseMenu.style.display = "none";
-        for (const timed of timedEvents.values()) {
-            timed.resume();
-        }
-        if (currentMusic) {
-            currentMusic.play();
-        }
-        timeToSubtract += window.performance.now(); // this is used to display time
     }
 };
 
@@ -204,6 +207,7 @@ function runGame() {
     const now = window.performance.now();
     timeToSubtract = now;
     lastFrameTime = now; // initialize to current timestamp
+    gameRunning = true;
     requestAnimationFrame(gameLoop);
 
     function gameLoop(timestamp) {
@@ -242,5 +246,16 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("restart-btn-game-over").addEventListener("click", () => {
         document.getElementById("game-over-menu").style.display = "none";
         restartGame();
+    });
+
+    // Test victory screen
+
+    const victoryScreen = document.getElementById("victory");
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "v") {
+            startMenu.style.display == "block" ? startMenu.style.display = "none": startMenu.style.display = "block";
+            victoryScreen.style.display == "block" ? victoryScreen.style.display = "none": victoryScreen.style.display = "block";
+            console.log("v pressed");
+        }
     });
 });

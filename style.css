@@ -206,6 +206,13 @@ body {
     background: #ddd;
 }
 
+#victory {
+    background-image: url("images/victory.svg");
+    display: none;
+    background-size: cover;
+    color: white;
+}
+
 .textbar{
     display: flex;
     flex-direction: row;
