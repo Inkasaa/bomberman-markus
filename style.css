@@ -1,4 +1,7 @@
 body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     margin: 0;
     height: 100vh;
     background: #000 url("images/background02.jpg") no-repeat center center;
@@ -207,10 +210,39 @@ body {
 }
 
 #victory {
+    width: 70vw;
+    height: 70vh;
     background-image: url("images/victory.svg");
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
     display: none;
-    background-size: cover;
     color: white;
+
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.victory-text {
+    max-width: 30vw;
+    text-align: center;
+}
+
+#victory button {    
+    padding: 12px 24px;
+    font-size: 1.2em;
+    background: #fff;
+    color: #000;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-top: 5vh;
+}
+
+#victory button:hover {
+    background: #ddd;
 }
 
 .textbar{

@@ -89,22 +89,31 @@ export function restartGame() {
     location.reload();
 };
 
-export function toggleFinished (){
+export function toggleFinished() {
     finished = !finished;
     scoreTime = window.performance.now() - timeToSubtract;
 }
 
-export function nextLevel() {
-    if (level >= 5) {
-        window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
-        return;
-    }
+function toggleEndScreen() {
+    const victoryScreen = document.getElementById("victory");
+    let msg = document.getElementById("victory-message");
+    msg.textContent = `You scored ${Math.round(score)} points with ${player.lives} lives remaining, you absolute legend!`;
+    victoryScreen.style.display == "flex" ? victoryScreen.style.display = "none" : victoryScreen.style.display = "flex";
+}
 
-    document.getElementById("game-container").replaceChildren();
+export function nextLevel() {   
 
     let scoreAddition = ((twoMinutes - (scoreTime - timeToSubtract)) / 1000) * player.lives * level;
     if (scoreAddition > 0) score += scoreAddition;
     updateScoreInfo(score);
+
+    if (level >= 5) {
+        toggleEndScreen();
+        //window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+        return;
+    }
+
+    document.getElementById("game-container").replaceChildren();
 
     level++;
     timeToSubtract = window.performance.now(); // resets level clock  
@@ -129,14 +138,14 @@ export function nextLevel() {
     startSequence();
     updateLevelInfo(level);
     updateLivesInfo(player.lives);
-    toggleFinished ();
+    toggleFinished();
 };
 
 function togglePause() {
-    if (gameRunning){
+    if (gameRunning) {
         paused = !paused;
         const pauseMenu = document.getElementById("pause-menu");
-    
+
         if (paused) {
             pauseMenu.style.display = "block";
             for (const timed of timedEvents.values()) {
@@ -229,7 +238,10 @@ function runGame() {
 document.addEventListener("DOMContentLoaded", () => {
     // Pause menu
     document.getElementById("continue-btn").addEventListener("click", togglePause);
-    document.getElementById("restart-btn").addEventListener("click", restartGame);
+    //document.getElementById("restart-btn").addEventListener("click", restartGame);
+
+    const restarts = document.querySelectorAll('.restart-btn');
+    restarts.forEach(rs => rs.addEventListener('click', restartGame));
 
     // Start menu
     const startMenu = document.getElementById("start-menu");
@@ -246,16 +258,5 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("restart-btn-game-over").addEventListener("click", () => {
         document.getElementById("game-over-menu").style.display = "none";
         restartGame();
-    });
-
-    // Test victory screen
-
-    const victoryScreen = document.getElementById("victory");
-    document.addEventListener("keydown", (event) => {
-        if (event.key === "v") {
-            startMenu.style.display == "block" ? startMenu.style.display = "none": startMenu.style.display = "block";
-            victoryScreen.style.display == "block" ? victoryScreen.style.display = "none": victoryScreen.style.display = "block";
-            console.log("v pressed");
-        }
     });
 });
