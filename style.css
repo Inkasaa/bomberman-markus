@@ -6,6 +6,12 @@ body {
     height: 100vh;
     background: #000 url("images/background02.jpg") no-repeat center center;
     background-size: cover;
+
+    font-family: Rockwell, 'Rockwell Nova', 'Roboto Slab', 'DejaVu Serif', 'Sitka Small', serif;
+}
+
+button {
+    font-family: Superclarendon, 'Bookman Old Style', 'URW Bookman', 'URW Bookman L', 'Georgia Pro', Georgia, serif;
 }
 
 #game-container {
