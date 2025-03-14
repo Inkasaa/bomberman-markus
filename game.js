@@ -8,14 +8,14 @@ export let halfStep = 0;
 export let levelMap;                    // for placing elements, wall collapses
 export let powerUpMap;                  // for placing elements, wall collapses
 
-export let solidWalls = [];           // for player collisions
+export let solidWalls = [];             // for player collisions
 export const weakWalls = new Map();     // for player collisions
 export const bombs = new Map();         // for player collisions
 export const bombTime = 2500;
 export const flames = new Map();        // for player collisions
 export const timedEvents = new Map();
-export const enemies = new Map();        // for player collisions
-export const powerups = new Map();        // for player collisions
+export const enemies = new Map();       // for player collisions
+export const powerups = new Map();      // for player collisions
 export let finish;
 
 let levelinfo;
@@ -213,12 +213,8 @@ function runGame() {
 
         if (!paused) {
             if (!finished) updateTimeInfo(timestamp - timeToSubtract);
-
             player.movePlayer(deltaTime);
-
-            for (const en of enemies.values()) {
-                en.moveEnemy(deltaTime);
-            }
+            enemies.forEach((en) => en.moveEnemy(deltaTime));
         }
 
         // requestAnimationFrame() always runs callback with 'timestamp' argument (milliseconds since the page loaded)
