@@ -29,12 +29,9 @@ let timeToSubtract = 0;
 // Sound effects
 export const menuMusic = new Audio("sfx/menuMusic.mp3");
 menuMusic.loop = true;
-export const walkingSound = new Audio ("sfx/walkingSound.mp3");
+export const walkingSound = new Audio ("sfx/walkingFaster.mp3");
 walkingSound.volume = 0.5;
 walkingSound.loop = true;
-export const enemyWalking = new Audio ("sfx/enemyWalking.mp3");
-enemyWalking.volume = 0.2;
-enemyWalking.loop = true;
 export const playerDeath = new Audio("sfx/playerDeath.mp3");
 playerDeath.volume = 0.3;
 export const playerDeath2 = new Audio("sfx/playerDeath2.mp3");
