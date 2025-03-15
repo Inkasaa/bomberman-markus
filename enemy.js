@@ -1,5 +1,5 @@
 import { tryToActivateFinish } from "./finish.js";
-import { enemies, flames, gridStep, halfStep, levelMap, timedEvents, enemyDeath } from "./game.js";
+import { enemies, flames, gridStep, halfStep, levelMap, timedEvents, enemyDeath, enemyWalking } from "./game.js";
 import { Timer } from "./timer.js";
 
 let timedCount = 0;
@@ -15,6 +15,7 @@ export class Enemy {
 
         this.alive = true;
         this.onBomb = false;
+        this.isMoving = false;
 
         this.element = document.createElement('div');
         this.element.id = `enemy${enemyCount}`;
@@ -25,6 +26,11 @@ export class Enemy {
         this.element.style.transform = `translate(${this.x}px, ${this.y}px)`;
         document.getElementById("game-container").appendChild(this.element);
 
+        // Instance-specific enemy walking sound
+        this.enemyWalking = new Audio("sfx/enemyWalking.mp3");
+        this.enemyWalking.volume = 0.4;
+        this.enemyWalking.loop = true;
+        
         let col = Math.round(x / gridStep);
         let row = Math.round(y / gridStep);
 
@@ -39,6 +45,8 @@ export class Enemy {
         this.element.style.backgroundImage = 'url("enemyDead.png")';
         enemyDeath.play();
         this.alive = false;
+        this.enemyWalking.pause();
+        this.enemyWalking.currentTime = 0;
 
         // Set a timer for removing the enemy from the game
         const countNow = timedCount;
@@ -101,6 +109,7 @@ export class Enemy {
     moveEnemy(deltaTime) {
         if (this.alive) {
             let moveDistance = this.speed * deltaTime;
+            const wasMoving = this.isMoving;
 
             // make enemy change direction if bomb is dropped in its way
             if (this.next && !isEmpty(this.next[0], this.next[1])) {
@@ -128,13 +137,31 @@ export class Enemy {
             if (this.direction == "up") this.y -= moveDistance;
             if (this.direction == "down") this.y += moveDistance;
 
-            // decide which way to go if at center of next square
-            if (!this.direction || this.direction == "spawn" || Math.abs(this.x - this.prevSpot[0]) >= gridStep || Math.abs(this.y - this.prevSpot[1]) >= gridStep) {
+            // Check if moving or stuck
+            this.isMoving = (this.direction && this.direction !== "spawn" && 
+                Math.abs(this.x - this.prevSpot[0]) < gridStep && 
+                Math.abs(this.y - this.prevSpot[1]) < gridStep);
+
+
+
+            // Decide which way to go if at center of next square or stuck
+            if (!this.direction || this.direction == "spawn" || 
+                Math.abs(this.x - this.prevSpot[0]) >= gridStep ||
+                Math.abs(this.y - this.prevSpot[1]) >= gridStep) {
                 this.chooseDirection();
+                this.isMoving = false;
             };
 
-            // apply movement
+            // Apply movement
             if (this.direction) this.element.style.transform = `translate(${this.x}px, ${this.y}px)`;
+
+            // Enemy walking sound logic
+            if (this.isMoving && !wasMoving) {
+                this.enemyWalking.play();
+            } else if (!this.isMoving && wasMoving) {
+                this.enemyWalking.pause();
+                this.enemyWalking.currentTime = 0;
+            }
 
             // flames hit
             let enemyBounds = this.element.getBoundingClientRect()

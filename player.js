@@ -1,5 +1,5 @@
 import { Bomb } from "./bomb.js";
-import { bombTime, bombs, bounds, enemies, finish, flames, nextLevel, powerups, solidWalls, timedEvents, weakWalls, walkingSound, playerDeath, playerDeath2, playerBombDeath, flameUp, bombUp, finishLevel, levelMap, updateLivesInfo, gridStep, toggleFinished } from "./game.js";
+import { bombTime, bombs, bounds, enemies, finish, flames, nextLevel, powerups, solidWalls, timedEvents, weakWalls, walkingSound, playerDeath, playerDeath2, playerBombDeath, flameUp, bombUp, finishLevel, levelMap, updateLivesInfo, gridStep, toggleFinished, gameLost1, gameLost2, levelMusic, setGameLost } from "./game.js";
 import { Timer } from "./timer.js";
 
 let timedCount = 0;
@@ -138,6 +138,22 @@ export class Player {
                 gameOverMenu.style.background = `rgba(0, 0, 0, 0.8) url("${randomGif}") no-repeat center center`;
                 gameOverMenu.style.backgroundSize = "cover";
                 gameOverMenu.style.display = "block";
+
+                levelMusic.forEach(track => {
+                    track.pause();
+                    track.currentTime = 0;
+                });
+                enemies.forEach(enemy => {
+                    enemy.enemyWalking.pause();
+                    enemy.enemyWalking.currentTime = 0;
+                });
+                setGameLost(); // Stop game loop updates
+
+                if (randomGif === "images/loser1.gif") {
+                    gameLost1.play(); // sad-trombone for loser1.gif
+                } else {
+                    gameLost2.play(); // sinister-laugh for loser2.gif
+                }
             };
             timedEvents.delete(`resurrection${countNow}`)
         }, 2000);
@@ -280,6 +296,8 @@ export class Player {
             // finish hit
             if (finish.active && finish.checkCollision(newX, newY, this.size)) {
                 this.alive = false;
+                walkingSound.pause();
+                walkingSound.currentTime = 0;
                 finishLevel.play();
                 toggleFinished();
                 const timedNextLevel = new Timer(() => {

@@ -27,12 +27,14 @@ let score = 0;
 let timeToSubtract = 0;
 
 // Sound effects
+export const menuMusic = new Audio("sfx/menuMusic.mp3");
+menuMusic.loop = true;
 export const walkingSound = new Audio ("sfx/walkingSound.mp3");
-walkingSound.volume = 0.8;
+walkingSound.volume = 0.5;
 walkingSound.loop = true;
-// export const enemyWalking = new Audio ("sfx/enemyWalking.mp3");
-// enemyWalking.volume = 0.5;
-// enemyWalking.loop = true;
+export const enemyWalking = new Audio ("sfx/enemyWalking.mp3");
+enemyWalking.volume = 0.2;
+enemyWalking.loop = true;
 export const playerDeath = new Audio("sfx/playerDeath.mp3");
 playerDeath.volume = 0.3;
 export const playerDeath2 = new Audio("sfx/playerDeath2.mp3");
@@ -47,13 +49,15 @@ explosion.volume = 0.6;
 export const placeBomb = new Audio("sfx/placeBomb.mp3");
 export const tickingBomb = new Audio("sfx/tickingBomb.mp3");
 tickingBomb.loop = true;
-export const wallBreak = new Audio("sfx/wallBreak.mp3");
-wallBreak.volume = 0.4;
+export const wallBreak = new Audio("sfx/wallBreak2.mp3");
+wallBreak.volume = 0.6;
 export const flameUp = new Audio("sfx/flameUp.mp3");
 export const bombUp = new Audio("sfx/bombUp.mp3");
 export const finishLevel = new Audio("sfx/finishLevel.mp3");
-export const menuMusic = new Audio("sfx/menuMusic.mp3");
-menuMusic.loop = true;
+export const gameLost1 = new Audio("sfx/sad-trombone.mp3");
+export const gameLost2 = new Audio("sfx/sinister-laugh.mp3");
+export const congrats = new Audio("sfx/congratulations.mp3");
+export const crowdClapCheer = new Audio("sfx/cheering-and-clapping-crowd.mp3");
 
 // Background music for each level
 export const levelMusic = [
@@ -75,6 +79,7 @@ let player;
 let paused = false;
 let finished = false;
 let gameRunning = false;
+let gameLost = false;
 let scoreTime = 0;
 let lastFrameTime = 0;
 export let level = 1;
@@ -111,6 +116,10 @@ export function nextLevel() {
 
     if (level >= 5) {
         toggleEndScreen();
+        congrats.play();
+        congrats.onended = () => {
+            crowdClapCheer.play();
+        };
         //window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
         return;
     }
@@ -144,7 +153,7 @@ export function nextLevel() {
 };
 
 function togglePause() {
-    if (gameRunning) {
+    if (gameRunning && !gameLost) {
         paused = !paused;
         const pauseMenu = document.getElementById("pause-menu");
 
@@ -156,6 +165,10 @@ function togglePause() {
             if (currentMusic) {
                 currentMusic.pause();
             }
+            walkingSound.pause();
+            enemies.forEach(enemy => {
+                enemy.enemyWalking.pause();
+            });
             timeToSubtract -= window.performance.now(); // stored for unpausing 
         } else {
             pauseMenu.style.display = "none";
@@ -165,6 +178,15 @@ function togglePause() {
             if (currentMusic) {
                 currentMusic.play();
             }
+            if (player.isMoving) {
+                walkingSound.play();
+            }
+
+            enemies.forEach(enemy => {
+                if (enemy.isMoving) {
+                    enemy.enemyWalking.play();
+                }
+            });
             timeToSubtract += window.performance.now(); // this is used to display time
         }
     }
@@ -214,6 +236,10 @@ function startSequence() {
     currentMusic.play();
 }
 
+export function setGameLost() {
+    gameLost = true;
+}
+
 function runGame() {
     const now = window.performance.now();
     timeToSubtract = now;
@@ -226,14 +252,16 @@ function runGame() {
         let deltaTime = (timestamp - lastFrameTime) / 16.7; // use deltaTime to normalize speed for different refresh rates
         lastFrameTime = timestamp;
 
-        if (!paused) {
+        if (!paused && !gameLost) {
             if (!finished) updateTimeInfo(timestamp - timeToSubtract);
             player.movePlayer(deltaTime);
             enemies.forEach((en) => en.moveEnemy(deltaTime));
         }
 
         // requestAnimationFrame() always runs callback with 'timestamp' argument (milliseconds since the page loaded)
-        requestAnimationFrame(gameLoop);
+        if (gameRunning) { // Keep looping unless explicitly stopped
+            requestAnimationFrame(gameLoop);
+        };
     };
 };
 
@@ -248,9 +276,12 @@ document.addEventListener("DOMContentLoaded", () => {
     // Start menu
     const startMenu = document.getElementById("start-menu");
     startMenu.style.display = "block";
+    menuMusic.play();
 
     document.getElementById("start-btn").addEventListener("click", () => {
         startMenu.style.display = "none";
+        menuMusic.pause();
+        menuMusic.currentTime = 0;
         startSequence();
         [levelinfo, livesinfo, scoreinfo, timeinfo] = makeTextBar();
         updateLivesInfo(player.lives);
