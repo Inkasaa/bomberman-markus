@@ -22,36 +22,32 @@ button {
 }
 
 #player {
-    will-change: transform;
-    /* to own layer => GPU acceleration */
-    background-image:
-        url("/images/nalleDead.png"),
-        /* preload into cache */
-        url("/images/nalleLeft3.png"),
-        url("/images/nalleRight3.png");
+    will-change: transform;            /* to own layer => GPU acceleration */
+    background-image: url("/images/nalleRight3.png");
     background-size: contain;
-    /* Ensure the image is fully visible */
-    background-position: center;
-    /* Center the image within the element */
-    background-repeat: no-repeat;
-    /* Prevent the image from repeating */
     z-index: 10;
+}
+
+#player.left {
+    background-image: url('/images/nalleLeft3.png');
+}
+
+#player.dead {
+    background-image: url("/images/nalleDead.png");
 }
 
 .enemy {
     position: absolute;
-    will-change: transform;
-    /* to own layer => GPU acceleration */
-    background-image:
-        url("images/enemyDead.png"),
-        url("images/enemy.png");
-    background-size: contain;
-    /* Ensure the image is fully visible */
-    background-position: center;
-    /* Center the image within the element */
-    background-repeat: no-repeat;
-    /* Prevent the image from repeating */
+    will-change: transform;                 /* to own layer => GPU acceleration */
+    background-image: url("images/enemy.png");
+    background-size: contain;               /* Ensure the image is fully visible */
+    background-position: center;            /* Center the image within the element */
+    background-repeat: no-repeat;           /* Prevent the image from repeating */
     z-index: 9;
+}
+
+.enemy.dead {
+    background-image: url("images/enemyDead.png");
 }
 
 .wall {
@@ -66,26 +62,27 @@ button {
 
 .wall.weak {
     background-color: rgb(199, 165, 130);
-    background-image:
-        url("/images/burningwall.svg"),
-        url("/images/weakwall02.svg");
+    background-image: url("/images/weakwall02.svg");
     background-size: cover;
+}
+
+.wall.burning {
+    background-image: url("/images/burningwall.svg");
 }
 
 .bomb {
     position: absolute;
-    /* background-color: rgb(0, 0, 0); */
-    /* border-radius: 50%; */
-    background-image:
-        url("/images/bomborange.svg"),
-        url("/images/bomb.svg");
+    background-image: url("/images/bomb.svg");
     background-size: cover;
     z-index: 4;
 }
 
+.bomb.glowing {
+    background-image: url("/images/bomborange.svg");
+}
+
 .flame {
     position: absolute;
-    /* background-color: rgb(255, 234, 0); */
     z-index: 1;
 }
 
@@ -275,16 +272,13 @@ button {
 .textbar {
     display: flex;
     flex-direction: row;
-    /* justify-content: space-around; */
     position: absolute;
-    /* background-color: #ddd; */
     font-family: monospace;
     justify-content: space-around;
 }
 
 .infobox {
-    flex: 1;
-    /* Equal width for all */
+    flex: 1;    /* Equal width for all */
     background-color: #474747;
     border-style: solid;
     border-color: #ececec;

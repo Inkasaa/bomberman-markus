@@ -123,7 +123,6 @@ export class Bomb {
         this.element.style.height = `${size}px`;
         this.element.style.left = `${this.x}px`;
         this.element.style.top = `${this.y}px`;
-        this.element.style.backgroundImage = 'url("/images/bomb.svg")';
         this.bounds = this.element.getBoundingClientRect();
         this.element.style.display = "none";
 
@@ -167,7 +166,8 @@ export class Bomb {
     }
 
     explode() {
-        this.element.style.backgroundImage = "url('images/bomborange.svg')";
+        this.element.classList.add('glowing');  // let css swap background
+
         explosion.play();
 
         // Stop ticking sound when bomb explodes
@@ -251,7 +251,7 @@ export class Bomb {
 
         // delay deleting bomb for a bit
         const timedExplotion = new Timer(() => {
-            this.element.style.backgroundImage = "url('images/bomb.svg')";
+            this.element.classList.remove('glowing');
             this.element.style.display = "none";
             this.active = false;
 

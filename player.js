@@ -25,7 +25,6 @@ export class Player {
         this.element.style.borderRadius = `${size / 5}px`;
         this.element.style.position = 'absolute';
         this.element.style.transform = `translate(${x}px, ${y}px)`;
-        this.element.style.backgroundImage = "url('/images/nalleRight3.png')";
         document.getElementById("game-container").appendChild(this.element);
 
         // listen for bomb drop button
@@ -73,10 +72,10 @@ export class Player {
     updateSpriteDirection(key) {
         if (this.alive) {
             if (key == 'ArrowLeft') {
-                this.element.style.backgroundImage = "url('/images/nalleLeft3.png')";
+                this.element.classList.add('left');
             }
             if (key == 'ArrowRight') {
-                this.element.style.backgroundImage = "url('/images/nalleRight3.png')";
+                this.element.classList.remove('left');
             }
         }
     }
@@ -117,10 +116,8 @@ export class Player {
     };
 
     die() {
-        //const oldBR = this.element.style.background;
-        //const oldBR = getComputedStyle(this.element).backgroundColor; // alternative
-        //this.element.style.background = 'red';
-        this.element.style.backgroundImage = "url('/images/nalleDead.png')";
+        this.element.classList.add('dead');
+
         this.alive = false;
         this.lives--;
         updateLivesInfo(this.lives);
@@ -136,12 +133,10 @@ export class Player {
                 this.x = this.startX;
                 this.y = this.startY;
                 this.element.style.transform = `translate(${this.x}px, ${this.y}px)`;
-                //this.element.style.background = oldBR;
-                this.element.style.backgroundImage = "url('/images/nalleRight3.png')";
+                this.element.classList.remove('dead');
                 this.alive = true;
                 // update counter too
             } else {
-                //document.getElementById("game-over-menu").style.display = "block";
                 const gameOverMenu = document.getElementById("game-over-menu");
                 const gifs = ["images/loser1.gif", "images/loser2.gif"];
                 const randomGif = gifs[Math.floor(Math.random() * gifs.length)];
