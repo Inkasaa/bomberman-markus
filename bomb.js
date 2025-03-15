@@ -102,7 +102,7 @@ function verticalFlame(bombsize, x, y) {
 
 
 export class Bomb {
-    setValues(size, row, col, power, name){
+    setValues(size, row, col, power, name) {
         // Align dropped bomb to grid
         this.mapCol = col;
         this.mapRow = row;
@@ -131,7 +131,7 @@ export class Bomb {
     };
 
     drop(row, col, power, name) {
-        this.setValues(this.size, row, col, power, name)        
+        this.setValues(this.size, row, col, power, name)
         this.active = true;
 
         this.element.style.left = `${this.x}px`;
@@ -168,27 +168,11 @@ export class Bomb {
 
     explode() {
         this.element.style.backgroundImage = "url('images/bomborange.svg')";
-
         explosion.play();
 
         // Stop ticking sound when bomb explodes
         tickingBomb.pause();
         tickingBomb.currentTime = 0; // Reset for next use
-
-        // Check if any weak walls will be destroyed
-        let willBreakWall = false;
-        for (let i = 1; i <= this.power; i++) {
-            if (isWeakWall(this.mapRow, this.mapCol + i) ||
-                isWeakWall(this.mapRow, this.mapCol - i) ||
-                isWeakWall(this.mapRow + i, this.mapCol) ||
-                isWeakWall(this.mapRow - i, this.mapCol)) {
-                willBreakWall = true;
-                break; // No need to check further once we know a wall will break
-            }
-        }
-        if (willBreakWall) {
-            setTimeout(() => wallBreak.play(), 50); // Play wall break sound once if any weak wall is hit
-        }
 
         // Draw flames of explosion in the middle
         horizontalFlame(this.size, this.x, this.y);
@@ -202,6 +186,7 @@ export class Bomb {
             { name: 'up', going: true, coords: undefined },
         ];
         let [lastLeft, lastRight, lastUp, lastDown] = [undefined, undefined, undefined, undefined];
+        let firstWeakWall = true;
 
         for (let i = 1; i <= this.power; i++) {
             // In four directions: Stop flames at walls and edges, destroy weak walls, explode other bombs
@@ -217,7 +202,13 @@ export class Bomb {
                     const dirCol = fourDirs[j].coords[1];
 
                     if (isWall(dirRow, dirCol)) {
-                        this.tryToDestroy(dirRow, dirCol);
+                        if (levelMap[dirRow][dirCol].startsWith('weakWall')) {
+                            this.destroyWall(dirRow, dirCol);
+                            if (firstWeakWall) {
+                                setTimeout(() => wallBreak.play(), 100);
+                                firstWeakWall = false;
+                            }
+                        }
                         fourDirs[j].going = false;
                         foundWall = true;
                     };
@@ -260,8 +251,6 @@ export class Bomb {
 
         // delay deleting bomb for a bit
         const timedExplotion = new Timer(() => {
-            //this.element.remove();
-
             this.element.style.backgroundImage = "url('images/bomb.svg')";
             this.element.style.display = "none";
             this.active = false;
@@ -274,21 +263,18 @@ export class Bomb {
         timedCount++;
     };
 
-    tryToDestroy(row, col) {
-        if (levelMap[row][col] && typeof levelMap[row][col] == 'string') {
-            let name = levelMap[row][col];
-            if (name.startsWith('weakWall')) {
-                weakWalls.get(name).collapse();
-                const timedDeleteWall = new Timer(() => {
-                    weakWalls.delete(name);
-                    levelMap[row][col] = "";
-                    timedEvents.delete(`deleteWall${this.countNow}`)
-                }, 500);
+    destroyWall(row, col) {
+        let name = levelMap[row][col];
+        weakWalls.get(name).collapse();
 
-                timedEvents.set(`deleteWall${this.countNow}`, timedDeleteWall);
-                timedCount++;
-            };
-        };
+        const timedDeleteWall = new Timer(() => {
+            weakWalls.delete(name);
+            levelMap[row][col] = "";
+            timedEvents.delete(`deleteWall${this.countNow}`)
+        }, 500);
+
+        timedEvents.set(`deleteWall${this.countNow}`, timedDeleteWall);
+        timedCount++;
     };
 
     checkCollision(playerX, playerY, playerSize) {
@@ -315,15 +301,4 @@ export class Bomb {
             };
         };
     };
-}
-
-// Helper function to check for weak walls
-function isWeakWall(row, col) {
-    return (
-        row >= 0 && row <= 10 &&
-        col >= 0 && col <= 12 &&
-        levelMap[row][col] &&
-        typeof levelMap[row][col] === 'string' &&
-        levelMap[row][col].startsWith('weakWall')
-    );
 }
