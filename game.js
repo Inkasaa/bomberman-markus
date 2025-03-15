@@ -1,5 +1,5 @@
 import { Finish } from "./finish.js";
-import { resizeGameContainer, getGridSize, setUpGame, makeWalls, makeLevelMap, makeTextBar } from "./initialize.js";
+import { resizeGameContainer, getGridSize, setUpGame, makeWalls, makeLevelMap, makeTextBar, fillFlamePools } from "./initialize.js";
 
 export let bounds;
 export let mult = 1.0;
@@ -16,6 +16,8 @@ export const flames = new Map();        // for player collisions
 export const timedEvents = new Map();
 export const enemies = new Map();       // for player collisions
 export const powerups = new Map();      // for player collisions
+export let flamesH = [];              // pools of objects to avoid run time memory allocations
+export let flamesV = [];
 export let finish;
 
 let levelinfo;
@@ -132,6 +134,8 @@ export function nextLevel() {
     timedEvents.clear();
     enemies.clear();
     powerups.clear();
+    flamesH = [];
+    flamesV = [];
 
     // Stop current music and start new level’s music
     if (currentMusic) {
@@ -222,6 +226,7 @@ function startSequence() {
     levelMap = makeLevelMap();
     powerUpMap = makeLevelMap();
     makeWalls();
+    fillFlamePools();
     finish = new Finish(gridStep * 12, gridStep * 10, gridStep);
 
     // Start music for the current level
@@ -265,8 +270,6 @@ function runGame() {
 document.addEventListener("DOMContentLoaded", () => {
     // Pause menu
     document.getElementById("continue-btn").addEventListener("click", togglePause);
-    //document.getElementById("restart-btn").addEventListener("click", restartGame);
-
     const restarts = document.querySelectorAll('.restart-btn');
     restarts.forEach(rs => rs.addEventListener('click', restartGame));
 

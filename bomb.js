@@ -1,6 +1,7 @@
-import { bombs, bombTime, mult, gridStep, halfStep, levelMap, weakWalls, flames, timedEvents, powerUpMap, explosion, wallBreak, placeBomb, tickingBomb } from "./game.js";
+import { bombs, bombTime, mult, gridStep, halfStep, levelMap, weakWalls, flames, timedEvents, powerUpMap, explosion, wallBreak, placeBomb, tickingBomb, flamesH, flamesV } from "./game.js";
 import { Timer } from "./timer.js";
 
+const gameContainer = document.getElementById("game-container");
 let flameCounter = 0;
 let timedCount = 0;
 
@@ -41,28 +42,25 @@ function isPowerUp(row, col) {
     );
 }
 
-function horizontalFlame(size, x, y) {
-    const twoflames = [];
-    for (let i = 0; i < 2; i++) {
-        let flame = document.createElement('div');
-        flame.classList.add("flame");
-        flame.classList.add("horizontal");
-        if (i == 0) flame.classList.add("ends");
-        flame.style.width = `${gridStep}px`;
-        flame.style.height = `${halfStep}px`;
-        flame.style.left = `${x + (size / 2) - halfStep}px`;
-        flame.style.top = `${y + (size / 2) - (halfStep / 2)}px`;
-        document.getElementById("game-container").appendChild(flame);
+function horizontalFlame(bombsize, x, y) {
+    const flame = flamesH.find((f) => !f.active);
 
-        flameCounter++
-        flames.set(`flameH${flameCounter}${i}`, flame)   // to map of flames
-        twoflames.push(flame);
+    flame.active = true;
+    for (const ele of flame.elements) {
+        ele.style.left = `${x + (bombsize / 2) - halfStep}px`;
+        ele.style.top = `${y + (bombsize / 2) - (halfStep / 2)}px`;
+        ele.style.display = "block";
     }
+    flame.elements[1].style.clipPath = `inset(0)`;
+
+    flameCounter++
+    flames.set(`flameH${flameCounter}0`, flame.elements[0])   // to map of flames for collisions
+    flames.set(`flameH${flameCounter}1`, flame.elements[1])
 
     const countNow = timedCount;
     const timedFlame = new Timer(() => {
-        twoflames[0].remove();
-        twoflames[1].remove();
+        flame.active = false;
+        flame.elements.forEach(e => e.style.display = "none");
         flames.delete(`flameH${flameCounter}0`);
         flames.delete(`flameH${flameCounter}1`);
         timedEvents.delete(`flameH${countNow}`)
@@ -70,39 +68,36 @@ function horizontalFlame(size, x, y) {
     timedEvents.set(`flameH${countNow}`, timedFlame)
     timedCount++;
 
-    return twoflames[1];
+    return flame.elements[1];
 }
 
-function verticalFlame(size, x, y) {
-    const twoflames = [];
-    for (let i = 0; i < 2; i++) {
-        let flame = document.createElement('div');
-        flame.classList.add("flame");
-        flame.classList.add("vertical");
-        if (i == 0) flame.classList.add("ends");
-        flame.style.width = `${halfStep}px`;
-        flame.style.height = `${gridStep}px`;
-        flame.style.left = `${x + (size / 2) - (halfStep / 2)}px`;
-        flame.style.top = `${y + (size / 2) - halfStep}px`;
-        document.getElementById("game-container").appendChild(flame);
+function verticalFlame(bombsize, x, y) {
+    const flame = flamesV.find((f) => !f.active);
 
-        flameCounter++
-        flames.set(`flameV${flameCounter}${i}`, flame)   // to map of flames
-        twoflames.push(flame);
+    flame.active = true;
+    for (const ele of flame.elements) {
+        ele.style.left = `${x + (bombsize / 2) - (halfStep / 2)}px`;
+        ele.style.top = `${y + (bombsize / 2) - halfStep}px`;
+        ele.style.display = "block";
     }
+    flame.elements[1].style.clipPath = `inset(0)`;
+
+    flameCounter++
+    flames.set(`flameV${flameCounter}0`, flame.elements[0])   // to map of flames for collisions
+    flames.set(`flameV${flameCounter}1`, flame.elements[1])
 
     const countNow = timedCount;
     const timedFlame = new Timer(() => {
-        twoflames[0].remove();
-        twoflames[1].remove();
+        flame.active = false;
+        flame.elements.forEach(e => e.style.display = "none");
         flames.delete(`flameV${flameCounter}0`);
         flames.delete(`flameV${flameCounter}1`);
-        timedEvents.delete(`flameV${countNow}`);
+        timedEvents.delete(`flameV${countNow}`)
     }, 500);
-    timedEvents.set(`flameV${countNow}`, timedFlame);
+    timedEvents.set(`flameV${countNow}`, timedFlame)
     timedCount++;
 
-    return twoflames[1];
+    return flame.elements[1];
 }
 
 export class Bomb {
@@ -125,9 +120,10 @@ export class Bomb {
         this.element.style.height = `${size}px`;
         this.element.style.left = `${this.x}px`;
         this.element.style.top = `${this.y}px`;
+        this.element.style.backgroundImage = 'url("/images/bomb.svg")';
         this.bounds = this.element.getBoundingClientRect();
 
-        document.getElementById("game-container").appendChild(this.element);
+        gameContainer.appendChild(this.element);
         bombs.set(`bomb${this.mapCol}${this.mapRow}`, this);  // add bomb to map for collision checks
         levelMap[this.mapRow][this.mapCol] = ['bomb', this];  // store reference to level map
 

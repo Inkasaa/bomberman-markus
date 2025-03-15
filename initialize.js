@@ -1,5 +1,6 @@
 import { Enemy } from "./enemy.js";
-import { bounds, enemies, gridStep, halfStep, level, levelMap, mult, powerUpMap, powerups, solidWalls, weakWalls } from "./game.js";
+import { FlameH, FlameV} from "./flames.js";
+import { enemies, gridStep, halfStep, level, levelMap, mult, powerUpMap, powerups, solidWalls, weakWalls, flamesV, flamesH  } from "./game.js";
 import { Player } from "./player.js";
 import { BombUp, FlameUp } from "./powerup.js";
 import { SolidWall, WeakWall } from "./walls.js";
@@ -204,7 +205,7 @@ export function makeTextBar() {
         info.style.borderRadius = `${pad * mult}px`;
         info.id = ids[i];
         info.textContent = placeholders[i];
-        info.style.fontSize = `${20*mult}px`;
+        info.style.fontSize = `${20 * mult}px`;
         textbar.appendChild(info);
         infos.push(info);
     }
@@ -213,4 +214,11 @@ export function makeTextBar() {
     document.body.appendChild(textbar);
 
     return infos;
+}
+
+export function fillFlamePools() {
+    for (let i = 0; i < 200; i++) {
+        flamesH.push(new FlameH(mult * 60, 0, 0));
+        flamesV.push(new FlameV(mult * 60, 0, 0));
+    }
 }

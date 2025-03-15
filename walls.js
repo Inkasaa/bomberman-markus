@@ -6,9 +6,9 @@ class Wall {
         this.x = x;
         this.y = y;
         this.size = size;
+
         this.element = document.createElement("div");
         this.element.classList.add("wall")
-
         this.element.style.position = "absolute";
         this.element.style.width = `${size}px`;
         this.element.style.height = `${size}px`;
@@ -77,6 +77,7 @@ export class WeakWall extends Wall {
     constructor(x, y, size) {
         super(x, y, size);
         this.wallType = "weak";
+        this.element.style.backgroundImage = 'url("/images/weakwall02.svg")';
         this.element.classList.add("weak");
     };
 

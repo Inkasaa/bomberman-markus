@@ -24,6 +24,7 @@ export class Enemy {
         this.element.style.height = `${size}px`;
         this.element.style.borderRadius = `${size / 5}px`;
         this.element.style.transform = `translate(${this.x}px, ${this.y}px)`;
+        this.element.style.backgroundImage = "url('/images/enemy.png')";
         document.getElementById("game-container").appendChild(this.element);
 
         // Instance-specific enemy walking sound
@@ -42,7 +43,7 @@ export class Enemy {
     } skull
 
     die() {
-        this.element.style.backgroundImage = 'url("enemyDead.png")';
+        this.element.style.backgroundImage = 'url("/images/enemyDead.png")';
         enemyDeath.play();
         this.alive = false;
         this.enemyWalking.pause();
