@@ -1,5 +1,5 @@
 import { Finish } from "./finish.js";
-import { resizeGameContainer, getGridSize, setUpGame, makeWalls, makeLevelMap, makeTextBar, fillFlamePools } from "./initialize.js";
+import { resizeGameContainer, getGridSize, setUpGame, makeWalls, makeLevelMap, makeTextBar, fillFlameAndBombPools } from "./initialize.js";
 
 export let bounds;
 export let mult = 1.0;
@@ -16,8 +16,9 @@ export const flames = new Map();        // for player collisions
 export const timedEvents = new Map();
 export const enemies = new Map();       // for player collisions
 export const powerups = new Map();      // for player collisions
-export let flamesH = [];              // pools of objects to avoid run time memory allocations
-export let flamesV = [];
+export let flamesPoolH = [];              // pools of objects to avoid run time memory allocations
+export let flamesPoolV = [];
+export let bombsPool = [];
 export let finish;
 
 let levelinfo;
@@ -134,8 +135,9 @@ export function nextLevel() {
     timedEvents.clear();
     enemies.clear();
     powerups.clear();
-    flamesH = [];
-    flamesV = [];
+    flamesPoolH = [];
+    flamesPoolV = [];
+    bombsPool = [];
 
     // Stop current music and start new level’s music
     if (currentMusic) {
@@ -226,7 +228,7 @@ function startSequence() {
     levelMap = makeLevelMap();
     powerUpMap = makeLevelMap();
     makeWalls();
-    fillFlamePools();
+    fillFlameAndBombPools();
     finish = new Finish(gridStep * 12, gridStep * 10, gridStep);
 
     // Start music for the current level

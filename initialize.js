@@ -1,6 +1,7 @@
+import { Bomb } from "./bomb.js";
 import { Enemy } from "./enemy.js";
 import { FlameH, FlameV} from "./flames.js";
-import { enemies, gridStep, halfStep, level, levelMap, mult, powerUpMap, powerups, solidWalls, weakWalls, flamesV, flamesH  } from "./game.js";
+import { enemies, gridStep, halfStep, level, levelMap, mult, powerUpMap, powerups, solidWalls, weakWalls, flamesPoolV, flamesPoolH, bombsPool  } from "./game.js";
 import { Player } from "./player.js";
 import { BombUp, FlameUp } from "./powerup.js";
 import { SolidWall, WeakWall } from "./walls.js";
@@ -216,9 +217,15 @@ export function makeTextBar() {
     return infos;
 }
 
-export function fillFlamePools() {
+export function fillFlameAndBombPools() {
+    const bombSize = mult * 60;
+
     for (let i = 0; i < 200; i++) {
-        flamesH.push(new FlameH(mult * 60, 0, 0));
-        flamesV.push(new FlameV(mult * 60, 0, 0));
+        flamesPoolH.push(new FlameH(bombSize, 0, 0));
+        flamesPoolV.push(new FlameV(bombSize, 0, 0));
+    }
+
+    for (let i = 0; i < 50; i++) {
+        bombsPool.push(new Bomb(bombSize));
     }
 }

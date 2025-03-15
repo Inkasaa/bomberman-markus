@@ -1,4 +1,4 @@
-import { bombs, bombTime, mult, gridStep, halfStep, levelMap, weakWalls, flames, timedEvents, powerUpMap, explosion, wallBreak, placeBomb, tickingBomb, flamesH, flamesV } from "./game.js";
+import { bombs, bombTime, mult, gridStep, halfStep, levelMap, weakWalls, flames, timedEvents, powerUpMap, explosion, wallBreak, placeBomb, tickingBomb, flamesPoolH, flamesPoolV } from "./game.js";
 import { Timer } from "./timer.js";
 
 const gameContainer = document.getElementById("game-container");
@@ -43,7 +43,7 @@ function isPowerUp(row, col) {
 }
 
 function horizontalFlame(bombsize, x, y) {
-    const flame = flamesH.find((f) => !f.active);
+    const flame = flamesPoolH.find((f) => !f.active);
 
     flame.active = true;
     for (const ele of flame.elements) {
@@ -72,7 +72,7 @@ function horizontalFlame(bombsize, x, y) {
 }
 
 function verticalFlame(bombsize, x, y) {
-    const flame = flamesV.find((f) => !f.active);
+    const flame = flamesPoolV.find((f) => !f.active);
 
     flame.active = true;
     for (const ele of flame.elements) {
@@ -100,19 +100,22 @@ function verticalFlame(bombsize, x, y) {
     return flame.elements[1];
 }
 
-export class Bomb {
-    constructor(row, col, power, name) {
-        const size = mult * 60;
 
+export class Bomb {
+    setValues(size, row, col, power, name){
         // Align dropped bomb to grid
         this.mapCol = col;
         this.mapRow = row;
         this.x = this.mapCol * gridStep + halfStep - size / 2;
         this.y = this.mapRow * gridStep + halfStep - size / 2;
         this.size = size;
-
         this.owner = name;
         this.power = power;
+    }
+
+    constructor(size = mult * 60, row = 0, col = 0, power = 1, name = '') {
+        this.setValues(size, row, col, power, name)
+        this.active = false;
 
         this.element = document.createElement("div");
         this.element.classList.add("bomb");
@@ -122,8 +125,20 @@ export class Bomb {
         this.element.style.top = `${this.y}px`;
         this.element.style.backgroundImage = 'url("/images/bomb.svg")';
         this.bounds = this.element.getBoundingClientRect();
+        this.element.style.display = "none";
 
         gameContainer.appendChild(this.element);
+    };
+
+    drop(row, col, power, name) {
+        this.setValues(this.size, row, col, power, name)        
+        this.active = true;
+
+        this.element.style.left = `${this.x}px`;
+        this.element.style.top = `${this.y}px`;
+        this.bounds = this.element.getBoundingClientRect();
+        this.element.style.display = "block";
+
         bombs.set(`bomb${this.mapCol}${this.mapRow}`, this);  // add bomb to map for collision checks
         levelMap[this.mapRow][this.mapCol] = ['bomb', this];  // store reference to level map
 
@@ -140,7 +155,7 @@ export class Bomb {
         }, bombTime);
         timedEvents.set(`bomb${this.countNow}`, timedBomb);
         timedCount++;
-    };
+    }
 
     // explodeEarly removes the original timer and triggers the explosion
     explodeEarly() {
@@ -152,7 +167,6 @@ export class Bomb {
     }
 
     explode() {
-        //this.element.style.backgroundColor = "orange";
         this.element.style.backgroundImage = "url('images/bomborange.svg')";
 
         explosion.play();
@@ -173,7 +187,7 @@ export class Bomb {
             }
         }
         if (willBreakWall) {
-            setTimeout(() => wallBreak.play(), 100); // Play wall break sound once if any weak wall is hit
+            setTimeout(() => wallBreak.play(), 50); // Play wall break sound once if any weak wall is hit
         }
 
         // Draw flames of explosion in the middle
@@ -246,7 +260,12 @@ export class Bomb {
 
         // delay deleting bomb for a bit
         const timedExplotion = new Timer(() => {
-            this.element.remove();
+            //this.element.remove();
+
+            this.element.style.backgroundImage = "url('images/bomb.svg')";
+            this.element.style.display = "none";
+            this.active = false;
+
             bombs.delete(`bomb${this.mapCol}${this.mapRow}`);
             timedEvents.delete(`explosion${this.countNow}`);
             levelMap[this.mapRow][this.mapCol] = '';
