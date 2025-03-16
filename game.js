@@ -94,9 +94,6 @@ export function nextLevel() {
     flamesPoolV = [];
     bombsPool = [];
 
-    // levelmap?
-    // powerupmap?
-
     startSequence();
     updateLevelInfo(level);
     updateLivesInfo(player.lives);
@@ -120,6 +117,7 @@ function togglePause() {
             enemies.forEach(enemy => {
                 enemy.enemyWalking.pause();
             });
+            tickingBomb.pause();
             timeToSubtract -= window.performance.now(); // stored for unpausing 
         } else {
             pauseMenu.style.display = "none";
@@ -132,15 +130,17 @@ function togglePause() {
             if (player.isMoving) {
                 walkingSound.play();
             }
-
             enemies.forEach(enemy => {
                 if (enemy.isMoving) {
                     enemy.enemyWalking.play();
                 }
             });
+            if (bombs.size > 0) {
+                tickingBomb.play();
+            }
             timeToSubtract += window.performance.now(); // this is used to display time
-        }
-    }
+        };
+    };
 };
 
 document.addEventListener("keydown", (event) => {
