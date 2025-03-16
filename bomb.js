@@ -1,4 +1,5 @@
-import { bombs, bombTime, mult, gridStep, halfStep, levelMap, weakWalls, flames, timedEvents, powerUpMap, explosion, wallBreak, placeBomb, tickingBomb, flamesPoolH, flamesPoolV } from "./game.js";
+import { bombs, bombTime, mult, gridStep, halfStep, levelMap, weakWalls, flames, timedEvents, powerUpMap, flamesPoolH, flamesPoolV } from "./game.js";
+import { explosion, placeBomb, tickingBomb, wallBreak } from "./sounds.js";
 import { Timer } from "./timer.js";
 
 const gameContainer = document.getElementById("game-container");
@@ -167,7 +168,6 @@ export class Bomb {
 
     explode() {
         this.element.classList.add('glowing');  // let css swap background
-
         explosion.play();
 
         // Stop ticking sound when bomb explodes

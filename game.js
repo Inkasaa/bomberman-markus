@@ -1,5 +1,6 @@
 import { Finish } from "./finish.js";
 import { resizeGameContainer, getGridSize, setUpGame, makeWalls, makeLevelMap, makeTextBar, fillFlameAndBombPools } from "./initialize.js";
+import { congrats, crowdClapCheer, levelMusic, menuMusic, walkingSound } from "./sounds.js";
 
 export let bounds;
 export let mult = 1.0;
@@ -29,51 +30,6 @@ const twoMinutes = 120000;
 let score = 0;
 let timeToSubtract = 0;
 
-// Sound effects
-export const menuMusic = new Audio("sfx/menuMusic.mp3");
-menuMusic.loop = true;
-export const walkingSound = new Audio ("sfx/walkingFaster.mp3");
-walkingSound.volume = 0.5;
-walkingSound.loop = true;
-export const playerDeath = new Audio("sfx/playerDeath.mp3");
-playerDeath.volume = 0.3;
-export const playerDeath2 = new Audio("sfx/playerDeath2.mp3");
-playerDeath2.volume = 0.3;
-window.deathSound = 0;
-export const playerBombDeath = new Audio("sfx/playerBombDeath.mp3");
-playerBombDeath.volume = 0.5;
-export const enemyDeath = new Audio("sfx/enemyDeath.mp3");
-enemyDeath.volume = 0.3;
-export const explosion = new Audio("sfx/explosion.mp3");
-explosion.volume = 0.6;
-export const placeBomb = new Audio("sfx/placeBomb.mp3");
-export const tickingBomb = new Audio("sfx/tickingBomb.mp3");
-tickingBomb.loop = true;
-export const wallBreak = new Audio("sfx/wallBreak2.mp3");
-wallBreak.volume = 0.6;
-export const flameUp = new Audio("sfx/flameUp.mp3");
-export const bombUp = new Audio("sfx/bombUp.mp3");
-export const finishLevel = new Audio("sfx/finishLevel.mp3");
-export const gameLost1 = new Audio("sfx/sad-trombone.mp3");
-export const gameLost2 = new Audio("sfx/sinister-laugh.mp3");
-export const congrats = new Audio("sfx/congratulations.mp3");
-export const crowdClapCheer = new Audio("sfx/cheering-and-clapping-crowd.mp3");
-
-// Background music for each level
-export const levelMusic = [
-    new Audio('sfx/level1music.mp3'),
-    new Audio('sfx/level2music.mp3'),
-    new Audio('sfx/level3music.mp3'),
-    new Audio('sfx/level4music.mp3'),
-    new Audio('sfx/level5music.mp3')
-];
-
-// Set all music to loop
-levelMusic.forEach(track => {
-    track.loop = true; // Loops infinitely
-    track.volume = 0.5;
-});
-
 
 let player;
 let paused = false;
@@ -83,7 +39,7 @@ let gameLost = false;
 let scoreTime = 0;
 let lastFrameTime = 0;
 export let level = 1;
-let currentMusic = null;
+let currentMusic;
 
 // Prevent default behavior for arrow keys to avoid page scrolling. Notice 'window'
 window.addEventListener("keydown", function (e) {
@@ -280,6 +236,11 @@ document.addEventListener("DOMContentLoaded", () => {
     startMenu.style.display = "block";
     menuMusic.play();
 
+    document.getElementById("restart-btn-game-over").addEventListener("click", () => {
+        document.getElementById("game-over-menu").style.display = "none";
+        restartGame();
+    });
+
     document.getElementById("start-btn").addEventListener("click", () => {
         startMenu.style.display = "none";
         menuMusic.pause();
@@ -288,10 +249,5 @@ document.addEventListener("DOMContentLoaded", () => {
         [levelinfo, livesinfo, scoreinfo, timeinfo] = makeTextBar();
         updateLivesInfo(player.lives);
         runGame();
-    });
-
-    document.getElementById("restart-btn-game-over").addEventListener("click", () => {
-        document.getElementById("game-over-menu").style.display = "none";
-        restartGame();
     });
 });

@@ -1,5 +1,6 @@
 import { tryToActivateFinish } from "./finish.js";
-import { enemies, flames, gridStep, halfStep, levelMap, timedEvents, enemyDeath } from "./game.js";
+import { enemies, flames, gridStep, halfStep, levelMap, timedEvents } from "./game.js";
+import { enemyDeath } from "./sounds.js";
 import { Timer } from "./timer.js";
 
 let timedCount = 0;
@@ -30,7 +31,7 @@ export class Enemy {
         this.enemyWalking = new Audio("sfx/enemyWalking.mp3");
         this.enemyWalking.volume = 0.15;
         this.enemyWalking.loop = true;
-        
+
         let col = Math.round(x / gridStep);
         let row = Math.round(y / gridStep);
 
@@ -124,7 +125,7 @@ export class Enemy {
                     else if (this.direction == "right") this.direction = 'left';
                     else if (this.direction == "up") this.direction = 'down';
                     else if (this.direction == "down") this.direction = 'up';
-                    
+
                     this.onBomb = true;
                 }
             } else {
@@ -138,22 +139,28 @@ export class Enemy {
             if (this.direction == "down") this.y += moveDistance;
 
             // Check if moving or stuck
-            this.isMoving = (this.direction && this.direction !== "spawn" && 
-                Math.abs(this.x - this.prevSpot[0]) < gridStep && 
-                Math.abs(this.y - this.prevSpot[1]) < gridStep);
-
-
+            this.isMoving = (
+                this.direction &&
+                this.direction !== "spawn" &&
+                Math.abs(this.x - this.prevSpot[0]) < gridStep &&
+                Math.abs(this.y - this.prevSpot[1]) < gridStep
+            );
 
             // Decide which way to go if at center of next square or stuck
-            if (!this.direction || this.direction == "spawn" || 
+            if (
+                !this.direction ||
+                this.direction == "spawn" ||
                 Math.abs(this.x - this.prevSpot[0]) >= gridStep ||
-                Math.abs(this.y - this.prevSpot[1]) >= gridStep) {
+                Math.abs(this.y - this.prevSpot[1]) >= gridStep
+            ) {
                 this.chooseDirection();
                 this.isMoving = false;
             };
 
             // Apply movement
-            if (this.direction) this.element.style.transform = `translate(${this.x}px, ${this.y}px)`;
+            if (this.direction) {
+                this.element.style.transform = `translate(${this.x}px, ${this.y}px)`;
+            };
 
             // Enemy walking sound logic
             if (this.isMoving && !wasMoving) {
