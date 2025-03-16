@@ -59,7 +59,7 @@ export function makeLevelMap() {
 
 export function makeWalls() {
 
-    // place solid walls in 6 * 5 grid
+    // place 6 * 5 solid walls inside play area
     for (let i = 0; i < 6; i++) {
         for (let j = 0; j < 5; j++) {
             const mapX = (1 + i * 2);
@@ -106,7 +106,6 @@ export function makeWalls() {
 
         const x = gridStep * mapX;
         const y = gridStep * mapY;
-        //const name = `weakWall${mapX}${mapY}`;
         const name = `weakWall${String(mapX).padStart(2, '0')}${String(mapY).padStart(2, '0')}`;
         const newWeak = new WeakWall(x, y, gridStep);
         weakWalls.set(name, newWeak);

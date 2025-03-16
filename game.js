@@ -1,6 +1,5 @@
 import { Finish } from "./finish.js";
 import { resizeGameContainer, getGridSize, setUpGame, makeWalls, makeLevelMap, makeTextBar, fillFlameAndBombPools } from "./initialize.js";
-import { preloadImages, preloadSounds } from "./preload.js";
 import { congrats, crowdClapCheer, levelMusic, menuMusic, walkingSound } from "./sounds.js";
 
 export let bounds;
@@ -77,7 +76,6 @@ export function nextLevel() {
         congrats.onended = () => {
             crowdClapCheer.play();
         };
-        //window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
         return;
     }
 
@@ -96,15 +94,8 @@ export function nextLevel() {
     flamesPoolV = [];
     bombsPool = [];
 
-    // Stop current music and start new level’s music
-/*     if (currentMusic) {
-        currentMusic.pause();
-        currentMusic.currentTime = 0; // Reset to start
-    }
-    currentMusic = levelMusic[level - 1];
-    if (!paused) {
-        currentMusic.play();
-    } */
+    // levelmap?
+    // powerupmap?
 
     startSequence();
     updateLevelInfo(level);

@@ -36,6 +36,14 @@ button {
     background-image: url("/images/nalleDead.png");
 }
 
+#player.invulnerable {
+    background-image: url('/images/nalleRight3white.png');
+}
+
+#player.left.invulnerable {
+    background-image: url('/images/nalleLeft3white.png');
+}
+
 .enemy {
     position: absolute;
     will-change: transform;                 /* to own layer => GPU acceleration */

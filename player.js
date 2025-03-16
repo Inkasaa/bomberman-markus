@@ -43,7 +43,24 @@ export class Player {
         document.addEventListener('keydown', (event) => this.move(event));
         document.addEventListener('keyup', (event) => this.stop(event));
         this.isMoving = false;
+
+        this.invulnerability();
     };
+
+    invulnerability() {
+        let countNow = timedCount;
+        this.vulnerable = false;
+        this.element.classList.add("invulnerable");
+
+        const timedInvulnerability = new Timer(() => {
+            this.vulnerable = true;
+            this.element.classList.remove("invulnerable");
+            timedEvents.delete(`invulnerability${countNow}`)
+        }, 2000);
+
+        timedEvents.set(`invulnerability${countNow}`, timedInvulnerability)
+        timedCount++;
+    }
 
     dropBomb() {
         const row = Math.floor((this.y + this.size / 2) / gridStep);
@@ -135,11 +152,8 @@ export class Player {
                 this.element.style.transform = `translate(${this.x}px, ${this.y}px)`;
                 this.element.classList.remove('dead');
                 this.alive = true;
-
-                console.log("not pausing music");
+                this.invulnerability();
             } else {
-                console.log("this will pause it");
-
                 const gameOverMenu = document.getElementById("game-over-menu");
                 const gifs = ["/images/loser1.gif", "/images/loser2.gif"];
                 const randomGif = gifs[Math.floor(Math.random() * gifs.length)];
@@ -166,13 +180,13 @@ export class Player {
             timedEvents.delete(`resurrection${countNow}`)
         }, 2000);
 
-        // Block enemies for 1 second after resurrection
+        // Block enemies for 2 seconds after resurrection
         const timedEnemyBlock = new Timer(() => {
             if (this.lives > 0) {
                 levelMap[0][0] = '';
             }
             timedEvents.delete(`enemyBlock${countNow}`)
-        }, 3000);
+        }, 4000);
 
         timedEvents.set(`resurrection${countNow}`, timedResurrection)
         timedEvents.set(`enemyBlock${countNow}`, timedEnemyBlock)
@@ -260,30 +274,34 @@ export class Player {
 
             // Fatal, power-up and finish collisions after movement 
 
-            // flames hit
             let playerBounds = this.element.getBoundingClientRect();
-            for (const flame of flames.values()) {
-                if (checkHit(playerBounds, flame)) {
-                    playerBombDeath.play();
-                    this.die();
-                    break;
-                };
-            };
 
-            // enemies hit
-            for (const enemy of enemies.values()) {
-                if (checkHit(playerBounds, enemy.element)) {
-                    if (window.deathSound === 0) {
-                        playerDeath.play();
-                        window.deathSound = 1;
-                    } else {
-                        playerDeath2.play();
-                        window.deathSound = 0;
-                    }
-                    this.die();
-                    break;
+            if (this.vulnerable) {
+
+                // flames hit
+                for (const flame of flames.values()) {
+                    if (checkHit(playerBounds, flame)) {
+                        playerBombDeath.play();
+                        this.die();
+                        break;
+                    };
                 };
-            };
+
+                // enemies hit
+                for (const enemy of enemies.values()) {
+                    if (checkHit(playerBounds, enemy.element)) {
+                        if (window.deathSound === 0) {
+                            playerDeath.play();
+                            window.deathSound = 1;
+                        } else {
+                            playerDeath2.play();
+                            window.deathSound = 0;
+                        }
+                        this.die();
+                        break;
+                    };
+                };
+            }
 
             // power-ups hit
             for (const pow of powerups.values()) {
