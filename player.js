@@ -303,6 +303,10 @@ export class Player {
                 this.alive = false;
                 walkingSound.pause();
                 walkingSound.currentTime = 0;
+                levelMusic.forEach(track => {
+                    track.pause();
+                    track.currentTime = 0;
+                });
                 finishLevel.play();
                 toggleFinished();
                 const timedNextLevel = new Timer(() => {
