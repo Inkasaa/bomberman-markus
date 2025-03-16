@@ -170,12 +170,12 @@ function updateScoreInfo(score) {
 }
 
 function startSequence() {
-    bounds = resizeGameContainer();
+    bounds = resizeGameContainer(level);
     [gridStep, halfStep] = getGridSize();
     [mult, player] = setUpGame(bounds);
     levelMap = makeLevelMap();
     powerUpMap = makeLevelMap();
-    makeWalls();
+    makeWalls(level);
     fillFlameAndBombPools();
     finish = new Finish(gridStep * 12, gridStep * 10, gridStep);
 

@@ -63,6 +63,7 @@ export class Player {
     }
 
     dropBomb() {
+
         const row = Math.floor((this.y + this.size / 2) / gridStep);
         const col = Math.floor((this.x + this.size / 2) / gridStep);
 
@@ -330,6 +331,12 @@ export class Player {
                 });
                 finishLevel.play();
                 toggleFinished();
+
+               // this.element.style.backgroundImage = `url('images/finish.svg')`
+
+                // Trigger the finish animation
+                playFinishAnimation();
+
                 const timedNextLevel = new Timer(() => {
                     nextLevel();
                     timedEvents.delete(`finishingTheLevel`);
@@ -351,3 +358,49 @@ function checkHit(playerBounds, other) {
         playerBounds.bottom - mult * 10 < otherBounds.top ||
         playerBounds.top + mult * 10 > otherBounds.bottom);
 };
+
+
+function playFinishAnimation() {
+    const finishImages = [
+        '/images/finish8.png',
+        '/images/finish7.png',
+        '/images/finish6.png',
+        '/images/finish5.png',
+        '/images/finish4.png',
+        '/images/finish3.png',
+        '/images/finish2.png',
+        '/images/finish1.png',
+    ];
+
+    let currentImageIndex = 0;
+    const totalImages = finishImages.length;
+
+
+    // Set initial image for the animation
+    finish.element.style.backgroundImage = `url('${finishImages[currentImageIndex]}')`;
+
+      // Set a timeout for how long you want the animation to run (e.g., 4 seconds)
+      const animationDuration = 6000; // 6 seconds for the animation
+      const startTime = Date.now(); // Record the start time
+
+    // Create a timer to switch images in the animation sequence
+    const animationInterval = setInterval(() => {
+        currentImageIndex++;
+
+        if (currentImageIndex < totalImages) {
+            finish.element.style.backgroundImage = `url('${finishImages[currentImageIndex]}')`;
+        } else  {
+            // Reset back to the first image to loop
+            currentImageIndex = 0;
+            finish.element.style.backgroundImage = `url('${finishImages[currentImageIndex]}')`;
+        }
+
+        // If animation runs for 6 seconds, stop it and revert to the static finish image
+        if (Date.now() - startTime >= animationDuration) {
+            clearInterval(animationInterval);  // Stop the animation
+            finish.element.style.backgroundImage = `url('images/finishgrey.svg')`;  // Revert back to the static image
+            // Optionally, call nextLevel() here or any other logic to proceed to the next level
+             //nextLevel();
+        }
+    }, 100); // Change image every 100ms
+}

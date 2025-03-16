@@ -19,7 +19,30 @@ button {
     background: #eee;
     background-image: url("/images/bluegrass.jpg");
     z-index: -1;
+
 }
+
+/* Level-specific backgrounds */
+/* #geme-container.level-1 {
+    background-image: url("/images/sand.jpg");
+}
+
+.level-2 {
+    background-image: url("/images/bluegrass.jpg");
+}
+
+.level-3 {
+    background-image: url("/images/sand.jpg");
+}
+
+.level-4 {
+    background-image: url("/images/yellowgrass.jpg");
+}
+
+.level-5 {
+    background-image: url("/images/violet.jpg");
+}
+*/
 
 #player {
     will-change: transform;            /* to own layer => GPU acceleration */
@@ -60,23 +83,52 @@ button {
 
 .wall {
     z-index: 3;
-}
-
-.wall.solid {
-    background-color: rgb(136, 136, 136);
-    background-image: url("/images/solidwall.svg");
     background-size: cover;
 }
 
-.wall.weak {
-    background-color: rgb(199, 165, 130);
+.level-1.wall.solid {
+    background-image: url("/images/solidwall.svg")
+}
+
+.level-1.wall.weak {
     background-image: url("/images/weakwall02.svg");
-    background-size: cover;
+}
+
+.level-2.wall.solid {
+    background-image: url("/images/solidWallBlue.png") 
+}
+
+.level-2.wall.weak {
+    background-image: url("/images/weakwallLightBlue.png");
+}
+
+.level-3.wall.solid {
+    background-image: url("/images/solidwallConcreat.png") 
+}
+
+.level-3.wall.weak {
+    background-image: url("/images/weakwallBrown.svg");
+}
+
+.level-4.wall.solid {
+    background-image: url("/images/solidwallGreen.png") 
+}
+
+.level-4.wall.weak {
+    background-image: url("/images/weakwallGreen.png");
+}
+
+.level-5.wall.solid {
+    background-image: url("/images/solidwallGold.png")
+}
+
+.level-5.wall.weak {
+    background-image: url("/images/weakwallSteal.png");
 }
 
 .wall.burning {
     background-image: url("/images/burningwall.svg");
-}
+} 
 
 .bomb {
     position: absolute;

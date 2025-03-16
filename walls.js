@@ -64,20 +64,20 @@ class Wall {
 };
 
 export class SolidWall extends Wall {
-    constructor(x, y, size) {
+    constructor(x, y, size, level) {
         super(x, y, size);
         this.wallType = "solid";
-        this.element.classList.add("solid");
+        this.element.classList.add(`level-${level}`, "solid");
     };
 };
 
 let timedCount = 0;
 
 export class WeakWall extends Wall {
-    constructor(x, y, size) {
+    constructor(x, y, size, level) {
         super(x, y, size);
         this.wallType = "weak";
-        this.element.classList.add("weak");
+        this.element.classList.add(`level-${level}`, "weak");
     };
 
     collapse() {
