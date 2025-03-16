@@ -1,5 +1,5 @@
 import { tryToActivateFinish } from "./finish.js";
-import { enemies, flames, gridStep, halfStep, levelMap, timedEvents, enemyDeath, enemyWalking } from "./game.js";
+import { enemies, flames, gridStep, halfStep, levelMap, timedEvents, enemyDeath } from "./game.js";
 import { Timer } from "./timer.js";
 
 let timedCount = 0;
@@ -28,7 +28,7 @@ export class Enemy {
 
         // Instance-specific enemy walking sound
         this.enemyWalking = new Audio("sfx/enemyWalking.mp3");
-        this.enemyWalking.volume = 0.4;
+        this.enemyWalking.volume = 0.15;
         this.enemyWalking.loop = true;
         
         let col = Math.round(x / gridStep);

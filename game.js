@@ -68,9 +68,9 @@ export const levelMusic = [
     new Audio('sfx/level5music.mp3')
 ];
 
-// Set all music to loop
+// Set all level music to loop
 levelMusic.forEach(track => {
-    track.loop = true; // Loops infinitely
+    track.loop = true;
     track.volume = 0.5;
 });
 
@@ -143,11 +143,11 @@ export function nextLevel() {
     if (currentMusic) {
         currentMusic.pause();
         currentMusic.currentTime = 0; // Reset to start
-    }
+    };
     currentMusic = levelMusic[level - 1];
     if (!paused) {
         currentMusic.play();
-    }
+    };
 
     startSequence();
     updateLevelInfo(level);
@@ -172,6 +172,7 @@ function togglePause() {
             enemies.forEach(enemy => {
                 enemy.enemyWalking.pause();
             });
+            tickingBomb.pause();
             timeToSubtract -= window.performance.now(); // stored for unpausing 
         } else {
             pauseMenu.style.display = "none";
@@ -184,15 +185,17 @@ function togglePause() {
             if (player.isMoving) {
                 walkingSound.play();
             }
-
             enemies.forEach(enemy => {
                 if (enemy.isMoving) {
                     enemy.enemyWalking.play();
                 }
             });
+            if (bombs.size > 0) {
+                tickingBomb.play();
+            }
             timeToSubtract += window.performance.now(); // this is used to display time
-        }
-    }
+        };
+    };
 };
 
 document.addEventListener("keydown", (event) => {
