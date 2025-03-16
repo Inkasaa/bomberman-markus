@@ -15,7 +15,7 @@ export class Player {
 
         this.lives = 5;
         this.alive = true;
-        this.bombAmount = 1;
+        this.bombAmount = 3;    // BACK TO 1
         this.bombPower = 2;
 
         this.element = document.createElement('div');

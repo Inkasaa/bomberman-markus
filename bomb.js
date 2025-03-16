@@ -163,7 +163,14 @@ export class Bomb {
             timedEvents.get(`bomb${this.countNow}`).cancel();
             timedEvents.delete(`bomb${this.countNow}`);
         }
-        this.explode();
+
+        // small delay
+        const timedEarlyExplotion = new Timer(() => {
+            this.explode();
+            timedEvents.delete(`earlyexplosion${this.countNow}`)
+        }, 80);
+        timedEvents.set(`earlyexplosion${this.countNow}`, timedEarlyExplotion);
+        timedCount++;
     }
 
     explode() {
