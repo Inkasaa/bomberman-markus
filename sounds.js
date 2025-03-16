@@ -2,7 +2,7 @@
 // Sound effects
 export const menuMusic = new Audio("sfx/menuMusic.mp3");
 menuMusic.loop = true;
-export const walkingSound = new Audio ("sfx/walkingFaster.mp3");
+export const walkingSound = new Audio("sfx/walkingFaster.mp3");
 walkingSound.volume = 0.5;
 walkingSound.loop = true;
 export const playerDeath = new Audio("sfx/playerDeath.mp3");
@@ -38,8 +38,4 @@ export const levelMusic = [
     new Audio('sfx/level5music.mp3')
 ];
 
-// Set all music to loop
-levelMusic.forEach(track => {
-    track.loop = true; // Loops infinitely
-    track.volume = 0.5;
-});
+levelMusic.forEach((aud) => aud.loop = true);

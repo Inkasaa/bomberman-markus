@@ -236,7 +236,7 @@ button {
 #victory {
     width: 70vw;
     height: 70vh;
-    background-image: url("images/victory.svg");
+    background-image: url("/images/victory.svg");
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;

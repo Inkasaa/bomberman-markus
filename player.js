@@ -135,10 +135,13 @@ export class Player {
                 this.element.style.transform = `translate(${this.x}px, ${this.y}px)`;
                 this.element.classList.remove('dead');
                 this.alive = true;
-                // update counter too
+
+                console.log("not pausing music");
             } else {
+                console.log("this will pause it");
+
                 const gameOverMenu = document.getElementById("game-over-menu");
-                const gifs = ["images/loser1.gif", "images/loser2.gif"];
+                const gifs = ["/images/loser1.gif", "/images/loser2.gif"];
                 const randomGif = gifs[Math.floor(Math.random() * gifs.length)];
                 gameOverMenu.style.background = `rgba(0, 0, 0, 0.8) url("${randomGif}") no-repeat center center`;
                 gameOverMenu.style.backgroundSize = "cover";
@@ -154,7 +157,7 @@ export class Player {
                 });
                 setGameLost(); // Stop game loop updates
 
-                if (randomGif === "images/loser1.gif") {
+                if (randomGif === "/images/loser1.gif") {
                     gameLost1.play(); // sad-trombone for loser1.gif
                 } else {
                     gameLost2.play(); // sinister-laugh for loser2.gif

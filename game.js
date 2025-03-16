@@ -1,5 +1,6 @@
 import { Finish } from "./finish.js";
 import { resizeGameContainer, getGridSize, setUpGame, makeWalls, makeLevelMap, makeTextBar, fillFlameAndBombPools } from "./initialize.js";
+import { preloadImages, preloadSounds } from "./preload.js";
 import { congrats, crowdClapCheer, levelMusic, menuMusic, walkingSound } from "./sounds.js";
 
 export let bounds;
@@ -29,7 +30,7 @@ let timeinfo;
 const twoMinutes = 120000;
 let score = 0;
 let timeToSubtract = 0;
-
+let gameStartTime;
 
 let player;
 let paused = false;
@@ -64,7 +65,7 @@ function toggleEndScreen() {
     victoryScreen.style.display == "flex" ? victoryScreen.style.display = "none" : victoryScreen.style.display = "flex";
 }
 
-export function nextLevel() {   
+export function nextLevel() {
 
     let scoreAddition = ((twoMinutes - (scoreTime - timeToSubtract)) / 1000) * player.lives * level;
     if (scoreAddition > 0) score += scoreAddition;
@@ -96,14 +97,14 @@ export function nextLevel() {
     bombsPool = [];
 
     // Stop current music and start new level’s music
-    if (currentMusic) {
+/*     if (currentMusic) {
         currentMusic.pause();
         currentMusic.currentTime = 0; // Reset to start
     }
     currentMusic = levelMusic[level - 1];
     if (!paused) {
         currentMusic.play();
-    }
+    } */
 
     startSequence();
     updateLevelInfo(level);
@@ -194,6 +195,8 @@ function startSequence() {
     }
     currentMusic = levelMusic[level - 1];
     currentMusic.play();
+
+    gameStartTime = window.performance.now() + 50;     // time buffer to load something. 25 looks to be just enough
 }
 
 export function setGameLost() {
@@ -208,11 +211,10 @@ function runGame() {
     requestAnimationFrame(gameLoop);
 
     function gameLoop(timestamp) {
-
         let deltaTime = (timestamp - lastFrameTime) / 16.7; // use deltaTime to normalize speed for different refresh rates
         lastFrameTime = timestamp;
 
-        if (!paused && !gameLost) {
+        if (timestamp > gameStartTime && !paused && !gameLost) {
             if (!finished) updateTimeInfo(timestamp - timeToSubtract);
             player.movePlayer(deltaTime);
             enemies.forEach((en) => en.moveEnemy(deltaTime));
@@ -248,6 +250,7 @@ document.addEventListener("DOMContentLoaded", () => {
         startSequence();
         [levelinfo, livesinfo, scoreinfo, timeinfo] = makeTextBar();
         updateLivesInfo(player.lives);
+
         runGame();
     });
 });

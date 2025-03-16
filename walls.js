@@ -77,13 +77,10 @@ export class WeakWall extends Wall {
     constructor(x, y, size) {
         super(x, y, size);
         this.wallType = "weak";
-        //this.element.style.backgroundImage = 'url("/images/weakwall02.svg")';
         this.element.classList.add("weak");
     };
 
     collapse() {
-        //this.element.style.background = 'orange';
-        //this.element.style.backgroundImage = 'url("/images/burningwall.svg")';
         this.element.classList.add('burning');
 
         const countNow = timedCount;
