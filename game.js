@@ -1,6 +1,6 @@
 import { Finish } from "./finish.js";
 import { resizeGameContainer, getGridSize, setUpGame, makeWalls, makeLevelMap, makeTextBar, fillFlameAndBombPools } from "./initialize.js";
-import { congrats, crowdClapCheer, levelMusic, menuMusic, walkingSound } from "./sounds.js";
+import { congrats, crowdClapCheer, levelMusic, menuMusic, tickingBomb, walkingSound } from "./sounds.js";
 
 export let bounds;
 export let mult = 1.0;

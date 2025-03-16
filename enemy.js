@@ -29,7 +29,7 @@ export class Enemy {
 
         // Instance-specific enemy walking sound
         this.enemyWalking = new Audio("sfx/enemyWalking.mp3");
-        this.enemyWalking.volume = 0.2;
+        this.enemyWalking.volume = 0.15;
         this.enemyWalking.loop = true;
         this.enemyWalking.play();
 
