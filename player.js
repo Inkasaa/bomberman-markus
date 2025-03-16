@@ -1,4 +1,4 @@
-import { bombTime, bombs, bounds, enemies, finish, flames, nextLevel, powerups, solidWalls, timedEvents, weakWalls, levelMap, updateLivesInfo, gridStep, toggleFinished, setGameLost, bombsPool } from "./game.js";
+import { bombTime, bombs, bounds, enemies, finish, flames, nextLevel, powerups, solidWalls, timedEvents, weakWalls, levelMap, updateLivesInfo, gridStep, toggleFinished, setGameLost, bombsPool, mult } from "./game.js";
 import { bombUp, finishLevel, flameUp, gameLost1, gameLost2, playerBombDeath, playerDeath, playerDeath2, walkingSound } from "./sounds.js";
 import { Timer } from "./timer.js";
 
@@ -342,8 +342,8 @@ function checkHit(playerBounds, other) {
     const otherBounds = other.getBoundingClientRect();
 
     // No hit (false) if player is safely outside on at least one side
-    return !(playerBounds.right < otherBounds.left ||
-        playerBounds.left > otherBounds.right ||
-        playerBounds.bottom < otherBounds.top ||
-        playerBounds.top > otherBounds.bottom);
+    return !(playerBounds.right - mult * 10 < otherBounds.left ||
+        playerBounds.left + mult * 10 > otherBounds.right ||
+        playerBounds.bottom - mult * 10 < otherBounds.top ||
+        playerBounds.top + mult * 10 > otherBounds.bottom);
 };
