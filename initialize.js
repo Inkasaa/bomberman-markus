@@ -1,7 +1,7 @@
 import { Bomb } from "./bomb.js";
 import { Enemy } from "./enemy.js";
-import { FlameH, FlameV} from "./flames.js";
-import { enemies, gridStep, halfStep, level, levelMap, mult, powerUpMap, powerups, solidWalls, weakWalls, flamesPoolV, flamesPoolH, bombsPool  } from "./game.js";
+import { FlameH, FlameV } from "./flames.js";
+import { enemies, gridStep, halfStep, level, levelMap, mult, powerUpMap, powerups, solidWalls, weakWalls, flamesPoolV, flamesPoolH, bombsPool } from "./game.js";
 import { Player } from "./player.js";
 import { BombUp, FlameUp } from "./powerup.js";
 import { SolidWall, WeakWall } from "./walls.js";
@@ -180,40 +180,56 @@ export function makeWalls() {
 
 export function makeTextBar() {
     const gameArea = document.getElementById("game-container").getBoundingClientRect();
-    //console.log(gameArea.left, gameArea.top, gameArea.right);
+    let oldTextBar = document.querySelector(".textbar");
 
-    // one bar to contain all text
     const pad = 10;
-    let textbar = document.createElement('div');
-    textbar.classList.add("textbar");
-    textbar.style.height = `${gridStep - pad * 2 * mult}px`;
-    textbar.style.width = `${gridStep * 13 - pad * 2 * mult}px`;
-    textbar.style.left = `${gameArea.left}px`;
-    textbar.style.top = `${gameArea.top - gridStep}px`;
-    textbar.style.padding = `${pad * mult}px`;
+    if (!oldTextBar) {
+        // one bar to contain all text
+        let textbar = document.createElement('div');
+        textbar.classList.add("textbar");
+        textbar.style.height = `${gridStep - pad * 2 * mult}px`;
+        textbar.style.width = `${gridStep * 13 - pad * 2 * mult}px`;
+        textbar.style.left = `${gameArea.left}px`;
+        textbar.style.top = `${gameArea.top - gridStep}px`;
+        textbar.style.padding = `${pad * mult}px`;
 
-    // four smaller bits to display info
-    const infos = [];
-    const ids = ["levelinfo", "livesinfo", "scoreinfo", "timeinfo"];
-    const placeholders = ["Level: 1", "Lives: X", "Score: 0", "time runneth"]
-    for (let i = 0; i < 4; i++) {
-        let info = document.createElement('div');
-        info.classList.add("infobox");
-        info.style.margin = `${pad * mult}px`;
-        info.style.padding = `${pad * mult}px`;
-        info.style.borderWidth = `${mult * 2}`;
-        info.style.borderRadius = `${pad * mult}px`;
-        info.id = ids[i];
-        info.textContent = placeholders[i];
-        info.style.fontSize = `${20 * mult}px`;
-        textbar.appendChild(info);
-        infos.push(info);
-    }
+        // four smaller bits to display info
+        const infos = [];
+        const ids = ["levelinfo", "livesinfo", "scoreinfo", "timeinfo"];
+        const placeholders = ["Level: 1", "Lives: X", "Score: 0", "time runneth"]
+        for (let i = 0; i < 4; i++) {
+            let info = document.createElement('div');
+            info.classList.add("infobox");
+            info.style.margin = `${pad * mult}px`;
+            info.style.padding = `${pad * mult}px`;
+            info.style.borderWidth = `${mult * 2}`;
+            info.style.borderRadius = `${pad * mult}px`;
+            info.id = ids[i];
+            info.textContent = placeholders[i];
+            info.style.fontSize = `${20 * mult}px`;
+            textbar.appendChild(info);
+            infos.push(info);
+        }
 
-    infos[3].style.justifyContent = "center";
-    document.body.appendChild(textbar);
+        infos[3].style.justifyContent = "center";
+        document.body.appendChild(textbar);
 
-    return infos;
+        return infos;
+    } else {
+        // recalculate text bar size and position in case window was resized
+        oldTextBar.style.height = `${gridStep - pad * 2 * mult}px`;
+        oldTextBar.style.width = `${gridStep * 13 - pad * 2 * mult}px`;
+        oldTextBar.style.left = `${gameArea.left}px`;
+        oldTextBar.style.top = `${gameArea.top - gridStep}px`;
+        oldTextBar.style.padding = `${pad * mult}px`;
+
+        return [
+            document.getElementById("levelinfo"),
+            document.getElementById("livesinfo"),
+            document.getElementById("scoreinfo"),
+            document.getElementById("timeinfo")
+        ];
+    };
 }
 
 export function fillFlameAndBombPools() {
