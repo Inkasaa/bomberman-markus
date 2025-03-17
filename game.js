@@ -162,7 +162,7 @@ function updateLevelInfo(level) {
 }
 
 export function updateLivesInfo(lives) {
-    livesinfo.textContent = `Lives: ${lives}`
+    livesinfo.textContent = `❤️: ${lives}`
 }
 
 function updateScoreInfo(score) {

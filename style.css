@@ -16,24 +16,24 @@ button {
 
 #game-container {
     position: absolute;
-    background: #eee;
+    background: #1d3f26;
     background-image: url("/images/bluegrass.jpg");
     z-index: -1;
 
 }
 
 /* Level-specific backgrounds */
-
+ 
 #game-container.level-1 {
     background-image: url("/images/bluegrass.jpg");
 }
 
 #game-container.level-2 {
-    background-image: url("/images/bluegrass.jpg");
+    background-image: url("/images/backgroundDeepwater.png");
 }
 
 #game-container.level-3 {
-    background-image: url("/images/sand.jpg");
+    background-image: url("/images/sandshadow.jpg");
 }
 
 #game-container.level-4 {
@@ -41,7 +41,7 @@ button {
 }
 
 #game-container.level-5 {
-    background-image: url("/images/violet.jpg");
+    background-image: url("/images/lavaSand.jpg");
 }
 
 
@@ -88,20 +88,22 @@ button {
 }
 
 
+
+
 .level-1.wall.solid {
-    background-image: url("/images/solidwall.svg")
+    background-image: url("/images/solidwall.svg") 
 }
 
 .level-1.wall.weak {
     background-image: url("/images/weakwall02.svg");
 }
-
+   
 .level-2.wall.solid {
-    background-image: url("/images/solidWallBlue.png") 
+    background-image: url("/images/solidwallSnow.svg")
 }
 
 .level-2.wall.weak {
-    background-image: url("/images/weakwallLightBlue.png");
+    background-image: url("/images/weakwallice.svg");
 }
 
 .level-3.wall.solid {
@@ -117,15 +119,15 @@ button {
 }
 
 .level-4.wall.weak {
-    background-image: url("/images/weakwallGreen.png");
+    background-image: url("/images/weakwallArmy.png");
 }
 
 .level-5.wall.solid {
-    background-image: url("/images/solidwallGold.png")
+    background-image: url("/images/solidwallLava.png") 
 }
 
 .level-5.wall.weak {
-    background-image: url("/images/weakwallSteal.png");
+    background-image: url("/images/weakwallLava2.jpg");
 }
 
 .level-1.wall.burning ,
