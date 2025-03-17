@@ -155,8 +155,8 @@ export function makeWalls() {
         const mapX = Math.floor(Math.random() * 13);
         const mapY = Math.floor(Math.random() * 11);
 
-        // don't replace content or put anything in the top left and bottom right corners
-        if (levelMap[mapY][mapX] || (mapX < 3 && mapY < 3) || (mapX > 9 && mapY > 7)) {
+        // don't replace content or put anything in the top left
+        if (levelMap[mapY][mapX] || (mapX < 3 && mapY < 3)) {
             continue;
         };
 
@@ -196,7 +196,7 @@ export function makeTextBar() {
         // four smaller bits to display info
         const infos = [];
         const ids = ["levelinfo", "livesinfo", "scoreinfo", "timeinfo"];
-        const placeholders = ["Level: 1", "Lives: X", "Score: 0", "time runneth"]
+        const placeholders = ["Level: 1", "Lives: X", "Score: 0", "00:00"]
         for (let i = 0; i < 4; i++) {
             let info = document.createElement('div');
             info.classList.add("infobox");

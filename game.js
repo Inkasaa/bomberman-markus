@@ -7,7 +7,7 @@ export let mult = 1.0;
 export let gridStep = 0;
 export let halfStep = 0;
 export let levelMap;                    // for placing elements, wall collapses
-export let powerUpMap;                  // for placing elements, wall collapses
+export let powerUpMap;
 
 export let solidWalls = [];             // for player collisions
 export const weakWalls = new Map();     // for player collisions
@@ -171,7 +171,7 @@ function updateScoreInfo(score) {
 }
 
 function updateStartTime(){
-    gameStartTime = window.performance.now() + 100;     // time buffer to load something. 25 looks to be just enough
+    gameStartTime = window.performance.now() + 100;     // time buffer to load something
 }
 
 function startSequence() {
@@ -229,25 +229,23 @@ document.addEventListener("DOMContentLoaded", () => {
     const restarts = document.querySelectorAll('.restart-btn');
     restarts.forEach(rs => rs.addEventListener('click', restartGame));
 
-    // Start menu
-    const startMenu = document.getElementById("start-menu");
-    startMenu.style.display = "block";
-    menuMusic.play();
-
     document.getElementById("restart-btn-game-over").addEventListener("click", () => {
         document.getElementById("game-over-menu").style.display = "none";
         restartGame();
     });
 
+    // Start menu
+    const startMenu = document.getElementById("start-menu");
+    startMenu.style.display = "block";
+    menuMusic.play();
+
     document.getElementById("start-btn").addEventListener("click", () => {
         menuMusic.pause();
         menuMusic.currentTime = 0;
         startMenu.style.display = "none";
-        menuMusic.pause();
-        menuMusic.currentTime = 0;
+
         startSequence();
         updateLivesInfo(player.lives);
-
         runGame();
     });
 });

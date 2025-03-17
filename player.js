@@ -22,7 +22,6 @@ export class Player {
         this.element.id = "player";
         this.element.style.width = `${size}px`;
         this.element.style.height = `${size}px`;
-        this.element.style.borderRadius = `${size / 5}px`;
         this.element.style.position = 'absolute';
         this.element.style.transform = `translate(${x}px, ${y}px)`;
         document.getElementById("game-container").appendChild(this.element);
@@ -67,9 +66,8 @@ export class Player {
         const col = Math.floor((this.x + this.size / 2) / gridStep);
 
         if (this.alive && this.bombAmount > 0 && !levelMap[row][col]) {
-            //new Bomb(row, col, this.bombPower, 'player');
 
-            // find from bombPool, start detonate method?
+            // find from bombPool, start explode method
             const bomb = bombsPool.find((b) => !b.active);
             bomb.drop(row, col, this.bombPower, 'player');
 
