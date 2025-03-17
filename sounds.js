@@ -2,7 +2,7 @@
 // Sound effects
 export const menuMusic = new Audio("sfx/menuMusic.mp3");
 menuMusic.loop = true;
-export const walkingSound = new Audio("sfx/walkingFaster.mp3");
+export const walkingSound = new Audio("sfx/walking.mp3");
 walkingSound.volume = 0.5;
 walkingSound.loop = true;
 export const playerDeath = new Audio("sfx/playerDeath.mp3");
@@ -19,7 +19,7 @@ explosion.volume = 0.6;
 export const placeBomb = new Audio("sfx/placeBomb.mp3");
 export const tickingBomb = new Audio("sfx/tickingBomb.mp3");
 tickingBomb.loop = true;
-export const wallBreak = new Audio("sfx/wallBreak2.mp3");
+export const wallBreak = new Audio("sfx/wallBreak.mp3");
 wallBreak.volume = 0.6;
 export const flameUp = new Audio("sfx/flameUp.mp3");
 export const bombUp = new Audio("sfx/bombUp.mp3");
