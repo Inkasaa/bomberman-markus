@@ -1,4 +1,4 @@
-# make-your-game: Explosives Person
+# make-your-game: Bomber Bear
 
 A Bomberman clone in JavaScript that runs in a browser.
 
