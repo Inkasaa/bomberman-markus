@@ -25,13 +25,13 @@ export function resizeGameContainer(level) {
     gameContainer.style.left = (windowWidth - bounds.width) / 2 + 'px';
     gameContainer.style.top = (windowHeight - bounds.height) / 2 + 'px';
 
-/*
+
     // Remove the previous level class if it exists
     gameContainer.classList.remove(`level-${level - 1}`);
 
     // Apply the level class to the game container
     gameContainer.classList.add(`level-${level}`);
-*/
+
     return bounds;
 };
 

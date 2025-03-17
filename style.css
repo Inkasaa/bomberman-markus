@@ -23,26 +23,27 @@ button {
 }
 
 /* Level-specific backgrounds */
-/* #geme-container.level-1 {
-    background-image: url("/images/sand.jpg");
-}
 
-.level-2 {
+#game-container.level-1 {
     background-image: url("/images/bluegrass.jpg");
 }
 
-.level-3 {
+#game-container.level-2 {
+    background-image: url("/images/bluegrass.jpg");
+}
+
+#game-container.level-3 {
     background-image: url("/images/sand.jpg");
 }
 
-.level-4 {
+#game-container.level-4 {
     background-image: url("/images/yellowgrass.jpg");
 }
 
-.level-5 {
+#game-container.level-5 {
     background-image: url("/images/violet.jpg");
 }
-*/
+
 
 #player {
     will-change: transform;            /* to own layer => GPU acceleration */
@@ -86,6 +87,7 @@ button {
     background-size: cover;
 }
 
+
 .level-1.wall.solid {
     background-image: url("/images/solidwall.svg")
 }
@@ -126,9 +128,14 @@ button {
     background-image: url("/images/weakwallSteal.png");
 }
 
-.wall.burning {
+.level-1.wall.burning ,
+.level-2.wall.burning ,
+.level-3.wall.burning ,
+.level-4.wall.burning ,
+.level-5.wall.burning  {
     background-image: url("/images/burningwall.svg");
 } 
+
 
 .bomb {
     position: absolute;
