@@ -1,5 +1,5 @@
 import { bombTime, bombs, bounds, enemies, finish, flames, nextLevel, powerups, solidWalls, timedEvents, weakWalls, levelMap, updateLivesInfo, gridStep, toggleFinished, setGameLost, bombsPool, mult } from "./game.js";
-import { bombUp, finishLevel, flameUp, gameLost1, gameLost2, levelMusic, playerBombDeath, playerDeath, playerDeath2, walkingSound } from "./sounds.js";
+import { finishLevel, gameLost1, gameLost2, levelMusic, playerBombDeath, playerDeath, playerDeath2, walkingSound } from "./sounds.js";
 import { Timer } from "./timer.js";
 
 let timedCount = 0;
@@ -22,7 +22,6 @@ export class Player {
         this.element.id = "player";
         this.element.style.width = `${size}px`;
         this.element.style.height = `${size}px`;
-        this.element.style.borderRadius = `${size / 5}px`;
         this.element.style.position = 'absolute';
         this.element.style.transform = `translate(${x}px, ${y}px)`;
         document.getElementById("game-container").appendChild(this.element);
@@ -68,9 +67,8 @@ export class Player {
         const col = Math.floor((this.x + this.size / 2) / gridStep);
 
         if (this.alive && this.bombAmount > 0 && !levelMap[row][col]) {
-            //new Bomb(row, col, this.bombPower, 'player');
 
-            // find from bombPool, start detonate method?
+            // find from bombPool, start explode method
             const bomb = bombsPool.find((b) => !b.active);
             bomb.drop(row, col, this.bombPower, 'player');
 
@@ -309,13 +307,12 @@ export class Player {
                 if (checkHit(playerBounds, pow.element)) {
                     if (pow.powerType === "bomb") {
                         this.bombAmount++;
-                        flameUp.play();
+                        pow.pickUp();
                     }
                     if (pow.powerType === "flame") {
                         this.bombPower++;
-                        bombUp.play()
+                        pow.pickUp();
                     }
-                    pow.pickUp();
                     break;
                 };
             };

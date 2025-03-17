@@ -1,6 +1,5 @@
 import { tryToActivateFinish } from "./finish.js";
 import { enemies, flames, gridStep, halfStep, levelMap, timedEvents } from "./game.js";
-import { enemyDeath } from "./sounds.js";
 import { Timer } from "./timer.js";
 
 let timedCount = 0;
@@ -27,11 +26,13 @@ export class Enemy {
         this.element.style.transform = `translate(${this.x}px, ${this.y}px)`;
         document.getElementById("game-container").appendChild(this.element);
 
-        // Instance-specific enemy walking sound
+        // Instance-specific enemy walking and dying sound
         this.enemyWalking = new Audio("sfx/enemyWalking.mp3");
         this.enemyWalking.volume = 0.15;
         this.enemyWalking.loop = true;
         this.enemyWalking.play();
+        this.enemyDeath = new Audio("sfx/enemyDeath.mp3");
+        this.enemyDeath.volume = 0.3;
 
         let col = Math.round(x / gridStep);
         let row = Math.round(y / gridStep);
@@ -45,7 +46,7 @@ export class Enemy {
 
     die() {
         this.element.classList.add('dead');
-        enemyDeath.play();
+        this.enemyDeath.play();
         this.alive = false;
         this.enemyWalking.pause();
         this.enemyWalking.currentTime = 0;
