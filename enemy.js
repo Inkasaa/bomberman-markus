@@ -1,5 +1,6 @@
 import { tryToActivateFinish } from "./finish.js";
-import { enemies, flames, gridStep, halfStep, levelMap, timedEvents, enemyDeath, enemyWalking } from "./game.js";
+import { enemies, flames, gridStep, halfStep, levelMap, timedEvents } from "./game.js";
+import { enemyDeath } from "./sounds.js";
 import { Timer } from "./timer.js";
 
 let timedCount = 0;
@@ -28,9 +29,10 @@ export class Enemy {
 
         // Instance-specific enemy walking sound
         this.enemyWalking = new Audio("sfx/enemyWalking.mp3");
-        this.enemyWalking.volume = 0.4;
+        this.enemyWalking.volume = 0.15;
         this.enemyWalking.loop = true;
-        
+        this.enemyWalking.play();
+
         let col = Math.round(x / gridStep);
         let row = Math.round(y / gridStep);
 
@@ -39,10 +41,10 @@ export class Enemy {
         this.curr = [row, col];
         this.next;
         this.direction = "spawn";
-    } skull
+    }
 
     die() {
-        this.element.style.backgroundImage = 'url("enemyDead.png")';
+        this.element.classList.add('dead');
         enemyDeath.play();
         this.alive = false;
         this.enemyWalking.pause();
@@ -96,20 +98,24 @@ export class Enemy {
             };
         };
 
-        if (availableDirs) {
+        if (availableDirs.length > 0) {
+            if (this.enemyWalking.paused) this.enemyWalking.play();
+
             this.direction = availableDirs[Math.floor(Math.random() * availableDirs.length)];
 
             if (this.direction == "left") this.next = [this.curr[0], this.curr[1] - 1];
             if (this.direction == "right") this.next = [this.curr[0], this.curr[1] + 1];
             if (this.direction == "up") this.next = [this.curr[0] - 1, this.curr[1]];
             if (this.direction == "down") this.next = [this.curr[0] + 1, this.curr[1]];
+        } else {
+            this.direction = "";
+            if (!this.enemyWalking.paused) this.enemyWalking.play();
         }
     }
 
     moveEnemy(deltaTime) {
         if (this.alive) {
             let moveDistance = this.speed * deltaTime;
-            const wasMoving = this.isMoving;
 
             // make enemy change direction if bomb is dropped in its way
             if (this.next && !isEmpty(this.next[0], this.next[1])) {
@@ -124,7 +130,7 @@ export class Enemy {
                     else if (this.direction == "right") this.direction = 'left';
                     else if (this.direction == "up") this.direction = 'down';
                     else if (this.direction == "down") this.direction = 'up';
-                    
+
                     this.onBomb = true;
                 }
             } else {
@@ -137,31 +143,20 @@ export class Enemy {
             if (this.direction == "up") this.y -= moveDistance;
             if (this.direction == "down") this.y += moveDistance;
 
-            // Check if moving or stuck
-            this.isMoving = (this.direction && this.direction !== "spawn" && 
-                Math.abs(this.x - this.prevSpot[0]) < gridStep && 
-                Math.abs(this.y - this.prevSpot[1]) < gridStep);
-
-
-
             // Decide which way to go if at center of next square or stuck
-            if (!this.direction || this.direction == "spawn" || 
+            if (
+                !this.direction ||
+                this.direction == "spawn" ||
                 Math.abs(this.x - this.prevSpot[0]) >= gridStep ||
-                Math.abs(this.y - this.prevSpot[1]) >= gridStep) {
+                Math.abs(this.y - this.prevSpot[1]) >= gridStep
+            ) {
                 this.chooseDirection();
-                this.isMoving = false;
             };
 
             // Apply movement
-            if (this.direction) this.element.style.transform = `translate(${this.x}px, ${this.y}px)`;
-
-            // Enemy walking sound logic
-            if (this.isMoving && !wasMoving) {
-                this.enemyWalking.play();
-            } else if (!this.isMoving && wasMoving) {
-                this.enemyWalking.pause();
-                this.enemyWalking.currentTime = 0;
-            }
+            if (this.direction != "") {
+                this.element.style.transform = `translate(${this.x}px, ${this.y}px)`;
+            };
 
             // flames hit
             let enemyBounds = this.element.getBoundingClientRect()

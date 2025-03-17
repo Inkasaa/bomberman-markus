@@ -4,7 +4,7 @@ body {
     align-items: center;
     margin: 0;
     height: 100vh;
-    background: #000 url("images/background02.jpg") no-repeat center center;
+    background: #000 url("images/background03.jpg") no-repeat center center;
     background-size: cover;
 
     font-family: Rockwell, 'Rockwell Nova', 'Roboto Slab', 'DejaVu Serif', 'Sitka Small', serif;
@@ -17,29 +17,45 @@ button {
 #game-container {
     position: absolute;
     background: #eee;
-    /* background-image: url("/images/greengrass.jpg"); */
     background-image: url("/images/bluegrass.jpg");
-    /* overflow: hidden; */
     z-index: -1;
 }
 
 #player {
-    will-change: transform; /* to own layer => GPU acceleration */
-    background-image: url("/images/nalleRight.png");
-    background-size: contain; /* Ensure the image is fully visible */
-    background-position: center; /* Center the image within the element */
-    background-repeat: no-repeat; /* Prevent the image from repeating */
+    will-change: transform;            /* to own layer => GPU acceleration */
+    background-image: url("/images/nalleRight3.png");
+    background-size: contain;
     z-index: 10;
+}
+
+#player.left {
+    background-image: url('/images/nalleLeft3.png');
+}
+
+#player.dead {
+    background-image: url("/images/nalleDead.png");
+}
+
+#player.invulnerable {
+    background-image: url('/images/nalleRight3white.png');
+}
+
+#player.left.invulnerable {
+    background-image: url('/images/nalleLeft3white.png');
 }
 
 .enemy {
     position: absolute;
-    will-change: transform; /* to own layer => GPU acceleration */
-    background-image: url("enemy.png");
-   background-size: contain; /* Ensure the image is fully visible */
-   background-position: center; /* Center the image within the element */
-   background-repeat: no-repeat; /* Prevent the image from repeating */
+    will-change: transform;                 /* to own layer => GPU acceleration */
+    background-image: url("images/enemy.png");
+    background-size: contain;               /* Ensure the image is fully visible */
+    background-position: center;            /* Center the image within the element */
+    background-repeat: no-repeat;           /* Prevent the image from repeating */
     z-index: 9;
+}
+
+.enemy.dead {
+    background-image: url("images/enemyDead.png");
 }
 
 .wall {
@@ -58,15 +74,31 @@ button {
     background-size: cover;
 }
 
+.wall.burning {
+    background-image: url("/images/burningwall.svg");
+}
+
+.bomb {
+    position: absolute;
+    background-image: url("/images/bomb.svg");
+    background-size: cover;
+    z-index: 4;
+}
+
+.bomb.glowing {
+    background-image: url("/images/bomborange.svg");
+}
+
 .flame {
     position: absolute;
-    /* background-color: rgb(255, 234, 0); */
     z-index: 1;
 }
+
 .flame.horizontal {
     background-image: url("/images/flamehor.svg");
     background-size: cover;
 }
+
 .flame.horizontal.ends {
     background-image: url("/images/flameendsh.svg");
     background-size: cover;
@@ -77,19 +109,11 @@ button {
     background-image: url("/images/flamevert.svg");
     background-size: cover;
 }
+
 .flame.vertical.ends {
     background-image: url("/images/flameendsv.svg");
     background-size: cover;
     z-index: 0;
-}
-
-.bomb {
-    position: absolute;
-    /* background-color: rgb(0, 0, 0); */
-    /* border-radius: 50%; */
-    background-image: url("/images/bomb.svg");
-    background-size: cover;
-    z-index: 4;
 }
 
 .powerup {
@@ -131,7 +155,7 @@ button {
     margin: 0;
     font-size: 2em;
     text-shadow: 2px 2px 4px #000;
-    
+
 }
 
 #start-menu button {
@@ -167,7 +191,7 @@ button {
 #pause-menu button {
     display: block;
     margin: 15px auto;
-    padding: 12px 24px; 
+    padding: 12px 24px;
     font-size: 1.1em;
     background: #fff;
     color: #000;
@@ -218,16 +242,16 @@ button {
 }
 
 #victory {
-    width: 70vw;
-    height: 70vh;
-    background-image: url("images/victory.svg");
+    /* width: 70vw;
+    height: 70vh; */
+    width: 100vw;
+    height: 80vh;
+    background-image: url("/images/victory.jpg");
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
     display: none;
     color: white;
-
-    display: none;
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -236,35 +260,49 @@ button {
 .victory-text {
     max-width: 30vw;
     text-align: center;
+    background: white;
+    padding: 10px 20px;
+    border-radius: 10px;
+    color: black;
 }
 
-#victory button {    
+#victory h1.victory-text {
+    font-size: 36px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    margin-top: 50px;
+}
+
+#victory-message.victory-text {
+    font-size: 24px;
+    margin-top: 0;
+}
+
+#victory button {
     padding: 12px 24px;
-    font-size: 1.2em;
+    font-size: 1.8em;
     background: #fff;
     color: #000;
     border: none;
     cursor: pointer;
-    border-radius: 5px;
-    margin-top: 5vh;
+    border-radius: 10px;
+    margin-top: 45vh;
 }
 
 #victory button:hover {
     background: #ddd;
 }
 
-.textbar{
+.textbar {
     display: flex;
     flex-direction: row;
-    /* justify-content: space-around; */
     position: absolute;
-    /* background-color: #ddd; */
     font-family: monospace;
     justify-content: space-around;
 }
 
 .infobox {
-    flex: 1; /* Equal width for all */
+    flex: 1;    /* Equal width for all */
     background-color: #474747;
     border-style: solid;
     border-color: #ececec;

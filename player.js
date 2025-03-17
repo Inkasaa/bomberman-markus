@@ -1,5 +1,5 @@
-import { Bomb } from "./bomb.js";
-import { bombTime, bombs, bounds, enemies, finish, flames, nextLevel, powerups, solidWalls, timedEvents, weakWalls, walkingSound, playerDeath, playerDeath2, playerBombDeath, flameUp, bombUp, finishLevel, levelMap, updateLivesInfo, gridStep, toggleFinished, gameLost1, gameLost2, levelMusic, setGameLost } from "./game.js";
+import { bombTime, bombs, bounds, enemies, finish, flames, nextLevel, powerups, solidWalls, timedEvents, weakWalls, levelMap, updateLivesInfo, gridStep, toggleFinished, setGameLost, bombsPool, mult } from "./game.js";
+import { bombUp, finishLevel, flameUp, gameLost1, gameLost2, levelMusic, playerBombDeath, playerDeath, playerDeath2, walkingSound } from "./sounds.js";
 import { Timer } from "./timer.js";
 
 let timedCount = 0;
@@ -43,14 +43,36 @@ export class Player {
         document.addEventListener('keydown', (event) => this.move(event));
         document.addEventListener('keyup', (event) => this.stop(event));
         this.isMoving = false;
+
+        this.invulnerability();
     };
+
+    invulnerability() {
+        let countNow = timedCount;
+        this.vulnerable = false;
+        this.element.classList.add("invulnerable");
+
+        const timedInvulnerability = new Timer(() => {
+            this.vulnerable = true;
+            this.element.classList.remove("invulnerable");
+            timedEvents.delete(`invulnerability${countNow}`)
+        }, 2000);
+
+        timedEvents.set(`invulnerability${countNow}`, timedInvulnerability)
+        timedCount++;
+    }
 
     dropBomb() {
         const row = Math.floor((this.y + this.size / 2) / gridStep);
         const col = Math.floor((this.x + this.size / 2) / gridStep);
 
         if (this.alive && this.bombAmount > 0 && !levelMap[row][col]) {
-            new Bomb(row, col, this.bombPower, 'player');
+            //new Bomb(row, col, this.bombPower, 'player');
+
+            // find from bombPool, start detonate method?
+            const bomb = bombsPool.find((b) => !b.active);
+            bomb.drop(row, col, this.bombPower, 'player');
+
             this.bombAmount--;
 
             let countNow = timedCount;
@@ -65,11 +87,13 @@ export class Player {
 
     // Handle sprite direction change based on movement
     updateSpriteDirection(key) {
-        if (key == 'ArrowLeft') {
-            this.element.style.backgroundImage = "url('/images/nalleLeft.png')";
-        }
-        if (key == 'ArrowRight') {
-            this.element.style.backgroundImage = "url('/images/nalleRight.png')";
+        if (this.alive) {
+            if (key == 'ArrowLeft') {
+                this.element.classList.add('left');
+            }
+            if (key == 'ArrowRight') {
+                this.element.classList.remove('left');
+            }
         }
     }
 
@@ -109,9 +133,8 @@ export class Player {
     };
 
     die() {
-        const oldBR = this.element.style.background;
-        //const oldBR = getComputedStyle(this.element).backgroundColor; // alternative
-        this.element.style.background = 'red';
+        this.element.classList.add('dead');
+
         this.alive = false;
         this.lives--;
         updateLivesInfo(this.lives);
@@ -127,13 +150,12 @@ export class Player {
                 this.x = this.startX;
                 this.y = this.startY;
                 this.element.style.transform = `translate(${this.x}px, ${this.y}px)`;
-                this.element.style.background = oldBR;
+                this.element.classList.remove('dead');
                 this.alive = true;
-                // update counter too
+                this.invulnerability();
             } else {
-                //document.getElementById("game-over-menu").style.display = "block";
                 const gameOverMenu = document.getElementById("game-over-menu");
-                const gifs = ["images/loser1.gif", "images/loser2.gif"];
+                const gifs = ["/images/loser1.gif", "/images/loser2.gif"];
                 const randomGif = gifs[Math.floor(Math.random() * gifs.length)];
                 gameOverMenu.style.background = `rgba(0, 0, 0, 0.8) url("${randomGif}") no-repeat center center`;
                 gameOverMenu.style.backgroundSize = "cover";
@@ -149,7 +171,7 @@ export class Player {
                 });
                 setGameLost(); // Stop game loop updates
 
-                if (randomGif === "images/loser1.gif") {
+                if (randomGif === "/images/loser1.gif") {
                     gameLost1.play(); // sad-trombone for loser1.gif
                 } else {
                     gameLost2.play(); // sinister-laugh for loser2.gif
@@ -158,13 +180,13 @@ export class Player {
             timedEvents.delete(`resurrection${countNow}`)
         }, 2000);
 
-        // Block enemies for 1 second after resurrection
+        // Block enemies for 2 seconds after resurrection
         const timedEnemyBlock = new Timer(() => {
             if (this.lives > 0) {
                 levelMap[0][0] = '';
             }
             timedEvents.delete(`enemyBlock${countNow}`)
-        }, 3000);
+        }, 4000);
 
         timedEvents.set(`resurrection${countNow}`, timedResurrection)
         timedEvents.set(`enemyBlock${countNow}`, timedEnemyBlock)
@@ -252,30 +274,34 @@ export class Player {
 
             // Fatal, power-up and finish collisions after movement 
 
-            // flames hit
             let playerBounds = this.element.getBoundingClientRect();
-            for (const flame of flames.values()) {
-                if (checkHit(playerBounds, flame)) {
-                    playerBombDeath.play();
-                    this.die();
-                    break;
-                };
-            };
 
-            // enemies hit
-            for (const enemy of enemies.values()) {
-                if (checkHit(playerBounds, enemy.element)) {
-                    if (window.deathSound === 0) {
-                        playerDeath.play();
-                        window.deathSound = 1;
-                    } else {
-                        playerDeath2.play();
-                        window.deathSound = 0;
-                    }
-                    this.die();
-                    break;
+            if (this.vulnerable) {
+
+                // flames hit
+                for (const flame of flames.values()) {
+                    if (checkHit(playerBounds, flame)) {
+                        playerBombDeath.play();
+                        this.die();
+                        break;
+                    };
                 };
-            };
+
+                // enemies hit
+                for (const enemy of enemies.values()) {
+                    if (checkHit(playerBounds, enemy.element)) {
+                        if (window.deathSound === 0) {
+                            playerDeath.play();
+                            window.deathSound = 1;
+                        } else {
+                            playerDeath2.play();
+                            window.deathSound = 0;
+                        }
+                        this.die();
+                        break;
+                    };
+                };
+            }
 
             // power-ups hit
             for (const pow of powerups.values()) {
@@ -298,6 +324,10 @@ export class Player {
                 this.alive = false;
                 walkingSound.pause();
                 walkingSound.currentTime = 0;
+                levelMusic.forEach(track => {
+                    track.pause();
+                    track.currentTime = 0;
+                });
                 finishLevel.play();
                 toggleFinished();
                 const timedNextLevel = new Timer(() => {
@@ -316,8 +346,8 @@ function checkHit(playerBounds, other) {
     const otherBounds = other.getBoundingClientRect();
 
     // No hit (false) if player is safely outside on at least one side
-    return !(playerBounds.right < otherBounds.left ||
-        playerBounds.left > otherBounds.right ||
-        playerBounds.bottom < otherBounds.top ||
-        playerBounds.top > otherBounds.bottom);
+    return !(playerBounds.right - mult * 10 < otherBounds.left ||
+        playerBounds.left + mult * 10 > otherBounds.right ||
+        playerBounds.bottom - mult * 10 < otherBounds.top ||
+        playerBounds.top + mult * 10 > otherBounds.bottom);
 };

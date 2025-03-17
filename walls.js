@@ -6,9 +6,9 @@ class Wall {
         this.x = x;
         this.y = y;
         this.size = size;
+
         this.element = document.createElement("div");
         this.element.classList.add("wall")
-
         this.element.style.position = "absolute";
         this.element.style.width = `${size}px`;
         this.element.style.height = `${size}px`;
@@ -81,9 +81,7 @@ export class WeakWall extends Wall {
     };
 
     collapse() {
-        //this.element.style.background = 'orange';
-        this.element.style.backgroundImage = 'url("/images/burningwall.svg")';
-        //wallBreak.play();
+        this.element.classList.add('burning');
 
         const countNow = timedCount;
         const timedCollapse = new Timer(() => {

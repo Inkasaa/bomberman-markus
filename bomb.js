@@ -1,6 +1,8 @@
-import { bombs, bombTime, mult, gridStep, halfStep, levelMap, weakWalls, flames, timedEvents, powerUpMap, explosion, wallBreak, placeBomb, tickingBomb } from "./game.js";
+import { bombs, bombTime, mult, gridStep, halfStep, levelMap, weakWalls, flames, timedEvents, powerUpMap, flamesPoolH, flamesPoolV } from "./game.js";
+import { placeBomb, tickingBomb, wallBreak } from "./sounds.js";
 import { Timer } from "./timer.js";
 
+const gameContainer = document.getElementById("game-container");
 let flameCounter = 0;
 let timedCount = 0;
 
@@ -41,28 +43,25 @@ function isPowerUp(row, col) {
     );
 }
 
-function horizontalFlame(size, x, y) {
-    const twoflames = [];
-    for (let i = 0; i < 2; i++) {
-        let flame = document.createElement('div');
-        flame.classList.add("flame");
-        flame.classList.add("horizontal");
-        if (i == 0) flame.classList.add("ends");
-        flame.style.width = `${gridStep}px`;
-        flame.style.height = `${halfStep}px`;
-        flame.style.left = `${x + (size / 2) - halfStep}px`;
-        flame.style.top = `${y + (size / 2) - (halfStep / 2)}px`;
-        document.getElementById("game-container").appendChild(flame);
+function horizontalFlame(bombsize, x, y) {
+    const flame = flamesPoolH.find((f) => !f.active);
 
-        flameCounter++
-        flames.set(`flameH${flameCounter}${i}`, flame)   // to map of flames
-        twoflames.push(flame);
+    flame.active = true;
+    for (const ele of flame.elements) {
+        ele.style.left = `${x + (bombsize / 2) - halfStep}px`;
+        ele.style.top = `${y + (bombsize / 2) - (halfStep / 2)}px`;
+        ele.style.display = "block";
     }
+    flame.elements[1].style.clipPath = `inset(0)`;
+
+    flameCounter++
+    flames.set(`flameH${flameCounter}0`, flame.elements[0])   // to map of flames for collisions
+    flames.set(`flameH${flameCounter}1`, flame.elements[1])
 
     const countNow = timedCount;
     const timedFlame = new Timer(() => {
-        twoflames[0].remove();
-        twoflames[1].remove();
+        flame.active = false;
+        flame.elements.forEach(e => e.style.display = "none");
         flames.delete(`flameH${flameCounter}0`);
         flames.delete(`flameH${flameCounter}1`);
         timedEvents.delete(`flameH${countNow}`)
@@ -70,54 +69,54 @@ function horizontalFlame(size, x, y) {
     timedEvents.set(`flameH${countNow}`, timedFlame)
     timedCount++;
 
-    return twoflames[1];
+    return flame.elements[1];
 }
 
-function verticalFlame(size, x, y) {
-    const twoflames = [];
-    for (let i = 0; i < 2; i++) {
-        let flame = document.createElement('div');
-        flame.classList.add("flame");
-        flame.classList.add("vertical");
-        if (i == 0) flame.classList.add("ends");
-        flame.style.width = `${halfStep}px`;
-        flame.style.height = `${gridStep}px`;
-        flame.style.left = `${x + (size / 2) - (halfStep / 2)}px`;
-        flame.style.top = `${y + (size / 2) - halfStep}px`;
-        document.getElementById("game-container").appendChild(flame);
+function verticalFlame(bombsize, x, y) {
+    const flame = flamesPoolV.find((f) => !f.active);
 
-        flameCounter++
-        flames.set(`flameV${flameCounter}${i}`, flame)   // to map of flames
-        twoflames.push(flame);
+    flame.active = true;
+    for (const ele of flame.elements) {
+        ele.style.left = `${x + (bombsize / 2) - (halfStep / 2)}px`;
+        ele.style.top = `${y + (bombsize / 2) - halfStep}px`;
+        ele.style.display = "block";
     }
+    flame.elements[1].style.clipPath = `inset(0)`;
+
+    flameCounter++
+    flames.set(`flameV${flameCounter}0`, flame.elements[0])   // to map of flames for collisions
+    flames.set(`flameV${flameCounter}1`, flame.elements[1])
 
     const countNow = timedCount;
     const timedFlame = new Timer(() => {
-        twoflames[0].remove();
-        twoflames[1].remove();
+        flame.active = false;
+        flame.elements.forEach(e => e.style.display = "none");
         flames.delete(`flameV${flameCounter}0`);
         flames.delete(`flameV${flameCounter}1`);
-        timedEvents.delete(`flameV${countNow}`);
+        timedEvents.delete(`flameV${countNow}`)
     }, 500);
-    timedEvents.set(`flameV${countNow}`, timedFlame);
+    timedEvents.set(`flameV${countNow}`, timedFlame)
     timedCount++;
 
-    return twoflames[1];
+    return flame.elements[1];
 }
 
-export class Bomb {
-    constructor(row, col, power, name) {
-        const size = mult * 60;
 
+export class Bomb {
+    setValues(size, row, col, power, name) {
         // Align dropped bomb to grid
         this.mapCol = col;
         this.mapRow = row;
         this.x = this.mapCol * gridStep + halfStep - size / 2;
         this.y = this.mapRow * gridStep + halfStep - size / 2;
         this.size = size;
-
         this.owner = name;
         this.power = power;
+    }
+
+    constructor(size = mult * 60, row = 0, col = 0, power = 1, name = '') {
+        this.setValues(size, row, col, power, name)
+        this.active = false;
 
         this.element = document.createElement("div");
         this.element.classList.add("bomb");
@@ -126,8 +125,23 @@ export class Bomb {
         this.element.style.left = `${this.x}px`;
         this.element.style.top = `${this.y}px`;
         this.bounds = this.element.getBoundingClientRect();
+        this.element.style.display = "none";
 
-        document.getElementById("game-container").appendChild(this.element);
+        this.explosion = new Audio("sfx/explosion.mp3");
+        this.explosion.volume = 0.6;
+
+        gameContainer.appendChild(this.element);
+    };
+
+    drop(row, col, power, name) {
+        this.setValues(this.size, row, col, power, name)
+        this.active = true;
+
+        this.element.style.left = `${this.x}px`;
+        this.element.style.top = `${this.y}px`;
+        this.bounds = this.element.getBoundingClientRect();
+        this.element.style.display = "block";
+
         bombs.set(`bomb${this.mapCol}${this.mapRow}`, this);  // add bomb to map for collision checks
         levelMap[this.mapRow][this.mapCol] = ['bomb', this];  // store reference to level map
 
@@ -144,7 +158,7 @@ export class Bomb {
         }, bombTime);
         timedEvents.set(`bomb${this.countNow}`, timedBomb);
         timedCount++;
-    };
+    }
 
     // explodeEarly removes the original timer and triggers the explosion
     explodeEarly() {
@@ -152,33 +166,23 @@ export class Bomb {
             timedEvents.get(`bomb${this.countNow}`).cancel();
             timedEvents.delete(`bomb${this.countNow}`);
         }
-        this.explode();
+
+        // small delay
+        const timedEarlyExplotion = new Timer(() => {
+            this.explode();
+            timedEvents.delete(`earlyexplosion${this.countNow}`)
+        }, 80);
+        timedEvents.set(`earlyexplosion${this.countNow}`, timedEarlyExplotion);
+        timedCount++;
     }
 
     explode() {
-        //this.element.style.backgroundColor = "orange";
-        this.element.style.backgroundImage = "url('images/bomborange.svg')";
-
-        explosion.play();
+        this.element.classList.add('glowing');  // let css swap background
+        this.explosion.play();
 
         // Stop ticking sound when bomb explodes
         tickingBomb.pause();
         tickingBomb.currentTime = 0; // Reset for next use
-
-        // Check if any weak walls will be destroyed
-        let willBreakWall = false;
-        for (let i = 1; i <= this.power; i++) {
-            if (isWeakWall(this.mapRow, this.mapCol + i) ||
-                isWeakWall(this.mapRow, this.mapCol - i) ||
-                isWeakWall(this.mapRow + i, this.mapCol) ||
-                isWeakWall(this.mapRow - i, this.mapCol)) {
-                willBreakWall = true;
-                break; // No need to check further once we know a wall will break
-            }
-        }
-        if (willBreakWall) {
-            setTimeout(() => wallBreak.play(), 100); // Play wall break sound once if any weak wall is hit
-        }
 
         // Draw flames of explosion in the middle
         horizontalFlame(this.size, this.x, this.y);
@@ -192,6 +196,7 @@ export class Bomb {
             { name: 'up', going: true, coords: undefined },
         ];
         let [lastLeft, lastRight, lastUp, lastDown] = [undefined, undefined, undefined, undefined];
+        let firstWeakWall = true;
 
         for (let i = 1; i <= this.power; i++) {
             // In four directions: Stop flames at walls and edges, destroy weak walls, explode other bombs
@@ -207,7 +212,13 @@ export class Bomb {
                     const dirCol = fourDirs[j].coords[1];
 
                     if (isWall(dirRow, dirCol)) {
-                        this.tryToDestroy(dirRow, dirCol);
+                        if (levelMap[dirRow][dirCol].startsWith('weakWall')) {
+                            this.destroyWall(dirRow, dirCol);
+                            if (firstWeakWall) {
+                                setTimeout(() => wallBreak.play(), 100);
+                                firstWeakWall = false;
+                            }
+                        }
                         fourDirs[j].going = false;
                         foundWall = true;
                     };
@@ -250,7 +261,10 @@ export class Bomb {
 
         // delay deleting bomb for a bit
         const timedExplotion = new Timer(() => {
-            this.element.remove();
+            this.element.classList.remove('glowing');
+            this.element.style.display = "none";
+            this.active = false;
+
             bombs.delete(`bomb${this.mapCol}${this.mapRow}`);
             timedEvents.delete(`explosion${this.countNow}`);
             levelMap[this.mapRow][this.mapCol] = '';
@@ -259,21 +273,18 @@ export class Bomb {
         timedCount++;
     };
 
-    tryToDestroy(row, col) {
-        if (levelMap[row][col] && typeof levelMap[row][col] == 'string') {
-            let name = levelMap[row][col];
-            if (name.startsWith('weakWall')) {
-                weakWalls.get(name).collapse();
-                const timedDeleteWall = new Timer(() => {
-                    weakWalls.delete(name);
-                    levelMap[row][col] = "";
-                    timedEvents.delete(`deleteWall${this.countNow}`)
-                }, 500);
+    destroyWall(row, col) {
+        let name = levelMap[row][col];
+        weakWalls.get(name).collapse();
 
-                timedEvents.set(`deleteWall${this.countNow}`, timedDeleteWall);
-                timedCount++;
-            };
-        };
+        const timedDeleteWall = new Timer(() => {
+            weakWalls.delete(name);
+            levelMap[row][col] = "";
+            timedEvents.delete(`deleteWall${this.countNow}`)
+        }, 500);
+
+        timedEvents.set(`deleteWall${this.countNow}`, timedDeleteWall);
+        timedCount++;
     };
 
     checkCollision(playerX, playerY, playerSize) {
@@ -300,15 +311,4 @@ export class Bomb {
             };
         };
     };
-}
-
-// Helper function to check for weak walls
-function isWeakWall(row, col) {
-    return (
-        row >= 0 && row <= 10 &&
-        col >= 0 && col <= 12 &&
-        levelMap[row][col] &&
-        typeof levelMap[row][col] === 'string' &&
-        levelMap[row][col].startsWith('weakWall')
-    );
 }

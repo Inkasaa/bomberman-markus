@@ -30,7 +30,7 @@ export class Finish {
 
     makeActive() {
         this.active = true;
-        this.element.style.backgroundImage = `url("images/finish.svg")`;
+        this.element.style.backgroundImage = `url("/images/finish.svg")`;
     }
 };
 
