@@ -1,5 +1,5 @@
 import { bombTime, bombs, bounds, enemies, finish, flames, nextLevel, powerups, solidWalls, timedEvents, weakWalls, levelMap, updateLivesInfo, gridStep, toggleFinished, setGameLost, bombsPool, mult } from "./game.js";
-import { bombUp, finishLevel, flameUp, gameLost1, gameLost2, levelMusic, playerBombDeath, playerDeath, playerDeath2, walkingSound } from "./sounds.js";
+import { finishLevel, gameLost1, gameLost2, levelMusic, playerBombDeath, playerDeath, playerDeath2, walkingSound } from "./sounds.js";
 import { Timer } from "./timer.js";
 
 let timedCount = 0;
@@ -306,13 +306,12 @@ export class Player {
                 if (checkHit(playerBounds, pow.element)) {
                     if (pow.powerType === "bomb") {
                         this.bombAmount++;
-                        flameUp.play();
+                        pow.pickUp();
                     }
                     if (pow.powerType === "flame") {
                         this.bombPower++;
-                        bombUp.play()
+                        pow.pickUp();
                     }
-                    pow.pickUp();
                     break;
                 };
             };

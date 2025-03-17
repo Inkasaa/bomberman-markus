@@ -1,4 +1,3 @@
-
 // Sound effects
 export const menuMusic = new Audio("sfx/menuMusic.mp3");
 menuMusic.loop = true;
@@ -12,15 +11,11 @@ playerDeath2.volume = 0.3;
 window.deathSound = 0;
 export const playerBombDeath = new Audio("sfx/playerBombDeath.mp3");
 playerBombDeath.volume = 0.5;
-export const enemyDeath = new Audio("sfx/enemyDeath.mp3");
-enemyDeath.volume = 0.3;
 export const placeBomb = new Audio("sfx/placeBomb.mp3");
 export const tickingBomb = new Audio("sfx/tickingBomb.mp3");
 tickingBomb.loop = true;
 export const wallBreak = new Audio("sfx/wallBreak.mp3");
 wallBreak.volume = 0.6;
-export const flameUp = new Audio("sfx/flameUp.mp3");
-export const bombUp = new Audio("sfx/bombUp.mp3");
 export const finishLevel = new Audio("sfx/finishLevel.mp3");
 export const gameLost1 = new Audio("sfx/sad-trombone.mp3");
 export const gameLost2 = new Audio("sfx/sinister-laugh.mp3");
