@@ -21,12 +21,12 @@ const imagePaths = [
     "/images/bombup.svg",
     "/images/flameup.svg",
     "/images/finishgrey.svg",
-    "/images/victory.svg",
+    "/images/victory2.svg",
 ];
 
 const soundPaths = [
     "sfx/menuMusic.mp3",
-    "sfx/walkingFaster.mp3",
+    "sfx/playerWalking.mp3",
     "sfx/playerDeath.mp3",
     "sfx/playerDeath2.mp3",
     "sfx/playerBombDeath.mp3",
@@ -34,7 +34,7 @@ const soundPaths = [
     "sfx/explosion.mp3",
     "sfx/placeBomb.mp3",
     "sfx/tickingBomb.mp3",
-    "sfx/wallBreak2.mp3",
+    "sfx/wallBreak.mp3",
     "sfx/flameUp.mp3",
     "sfx/bombUp.mp3",
     "sfx/finishLevel.mp3",

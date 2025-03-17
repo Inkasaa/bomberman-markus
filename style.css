@@ -301,16 +301,16 @@ button {
 }
 
 #victory {
-    width: 70vw;
-    height: 70vh;
-    background-image: url("/images/victory.svg");
+    /* width: 70vw;
+    height: 70vh; */
+    width: 100vw;
+    height: 80vh;
+    background-image: url("/images/victory.jpg");
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
     display: none;
     color: white;
-
-    display: none;
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -319,17 +319,33 @@ button {
 .victory-text {
     max-width: 30vw;
     text-align: center;
+    background: white;
+    padding: 10px 20px;
+    border-radius: 10px;
+    color: black;
+}
+
+#victory h1.victory-text {
+    font-size: 36px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    margin-top: 50px;
+}
+
+#victory-message.victory-text {
+    font-size: 24px;
+    margin-top: 0;
 }
 
 #victory button {
     padding: 12px 24px;
-    font-size: 1.2em;
+    font-size: 1.8em;
     background: #fff;
     color: #000;
     border: none;
     cursor: pointer;
-    border-radius: 5px;
-    margin-top: 5vh;
+    border-radius: 10px;
+    margin-top: 45vh;
 }
 
 #victory button:hover {

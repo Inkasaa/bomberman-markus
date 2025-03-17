@@ -139,6 +139,7 @@ function togglePause() {
                 tickingBomb.play();
             }
             timeToSubtract += window.performance.now(); // this is used to display time
+            updateStartTime();
         };
     };
 };
@@ -169,6 +170,10 @@ function updateScoreInfo(score) {
     scoreinfo.textContent = `Score: ${Math.round(score)}`
 }
 
+function updateStartTime(){
+    gameStartTime = window.performance.now() + 100;     // time buffer to load something. 25 looks to be just enough
+}
+
 function startSequence() {
     bounds = resizeGameContainer(level);
     [gridStep, halfStep] = getGridSize();
@@ -186,8 +191,8 @@ function startSequence() {
     }
     currentMusic = levelMusic[level - 1];
     currentMusic.play();
-
-    gameStartTime = window.performance.now() + 50;     // time buffer to load something. 25 looks to be just enough
+    updateStartTime();
+    [levelinfo, livesinfo, scoreinfo, timeinfo] = makeTextBar();
 }
 
 export function setGameLost() {
@@ -239,7 +244,6 @@ document.addEventListener("DOMContentLoaded", () => {
         menuMusic.pause();
         menuMusic.currentTime = 0;
         startSequence();
-        [levelinfo, livesinfo, scoreinfo, timeinfo] = makeTextBar();
         updateLivesInfo(player.lives);
 
         runGame();
