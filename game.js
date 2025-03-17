@@ -171,7 +171,7 @@ function updateScoreInfo(score) {
 }
 
 function updateStartTime(){
-    gameStartTime = window.performance.now() + 50;     // time buffer to load something. 25 looks to be just enough
+    gameStartTime = window.performance.now() + 100;     // time buffer to load something. 25 looks to be just enough
 }
 
 function startSequence() {

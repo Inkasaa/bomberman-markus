@@ -124,7 +124,7 @@ export function makeWalls() {
         ) {
             const x = gridStep * mapX;
             const y = gridStep * mapY;
-            const name = `bombUp${mapX}${mapY}`;
+            const name = `bombUp${String(mapX).padStart(2, '0')}${String(mapY).padStart(2, '0')}`;
             const newBombUp = new BombUp(x, y, gridStep * 1.0, name, mapY, mapX);
             powerups.set(name, newBombUp)
             powerUpMap[mapY][mapX] = [name, newBombUp];
@@ -143,7 +143,7 @@ export function makeWalls() {
         ) {
             const x = gridStep * mapX;
             const y = gridStep * mapY;
-            const name = `flameUp${mapX}${mapY}`;
+            const name = `flameUp${String(mapX).padStart(2, '0')}${String(mapY).padStart(2, '0')}`;
             const newFlameUp = new FlameUp(x, y, gridStep * 1.0, name, mapY, mapX);
             powerups.set(name, newFlameUp)
             powerUpMap[mapY][mapX] = [name, newFlameUp];
@@ -162,7 +162,7 @@ export function makeWalls() {
 
         const x = gridStep * mapX;
         const y = gridStep * mapY;
-        const name = `enemy${mapX}${mapY}`;
+        const name = `enemy${String(mapX).padStart(2, '0')}${String(mapY).padStart(2, '0')}`;
         const newEnemy = new Enemy(55 * mult, level * mult, x, y, name);
         enemies.set(name, newEnemy);
         levelMap[mapY][mapX] = 'enemy';
