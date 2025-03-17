@@ -236,8 +236,11 @@ document.addEventListener("DOMContentLoaded", () => {
     // Start menu
     const startMenu = document.getElementById("start-menu");
     startMenu.style.display = "block";
+    menuMusic.play();
 
     document.getElementById("start-btn").addEventListener("click", () => {
+        menuMusic.pause();
+        menuMusic.currentTime = 0;
         startMenu.style.display = "none";
         startSequence();
         [levelinfo, livesinfo, scoreinfo, timeinfo] = makeTextBar();
