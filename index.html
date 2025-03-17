@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Explosives Person</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <div id="start-menu">
         <h1>Explosives Person</h1>
@@ -18,13 +20,21 @@
     <div id="pause-menu">
         <h1>Pause</h1>
         <button id="continue-btn">Continue</button>
-        <button id="restart-btn">Restart</button>
+        <!-- <button id="restart-btn">Restart</button> -->
+        <button class="restart-btn">Restart</button>
     </div>
     <div id="game-over-menu">
         <h1>Game Over</h1>
         <button id="restart-btn-game-over">Restart</button>
     </div>
+    <div id="victory">
+        <h1 class="victory-text">Victory!</h1>
+        <p class="victory-text" id="victory-message">You scored XXXX points with Y lives remaining, you absolute legend!
+        </p>
+        <button class="restart-btn">Restart</button>
+    </div>
     <div id="game-container"></div>
     <script type="module" src="game.js"></script>
 </body>
+
 </html>

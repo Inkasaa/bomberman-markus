@@ -8,14 +8,14 @@ export let halfStep = 0;
 export let levelMap;                    // for placing elements, wall collapses
 export let powerUpMap;                  // for placing elements, wall collapses
 
-export let solidWalls = [];           // for player collisions
+export let solidWalls = [];             // for player collisions
 export const weakWalls = new Map();     // for player collisions
 export const bombs = new Map();         // for player collisions
 export const bombTime = 2500;
 export const flames = new Map();        // for player collisions
 export const timedEvents = new Map();
-export const enemies = new Map();        // for player collisions
-export const powerups = new Map();        // for player collisions
+export const enemies = new Map();       // for player collisions
+export const powerups = new Map();      // for player collisions
 export let finish;
 
 let levelinfo;
@@ -27,12 +27,14 @@ let score = 0;
 let timeToSubtract = 0;
 
 // Sound effects
+export const menuMusic = new Audio("sfx/menuMusic.mp3");
+menuMusic.loop = true;
 export const walkingSound = new Audio ("sfx/walkingSound.mp3");
-walkingSound.volume = 0.8;
+walkingSound.volume = 0.5;
 walkingSound.loop = true;
-// export const enemyWalking = new Audio ("sfx/enemyWalking.mp3");
-// enemyWalking.volume = 0.5;
-// enemyWalking.loop = true;
+export const enemyWalking = new Audio ("sfx/enemyWalking.mp3");
+enemyWalking.volume = 0.2;
+enemyWalking.loop = true;
 export const playerDeath = new Audio("sfx/playerDeath.mp3");
 playerDeath.volume = 0.3;
 export const playerDeath2 = new Audio("sfx/playerDeath2.mp3");
@@ -47,13 +49,15 @@ explosion.volume = 0.6;
 export const placeBomb = new Audio("sfx/placeBomb.mp3");
 export const tickingBomb = new Audio("sfx/tickingBomb.mp3");
 tickingBomb.loop = true;
-export const wallBreak = new Audio("sfx/wallBreak.mp3");
-wallBreak.volume = 0.4;
+export const wallBreak = new Audio("sfx/wallBreak2.mp3");
+wallBreak.volume = 0.6;
 export const flameUp = new Audio("sfx/flameUp.mp3");
 export const bombUp = new Audio("sfx/bombUp.mp3");
 export const finishLevel = new Audio("sfx/finishLevel.mp3");
-export const menuMusic = new Audio("sfx/menuMusic.mp3");
-menuMusic.loop = true;
+export const gameLost1 = new Audio("sfx/sad-trombone.mp3");
+export const gameLost2 = new Audio("sfx/sinister-laugh.mp3");
+export const congrats = new Audio("sfx/congratulations.mp3");
+export const crowdClapCheer = new Audio("sfx/cheering-and-clapping-crowd.mp3");
 
 // Background music for each level
 export const levelMusic = [
@@ -74,6 +78,8 @@ levelMusic.forEach(track => {
 let player;
 let paused = false;
 let finished = false;
+let gameRunning = false;
+let gameLost = false;
 let scoreTime = 0;
 let lastFrameTime = 0;
 export let level = 1;
@@ -90,22 +96,35 @@ export function restartGame() {
     location.reload();
 };
 
-export function toggleFinished (){
+export function toggleFinished() {
     finished = !finished;
     scoreTime = window.performance.now() - timeToSubtract;
 }
 
-export function nextLevel() {
-    if (level >= 5) {
-        window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
-        return;
-    }
+function toggleEndScreen() {
+    const victoryScreen = document.getElementById("victory");
+    let msg = document.getElementById("victory-message");
+    msg.textContent = `You scored ${Math.round(score)} points with ${player.lives} lives remaining, you absolute legend!`;
+    victoryScreen.style.display == "flex" ? victoryScreen.style.display = "none" : victoryScreen.style.display = "flex";
+}
 
-    document.getElementById("game-container").replaceChildren();
+export function nextLevel() {   
 
     let scoreAddition = ((twoMinutes - (scoreTime - timeToSubtract)) / 1000) * player.lives * level;
     if (scoreAddition > 0) score += scoreAddition;
     updateScoreInfo(score);
+
+    if (level >= 5) {
+        toggleEndScreen();
+        congrats.play();
+        congrats.onended = () => {
+            crowdClapCheer.play();
+        };
+        //window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+        return;
+    }
+
+    document.getElementById("game-container").replaceChildren();
 
     level++;
     timeToSubtract = window.performance.now(); // resets level clock  
@@ -130,31 +149,46 @@ export function nextLevel() {
     startSequence();
     updateLevelInfo(level);
     updateLivesInfo(player.lives);
-    toggleFinished ();
+    toggleFinished();
 };
 
 function togglePause() {
-    paused = !paused;
-    const pauseMenu = document.getElementById("pause-menu");
+    if (gameRunning && !gameLost) {
+        paused = !paused;
+        const pauseMenu = document.getElementById("pause-menu");
 
-    if (paused) {
-        pauseMenu.style.display = "block";
-        for (const timed of timedEvents.values()) {
-            timed.pause();
+        if (paused) {
+            pauseMenu.style.display = "block";
+            for (const timed of timedEvents.values()) {
+                timed.pause();
+            }
+            if (currentMusic) {
+                currentMusic.pause();
+            }
+            walkingSound.pause();
+            enemies.forEach(enemy => {
+                enemy.enemyWalking.pause();
+            });
+            timeToSubtract -= window.performance.now(); // stored for unpausing 
+        } else {
+            pauseMenu.style.display = "none";
+            for (const timed of timedEvents.values()) {
+                timed.resume();
+            }
+            if (currentMusic) {
+                currentMusic.play();
+            }
+            if (player.isMoving) {
+                walkingSound.play();
+            }
+
+            enemies.forEach(enemy => {
+                if (enemy.isMoving) {
+                    enemy.enemyWalking.play();
+                }
+            });
+            timeToSubtract += window.performance.now(); // this is used to display time
         }
-        if (currentMusic) {
-            currentMusic.pause();
-        }
-        timeToSubtract -= window.performance.now(); // stored for unpausing 
-    } else {
-        pauseMenu.style.display = "none";
-        for (const timed of timedEvents.values()) {
-            timed.resume();
-        }
-        if (currentMusic) {
-            currentMusic.play();
-        }
-        timeToSubtract += window.performance.now(); // this is used to display time
     }
 };
 
@@ -202,10 +236,15 @@ function startSequence() {
     currentMusic.play();
 }
 
+export function setGameLost() {
+    gameLost = true;
+}
+
 function runGame() {
     const now = window.performance.now();
     timeToSubtract = now;
     lastFrameTime = now; // initialize to current timestamp
+    gameRunning = true;
     requestAnimationFrame(gameLoop);
 
     function gameLoop(timestamp) {
@@ -213,25 +252,26 @@ function runGame() {
         let deltaTime = (timestamp - lastFrameTime) / 16.7; // use deltaTime to normalize speed for different refresh rates
         lastFrameTime = timestamp;
 
-        if (!paused) {
+        if (!paused && !gameLost) {
             if (!finished) updateTimeInfo(timestamp - timeToSubtract);
-
             player.movePlayer(deltaTime);
-
-            for (const en of enemies.values()) {
-                en.moveEnemy(deltaTime);
-            }
+            enemies.forEach((en) => en.moveEnemy(deltaTime));
         }
 
         // requestAnimationFrame() always runs callback with 'timestamp' argument (milliseconds since the page loaded)
-        requestAnimationFrame(gameLoop);
+        if (gameRunning) { // Keep looping unless explicitly stopped
+            requestAnimationFrame(gameLoop);
+        };
     };
 };
 
 document.addEventListener("DOMContentLoaded", () => {
     // Pause menu
     document.getElementById("continue-btn").addEventListener("click", togglePause);
-    document.getElementById("restart-btn").addEventListener("click", restartGame);
+    //document.getElementById("restart-btn").addEventListener("click", restartGame);
+
+    const restarts = document.querySelectorAll('.restart-btn');
+    restarts.forEach(rs => rs.addEventListener('click', restartGame));
 
     // Start menu
     const startMenu = document.getElementById("start-menu");
@@ -242,6 +282,8 @@ document.addEventListener("DOMContentLoaded", () => {
         menuMusic.pause();
         menuMusic.currentTime = 0;
         startMenu.style.display = "none";
+        menuMusic.pause();
+        menuMusic.currentTime = 0;
         startSequence();
         [levelinfo, livesinfo, scoreinfo, timeinfo] = makeTextBar();
         updateLivesInfo(player.lives);

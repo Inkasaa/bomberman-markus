@@ -1,5 +1,5 @@
 import { Bomb } from "./bomb.js";
-import { bombTime, bombs, bounds, enemies, finish, flames, nextLevel, powerups, solidWalls, timedEvents, weakWalls, walkingSound, playerDeath, playerDeath2, playerBombDeath, flameUp, bombUp, finishLevel, levelMap, updateLivesInfo, gridStep, toggleFinished } from "./game.js";
+import { bombTime, bombs, bounds, enemies, finish, flames, nextLevel, powerups, solidWalls, timedEvents, weakWalls, walkingSound, playerDeath, playerDeath2, playerBombDeath, flameUp, bombUp, finishLevel, levelMap, updateLivesInfo, gridStep, toggleFinished, gameLost1, gameLost2, levelMusic, setGameLost } from "./game.js";
 import { Timer } from "./timer.js";
 
 let timedCount = 0;
@@ -63,6 +63,16 @@ export class Player {
         };
     };
 
+    // Handle sprite direction change based on movement
+    updateSpriteDirection(key) {
+        if (key == 'ArrowLeft') {
+            this.element.style.backgroundImage = "url('/images/nalleLeft.png')";
+        }
+        if (key == 'ArrowRight') {
+            this.element.style.backgroundImage = "url('/images/nalleRight.png')";
+        }
+    }
+
     move(event) {
         switch (event.key) {
             case "ArrowLeft":
@@ -78,6 +88,7 @@ export class Player {
                 this.down = true;
                 break;
         };
+        this.updateSpriteDirection(event.key); // Update the sprite if player moves left or right    
     };
 
     stop(event) {
@@ -127,6 +138,22 @@ export class Player {
                 gameOverMenu.style.background = `rgba(0, 0, 0, 0.8) url("${randomGif}") no-repeat center center`;
                 gameOverMenu.style.backgroundSize = "cover";
                 gameOverMenu.style.display = "block";
+
+                levelMusic.forEach(track => {
+                    track.pause();
+                    track.currentTime = 0;
+                });
+                enemies.forEach(enemy => {
+                    enemy.enemyWalking.pause();
+                    enemy.enemyWalking.currentTime = 0;
+                });
+                setGameLost(); // Stop game loop updates
+
+                if (randomGif === "images/loser1.gif") {
+                    gameLost1.play(); // sad-trombone for loser1.gif
+                } else {
+                    gameLost2.play(); // sinister-laugh for loser2.gif
+                }
             };
             timedEvents.delete(`resurrection${countNow}`)
         }, 2000);
@@ -145,6 +172,7 @@ export class Player {
     };
 
     movePlayer(deltaTime) {
+
         if (this.alive) {
 
             // diagonal movement slowdown factor
@@ -216,9 +244,9 @@ export class Player {
             const wasMoving = this.isMoving;
             this.isMoving = this.left || this.right || this.up || this.down;
             if (this.isMoving && !wasMoving) {
-                walkingSound.play(); 
+                walkingSound.play();
             } else if (!this.isMoving && wasMoving) {
-                walkingSound.pause(); 
+                walkingSound.pause();
                 walkingSound.currentTime = 0;
             }
 
@@ -240,7 +268,7 @@ export class Player {
                     if (window.deathSound === 0) {
                         playerDeath.play();
                         window.deathSound = 1;
-                     } else {
+                    } else {
                         playerDeath2.play();
                         window.deathSound = 0;
                     }
@@ -268,9 +296,11 @@ export class Player {
             // finish hit
             if (finish.active && finish.checkCollision(newX, newY, this.size)) {
                 this.alive = false;
+                walkingSound.pause();
+                walkingSound.currentTime = 0;
                 finishLevel.play();
                 toggleFinished();
-                const timedNextLevel = new Timer(() => {                    
+                const timedNextLevel = new Timer(() => {
                     nextLevel();
                     timedEvents.delete(`finishingTheLevel`);
                 }, 4000);
