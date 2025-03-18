@@ -162,7 +162,12 @@ function updateLevelInfo(level) {
 }
 
 export function updateLivesInfo(lives) {
-    livesinfo.textContent = `❤️: ${lives}`
+    let livesText = '';
+    for (let i=0; i<lives; i++) {
+        livesText += `❤️`;
+    };
+    livesinfo.textContent = 'Lives: ' + livesText;
+    //livesinfo.textContent = `❤️: ${lives}`
 }
 
 function updateScoreInfo(score) {
