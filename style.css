@@ -16,6 +16,57 @@ body.grey {
     background-image: none;
 }
 
+body::after {
+    content: '';
+    display: none;
+    background-image:
+        url("images/background03.jpg"),
+        url("images/bluegrass.jpg"),
+        url("images/sandshadow.jpg"),
+        url("images/yellowgrass.jpg"),
+        url("images/lavaSand.jpg"),
+        url("images/weakwallLava2.jpg"),
+        url("images/backgroundDeepwater.png"),
+        url("images/nalleRight3.png"),
+        url("images/nalleLeft3.png"),
+        url("images/nalleDead.png"),
+        url("images/nalleRight3white.png"),
+        url("images/nalleLeft3white.png"),
+        url("images/enemy.png"),
+        url("images/enemyDead.png"),
+        url("images/solidwallConcreat.png"),
+        url("images/solidwallGreen.png"),
+        url("images/weakwallArmy.png"),
+        url("images/solidwallLava.png"),
+        url("images/finish1.png"),
+        url("images/finish2.png"),
+        url("images/finish3.png"),
+        url("images/finish4.png"),
+        url("images/finish5.png"),
+        url("images/finish6.png"),
+        url("images/finish7.png"),
+        url("images/finish8.png"),
+        url("images/solidwall.svg"),
+        url("images/weakwall02.svg"),
+        url("images/solidwallSnow.svg"),
+        url("images/weakwallice.svg"),
+        url("images/weakwallBrown.svg"),
+        url("images/burningwall.svg"),
+        url("images/bomb.svg"),
+        url("images/bomborange.svg"),
+        url("images/flamehor.svg"),
+        url("images/flameendsh.svg"),
+        url("images/flamevert.svg"),
+        url("images/flameendsv.svg"),
+        url("images/bombup.svg"),
+        url("images/flameup.svg"),
+        url("images/finishgrey.svg"),
+        url("images/finish.svg"),
+        url("images/burn.svg"),
+        url("images/loser1.gif"),
+        url("images/loser2.gif");
+}
+
 button {
     font-family: Superclarendon, 'Bookman Old Style', 'URW Bookman', 'URW Bookman L', 'Georgia Pro', Georgia, serif;
 }
@@ -29,7 +80,7 @@ button {
 }
 
 /* Level-specific backgrounds */
- 
+
 #game-container.level-1 {
     background-image: url("images/bluegrass.jpg");
 }
@@ -52,7 +103,8 @@ button {
 
 
 #player {
-    will-change: transform;            /* to own layer => GPU acceleration */
+    will-change: transform;
+    /* to own layer => GPU acceleration */
     background-image: url("images/nalleRight3.png");
     background-size: contain;
     z-index: 10;
@@ -76,11 +128,15 @@ button {
 
 .enemy {
     position: absolute;
-    will-change: transform;                 /* to own layer => GPU acceleration */
+    will-change: transform;
+    /* to own layer => GPU acceleration */
     background-image: url("images/enemy.png");
-    background-size: contain;               /* Ensure the image is fully visible */
-    background-position: center;            /* Center the image within the element */
-    background-repeat: no-repeat;           /* Prevent the image from repeating */
+    background-size: contain;
+    /* Ensure the image is fully visible */
+    background-position: center;
+    /* Center the image within the element */
+    background-repeat: no-repeat;
+    /* Prevent the image from repeating */
     z-index: 9;
 }
 
@@ -94,13 +150,13 @@ button {
 }
 
 .level-1.wall.solid {
-    background-image: url("images/solidwall.svg") 
+    background-image: url("images/solidwall.svg")
 }
 
 .level-1.wall.weak {
     background-image: url("images/weakwall02.svg");
 }
-   
+
 .level-2.wall.solid {
     background-image: url("images/solidwallSnow.svg")
 }
@@ -110,7 +166,7 @@ button {
 }
 
 .level-3.wall.solid {
-    background-image: url("images/solidwallConcreat.png") 
+    background-image: url("images/solidwallConcreat.png")
 }
 
 .level-3.wall.weak {
@@ -118,7 +174,7 @@ button {
 }
 
 .level-4.wall.solid {
-    background-image: url("images/solidwallGreen.png") 
+    background-image: url("images/solidwallGreen.png")
 }
 
 .level-4.wall.weak {
@@ -126,18 +182,18 @@ button {
 }
 
 .level-5.wall.solid {
-    background-image: url("images/solidwallLava.png") 
+    background-image: url("images/solidwallLava.png")
 }
 
 .level-5.wall.weak {
     background-image: url("images/weakwallLava2.jpg");
 }
 
-.level-1.wall.burning ,
-.level-2.wall.burning ,
-.level-3.wall.burning ,
-.level-4.wall.burning ,
-.level-5.wall.burning  {
+.level-1.wall.burning,
+.level-2.wall.burning,
+.level-3.wall.burning,
+.level-4.wall.burning,
+.level-5.wall.burning {
     background-image: url("images/burningwall.svg");
 }
 
@@ -307,7 +363,7 @@ button {
 #victory {
     width: 70vw;
     height: 70vh;
-/*     width: 100vw;
+    /*     width: 100vw;
     height: 80vh; */
     background-image: url("images/victory.svg");
     background-size: contain;
@@ -365,7 +421,8 @@ button {
 }
 
 .infobox {
-    flex: 1;    /* Equal width for all */
+    flex: 1;
+    /* Equal width for all */
     background-color: #474747;
     border-style: solid;
     border-color: #ececec;
