@@ -16,10 +16,34 @@ button {
 
 #game-container {
     position: absolute;
-    background: #eee;
+    background: #1d3f26;
     background-image: url("/images/bluegrass.jpg");
     z-index: -1;
+
 }
+
+/* Level-specific backgrounds */
+ 
+#game-container.level-1 {
+    background-image: url("/images/bluegrass.jpg");
+}
+
+#game-container.level-2 {
+    background-image: url("/images/backgroundDeepwater.png");
+}
+
+#game-container.level-3 {
+    background-image: url("/images/sandshadow.jpg");
+}
+
+#game-container.level-4 {
+    background-image: url("/images/yellowgrass.jpg");
+}
+
+#game-container.level-5 {
+    background-image: url("/images/lavaSand.jpg");
+}
+
 
 #player {
     will-change: transform;            /* to own layer => GPU acceleration */
@@ -60,21 +84,57 @@ button {
 
 .wall {
     z-index: 3;
-}
-
-.wall.solid {
-    background-color: rgb(136, 136, 136);
-    background-image: url("/images/solidwall.svg");
     background-size: cover;
 }
 
-.wall.weak {
-    background-color: rgb(199, 165, 130);
+
+
+
+.level-1.wall.solid {
+    background-image: url("/images/solidwall.svg") 
+}
+
+.level-1.wall.weak {
     background-image: url("/images/weakwall02.svg");
-    background-size: cover;
+}
+   
+.level-2.wall.solid {
+    background-image: url("/images/solidwallSnow.svg")
 }
 
-.wall.burning {
+.level-2.wall.weak {
+    background-image: url("/images/weakwallice.svg");
+}
+
+.level-3.wall.solid {
+    background-image: url("/images/solidwallConcreat.png") 
+}
+
+.level-3.wall.weak {
+    background-image: url("/images/weakwallBrown.svg");
+}
+
+.level-4.wall.solid {
+    background-image: url("/images/solidwallGreen.png") 
+}
+
+.level-4.wall.weak {
+    background-image: url("/images/weakwallArmy.png");
+}
+
+.level-5.wall.solid {
+    background-image: url("/images/solidwallLava.png") 
+}
+
+.level-5.wall.weak {
+    background-image: url("/images/weakwallLava2.jpg");
+}
+
+.level-1.wall.burning ,
+.level-2.wall.burning ,
+.level-3.wall.burning ,
+.level-4.wall.burning ,
+.level-5.wall.burning  {
     background-image: url("/images/burningwall.svg");
 }
 

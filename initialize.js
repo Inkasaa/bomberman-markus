@@ -6,7 +6,7 @@ import { Player } from "./player.js";
 import { BombUp, FlameUp } from "./powerup.js";
 import { SolidWall, WeakWall } from "./walls.js";
 
-export function resizeGameContainer() {
+export function resizeGameContainer(level) {
     const gameContainer = document.getElementById("game-container");
 
     const windowWidth = window.innerWidth;
@@ -24,6 +24,13 @@ export function resizeGameContainer() {
     const bounds = gameContainer.getBoundingClientRect();
     gameContainer.style.left = (windowWidth - bounds.width) / 2 + 'px';
     gameContainer.style.top = (windowHeight - bounds.height) / 2 + 'px';
+
+
+    // Remove the previous level class if it exists
+    gameContainer.classList.remove(`level-${level - 1}`);
+
+    // Apply the level class to the game container
+    gameContainer.classList.add(`level-${level}`);
 
     return bounds;
 };
@@ -57,7 +64,7 @@ export function makeLevelMap() {
     return map;
 };
 
-export function makeWalls() {
+export function makeWalls(level) {
 
     // place 6 * 5 solid walls inside play area
     for (let i = 0; i < 6; i++) {
@@ -66,8 +73,10 @@ export function makeWalls() {
             const mapY = (1 + j * 2);
             const x = gridStep * mapX;
             const y = gridStep * mapY;
-            const newSolid = new SolidWall(x, y, gridStep);
+            // Create SolidWall instance with level passed
+            const newSolid = new SolidWall(x, y, gridStep, level);
             solidWalls.push(newSolid);
+
             levelMap[mapY][mapX] = 'solidWall';
         };
     };
@@ -80,7 +89,7 @@ export function makeWalls() {
             const mapY = yVal;
             const x = gridStep * mapX;
             const y = gridStep * mapY;
-            new SolidWall(x, y, gridStep);
+            new SolidWall(x, y, gridStep, level);
         }
     };
     const xVals = [-1, 13];
@@ -90,7 +99,7 @@ export function makeWalls() {
             const mapY = i;
             const x = gridStep * mapX;
             const y = gridStep * mapY;
-            new SolidWall(x, y, gridStep);
+            new SolidWall(x, y, gridStep, level);
         }
     };
 
@@ -107,7 +116,8 @@ export function makeWalls() {
         const x = gridStep * mapX;
         const y = gridStep * mapY;
         const name = `weakWall${String(mapX).padStart(2, '0')}${String(mapY).padStart(2, '0')}`;
-        const newWeak = new WeakWall(x, y, gridStep);
+        const newWeak = new WeakWall(x, y, gridStep, level);
+
         weakWalls.set(name, newWeak);
         levelMap[mapY][mapX] = name;
     };
