@@ -4,10 +4,16 @@ body {
     align-items: center;
     margin: 0;
     height: 100vh;
-    background: #000 url("images/background03.jpg") no-repeat center center;
+    background-color: #474747;
+    /* background: #000 url("images/background03.jpg") no-repeat center center; */
+    background-image: url("images/background03.jpg");
     background-size: cover;
 
     font-family: Rockwell, 'Rockwell Nova', 'Roboto Slab', 'DejaVu Serif', 'Sitka Small', serif;
+}
+
+body.grey {
+    background-image: none;
 }
 
 button {

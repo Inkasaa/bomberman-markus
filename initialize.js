@@ -212,11 +212,11 @@ export function makeTextBar() {
             info.classList.add("infobox");
             info.style.margin = `${pad * mult}px`;
             info.style.padding = `${pad * mult}px`;
-            info.style.borderWidth = `${mult * 2}`;
+            info.style.borderWidth = `${mult * 2}px`;
             info.style.borderRadius = `${pad * mult}px`;
             info.id = ids[i];
             info.textContent = placeholders[i];
-            info.style.fontSize = `${20 * mult}px`;
+            info.style.fontSize = `${18 * mult}px`;
             textbar.appendChild(info);
             infos.push(info);
         }

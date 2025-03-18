@@ -219,7 +219,8 @@ function startSequence() {
         () => { updateStartTime(); },
         () => { [levelinfo, livesinfo, scoreinfo, timeinfo] = makeTextBar(); },
         () => { updateLivesInfo(player.lives); },
-        () => {updateLivesInfo(player.lives);},
+        () => { updateLivesInfo(player.lives); },
+        () => { document.body.classList.add("grey"); },
         () => { runGame(); }
     ];
 
@@ -266,6 +267,13 @@ function runGame() {
     };
 };
 
+function playMenuMusicOnInteraction() {
+    menuMusic.play();
+    // Remove the event listeners after the first interaction to avoid triggering play multiple times
+    document.removeEventListener('click', playMenuMusicOnInteraction);
+    document.removeEventListener('keydown', playMenuMusicOnInteraction);
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     // Pause menu
     document.getElementById("continue-btn").addEventListener("click", togglePause);
@@ -277,17 +285,21 @@ document.addEventListener("DOMContentLoaded", () => {
         restartGame();
     });
 
+    // Start music on interaction to avoid errors
+    document.addEventListener('click', playMenuMusicOnInteraction);
+    document.addEventListener('keydown', playMenuMusicOnInteraction);
+
     // Start menu
     const startMenu = document.getElementById("start-menu");
     startMenu.style.display = "block";
-    menuMusic.play();
-    loadLevel();
+    //menuMusic.play();    
 
     document.getElementById("start-btn").addEventListener("click", () => {
         menuMusic.pause();
         menuMusic.currentTime = 0;
         startMenu.style.display = "none";
 
+        loadLevel();
         startSequence();
     });
 });
