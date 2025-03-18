@@ -152,7 +152,7 @@ document.addEventListener("keydown", (event) => {
 
 function updateTimeInfo(time) {
     time = twoMinutes - time;
-    if (time < 0 ) time = 0;
+    if (time < 0) time = 0;
     let totalSeconds = Math.floor(time / 1000);
     let minutes = Math.floor(totalSeconds / 60); // Get minutes
     let seconds = totalSeconds % 60; // Get seconds
@@ -215,6 +215,9 @@ function runGame() {
     function gameLoop(timestamp) {
         let deltaTime = (timestamp - lastFrameTime) / 16.7; // use deltaTime to normalize speed for different refresh rates
         lastFrameTime = timestamp;
+
+        // pause game when window not active
+        window.onblur = () => { if (!paused) togglePause() };
 
         if (timestamp > gameStartTime && !paused && !gameLost) {
             if (!finished) updateTimeInfo(timestamp - timeToSubtract);
