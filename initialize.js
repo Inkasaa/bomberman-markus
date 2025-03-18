@@ -89,8 +89,7 @@ export function makeWalls(level) {
             const mapY = yVal;
             const x = gridStep * mapX;
             const y = gridStep * mapY;
-            const newSolid = new SolidWall(x, y, gridStep, level);
-    
+            new SolidWall(x, y, gridStep, level);
         }
     };
     const xVals = [-1, 13];
@@ -100,8 +99,7 @@ export function makeWalls(level) {
             const mapY = i;
             const x = gridStep * mapX;
             const y = gridStep * mapY;
-            const newSolid = new SolidWall(x, y, gridStep, level);
-
+            new SolidWall(x, y, gridStep, level);
         }
     };
 
@@ -118,11 +116,8 @@ export function makeWalls(level) {
         const x = gridStep * mapX;
         const y = gridStep * mapY;
         const name = `weakWall${String(mapX).padStart(2, '0')}${String(mapY).padStart(2, '0')}`;
-        const newWeak = new WeakWall(x, y, gridStep);
+        const newWeak = new WeakWall(x, y, gridStep, level);
 
-         // Add the level-based class to the weak wall
-         newWeak.element.classList.add(`level-${level}`, "weak");
-     
         weakWalls.set(name, newWeak);
         levelMap[mapY][mapX] = name;
     };

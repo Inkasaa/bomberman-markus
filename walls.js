@@ -82,7 +82,6 @@ export class WeakWall extends Wall {
 
     collapse() {
         this.element.classList.add('burning');
-
         const countNow = timedCount;
         const timedCollapse = new Timer(() => {
             this.element.remove();

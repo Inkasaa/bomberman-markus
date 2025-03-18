@@ -136,8 +136,7 @@ button {
 .level-4.wall.burning ,
 .level-5.wall.burning  {
     background-image: url("/images/burningwall.svg");
-} 
-
+}
 
 .bomb {
     position: absolute;
