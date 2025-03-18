@@ -252,6 +252,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         startSequence();
         updateLivesInfo(player.lives);
+
         runGame();
     });
 });
