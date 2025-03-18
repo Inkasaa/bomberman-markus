@@ -288,7 +288,7 @@ export class Player {
 
                 // enemies hit
                 for (const enemy of enemies.values()) {
-                    if (checkHit(playerBounds, enemy.element)) {
+                    if (enemy.alive && checkHit(playerBounds, enemy.element)) {
                         if (window.deathSound === 0) {
                             playerDeath.play();
                             window.deathSound = 1;
