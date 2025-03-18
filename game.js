@@ -1,5 +1,6 @@
 import { Finish } from "./finish.js";
 import { resizeGameContainer, getGridSize, setUpGame, makeWalls, makeLevelMap, makeTextBar, fillFlameAndBombPools } from "./initialize.js";
+import { preloadAllImages } from "./preloadimages.js";
 import { congrats, crowdClapCheer, levelMusic, menuMusic, tickingBomb, walkingSound } from "./sounds.js";
 
 export let bounds;
