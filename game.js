@@ -55,6 +55,8 @@ export function restartGame() {
 export function toggleFinished() {
     finished = !finished;
     scoreTime = window.performance.now() - timeToSubtract;
+
+    console.log("scoretime updated")
 }
 
 function toggleEndScreen() {
@@ -66,9 +68,11 @@ function toggleEndScreen() {
 
 export function nextLevel() {
 
-    let scoreAddition = ((twoMinutes - (scoreTime - timeToSubtract)) / 1000) * player.lives * level;
+    let scoreAddition = ((twoMinutes - scoreTime) / 1000) * player.lives * level;
     if (scoreAddition > 0) score += scoreAddition;
     updateScoreInfo(score);
+
+    console.log("score itself updated")
 
     if (level >= 5) {
         toggleEndScreen();
@@ -163,11 +167,10 @@ function updateLevelInfo(level) {
 
 export function updateLivesInfo(lives) {
     let livesText = '';
-    for (let i=0; i<lives; i++) {
+    for (let i = 0; i < lives; i++) {
         livesText += `❤️`;
     };
     livesinfo.textContent = 'Lives: ' + livesText;
-    //livesinfo.textContent = `❤️: ${lives}`
 }
 
 function updateScoreInfo(score) {
@@ -175,7 +178,7 @@ function updateScoreInfo(score) {
     scoreinfo.textContent = `Score: ${Math.round(score)}`
 }
 
-function updateStartTime(){
+function updateStartTime() {
     gameStartTime = window.performance.now() + 100;     // time buffer to load something
 }
 
