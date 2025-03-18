@@ -94,6 +94,7 @@ export function nextLevel() {
     flamesPoolV = [];
     bombsPool = [];
 
+    loadLevel();
     startSequence();
     updateLevelInfo(level);
     updateLivesInfo(player.lives);
@@ -180,26 +181,59 @@ function updateStartTime() {
     gameStartTime = window.performance.now() + 100;     // time buffer to load something
 }
 
-function startSequence() {
-    bounds = resizeGameContainer(level);
-    [gridStep, halfStep] = getGridSize();
-    [mult, player] = setUpGame(bounds);
-    levelMap = makeLevelMap();
-    powerUpMap = makeLevelMap();
-    makeWalls(level);
-    fillFlameAndBombPools();
-    finish = new Finish(gridStep * 12, gridStep * 10, gridStep);
+function loadLevel() {
+    let tasks = [
+        () => { bounds = resizeGameContainer(level); },
+        () => { [gridStep, halfStep] = getGridSize(); },
+        () => { [mult, player] = setUpGame(bounds) },
+        () => { levelMap = makeLevelMap(); },
+        () => { powerUpMap = makeLevelMap(); },
+        () => { makeWalls(level); },
+        () => { fillFlameAndBombPools(); },
+        () => { finish = new Finish(gridStep * 12, gridStep * 10, gridStep); },
+    ];
 
-    // Start music for the current level
-    if (currentMusic) {
-        currentMusic.pause();
-        currentMusic.currentTime = 0;
+    function processNextTask() {
+        if (tasks.length > 0) {
+            let task = tasks.shift();
+            task();
+            requestAnimationFrame(processNextTask);
+        }
     }
-    currentMusic = levelMusic[level - 1];
-    currentMusic.play();
-    updateStartTime();
-    [levelinfo, livesinfo, scoreinfo, timeinfo] = makeTextBar();
+
+    requestAnimationFrame(processNextTask);
+
+    const gameContainer = document.getElementById("game-container");
+    gameContainer.style.visibility = "hidden";
 }
+
+function startSequence() {
+    const gameContainer = document.getElementById("game-container");
+    gameContainer.style.visibility = "visible";
+
+    let tasks = [
+        () => {
+            if (currentMusic) { currentMusic.pause(); currentMusic.currentTime = 0; }
+            currentMusic = levelMusic[level - 1]; currentMusic.play();
+        },
+        () => { updateStartTime(); },
+        () => { [levelinfo, livesinfo, scoreinfo, timeinfo] = makeTextBar(); },
+        () => { updateLivesInfo(player.lives); },
+        () => {updateLivesInfo(player.lives);},
+        () => { runGame(); }
+    ];
+
+    function processNextTask() {
+        if (tasks.length > 0) {
+            let task = tasks.shift();
+            task();
+            requestAnimationFrame(processNextTask);
+        }
+    }
+
+    requestAnimationFrame(processNextTask);
+}
+
 
 export function setGameLost() {
     gameLost = true;
@@ -247,6 +281,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const startMenu = document.getElementById("start-menu");
     startMenu.style.display = "block";
     menuMusic.play();
+    loadLevel();
 
     document.getElementById("start-btn").addEventListener("click", () => {
         menuMusic.pause();
@@ -254,7 +289,5 @@ document.addEventListener("DOMContentLoaded", () => {
         startMenu.style.display = "none";
 
         startSequence();
-        updateLivesInfo(player.lives);
-        runGame();
     });
 });
