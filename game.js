@@ -55,8 +55,6 @@ export function restartGame() {
 export function toggleFinished() {
     finished = !finished;
     scoreTime = window.performance.now() - timeToSubtract;
-
-    console.log("scoretime updated")
 }
 
 function toggleEndScreen() {
@@ -71,8 +69,6 @@ export function nextLevel() {
     let scoreAddition = ((twoMinutes - scoreTime) / 1000) * player.lives * level;
     if (scoreAddition > 0) score += scoreAddition;
     updateScoreInfo(score);
-
-    console.log("score itself updated")
 
     if (level >= 5) {
         toggleEndScreen();
@@ -155,6 +151,8 @@ document.addEventListener("keydown", (event) => {
 });
 
 function updateTimeInfo(time) {
+    time = twoMinutes - time;
+    if (time < 0 ) time = 0;
     let totalSeconds = Math.floor(time / 1000);
     let minutes = Math.floor(totalSeconds / 60); // Get minutes
     let seconds = totalSeconds % 60; // Get seconds
