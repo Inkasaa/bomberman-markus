@@ -153,7 +153,7 @@ export class Player {
                 this.invulnerability();
             } else {
                 const gameOverMenu = document.getElementById("game-over-menu");
-                const gifs = ["/images/loser1.gif", "/images/loser2.gif"];
+                const gifs = ["images/loser1.gif", "images/loser2.gif"];
                 const randomGif = gifs[Math.floor(Math.random() * gifs.length)];
                 gameOverMenu.style.background = `rgba(0, 0, 0, 0.8) url("${randomGif}") no-repeat center center`;
                 gameOverMenu.style.backgroundSize = "cover";
@@ -169,7 +169,7 @@ export class Player {
                 });
                 setGameLost(); // Stop game loop updates
 
-                if (randomGif === "/images/loser1.gif") {
+                if (randomGif === "images/loser1.gif") {
                     gameLost1.play(); // sad-trombone for loser1.gif
                 } else {
                     gameLost2.play(); // sinister-laugh for loser2.gif
@@ -358,14 +358,14 @@ function checkHit(playerBounds, other) {
 
 function playFinishAnimation() {
     const finishImages = [
-        '/images/finish8.png',
-        '/images/finish7.png',
-        '/images/finish6.png',
-        '/images/finish5.png',
-        '/images/finish4.png',
-        '/images/finish3.png',
-        '/images/finish2.png',
-        '/images/finish1.png',
+        'images/finish8.png',
+        'images/finish7.png',
+        'images/finish6.png',
+        'images/finish5.png',
+        'images/finish4.png',
+        'images/finish3.png',
+        'images/finish2.png',
+        'images/finish1.png',
     ];
 
     let currentImageIndex = 0;

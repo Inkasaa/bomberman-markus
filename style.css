@@ -23,7 +23,7 @@ button {
 #game-container {
     position: absolute;
     background: #1d3f26;
-    background-image: url("/images/bluegrass.jpg");
+    background-image: url("images/bluegrass.jpg");
     z-index: -1;
 
 }
@@ -31,47 +31,47 @@ button {
 /* Level-specific backgrounds */
  
 #game-container.level-1 {
-    background-image: url("/images/bluegrass.jpg");
+    background-image: url("images/bluegrass.jpg");
 }
 
 #game-container.level-2 {
-    background-image: url("/images/backgroundDeepwater.png");
+    background-image: url("images/backgroundDeepwater.png");
 }
 
 #game-container.level-3 {
-    background-image: url("/images/sandshadow.jpg");
+    background-image: url("images/sandshadow.jpg");
 }
 
 #game-container.level-4 {
-    background-image: url("/images/yellowgrass.jpg");
+    background-image: url("images/yellowgrass.jpg");
 }
 
 #game-container.level-5 {
-    background-image: url("/images/lavaSand.jpg");
+    background-image: url("images/lavaSand.jpg");
 }
 
 
 #player {
     will-change: transform;            /* to own layer => GPU acceleration */
-    background-image: url("/images/nalleRight3.png");
+    background-image: url("images/nalleRight3.png");
     background-size: contain;
     z-index: 10;
 }
 
 #player.left {
-    background-image: url('/images/nalleLeft3.png');
+    background-image: url('images/nalleLeft3.png');
 }
 
 #player.dead {
-    background-image: url("/images/nalleDead.png");
+    background-image: url("images/nalleDead.png");
 }
 
 #player.invulnerable {
-    background-image: url('/images/nalleRight3white.png');
+    background-image: url('images/nalleRight3white.png');
 }
 
 #player.left.invulnerable {
-    background-image: url('/images/nalleLeft3white.png');
+    background-image: url('images/nalleLeft3white.png');
 }
 
 .enemy {
@@ -94,43 +94,43 @@ button {
 }
 
 .level-1.wall.solid {
-    background-image: url("/images/solidwall.svg") 
+    background-image: url("images/solidwall.svg") 
 }
 
 .level-1.wall.weak {
-    background-image: url("/images/weakwall02.svg");
+    background-image: url("images/weakwall02.svg");
 }
    
 .level-2.wall.solid {
-    background-image: url("/images/solidwallSnow.svg")
+    background-image: url("images/solidwallSnow.svg")
 }
 
 .level-2.wall.weak {
-    background-image: url("/images/weakwallice.svg");
+    background-image: url("images/weakwallice.svg");
 }
 
 .level-3.wall.solid {
-    background-image: url("/images/solidwallConcreat.png") 
+    background-image: url("images/solidwallConcreat.png") 
 }
 
 .level-3.wall.weak {
-    background-image: url("/images/weakwallBrown.svg");
+    background-image: url("images/weakwallBrown.svg");
 }
 
 .level-4.wall.solid {
-    background-image: url("/images/solidwallGreen.png") 
+    background-image: url("images/solidwallGreen.png") 
 }
 
 .level-4.wall.weak {
-    background-image: url("/images/weakwallArmy.png");
+    background-image: url("images/weakwallArmy.png");
 }
 
 .level-5.wall.solid {
-    background-image: url("/images/solidwallLava.png") 
+    background-image: url("images/solidwallLava.png") 
 }
 
 .level-5.wall.weak {
-    background-image: url("/images/weakwallLava2.jpg");
+    background-image: url("images/weakwallLava2.jpg");
 }
 
 .level-1.wall.burning ,
@@ -138,18 +138,18 @@ button {
 .level-3.wall.burning ,
 .level-4.wall.burning ,
 .level-5.wall.burning  {
-    background-image: url("/images/burningwall.svg");
+    background-image: url("images/burningwall.svg");
 }
 
 .bomb {
     position: absolute;
-    background-image: url("/images/bomb.svg");
+    background-image: url("images/bomb.svg");
     background-size: cover;
     z-index: 4;
 }
 
 .bomb.glowing {
-    background-image: url("/images/bomborange.svg");
+    background-image: url("images/bomborange.svg");
 }
 
 .flame {
@@ -158,23 +158,23 @@ button {
 }
 
 .flame.horizontal {
-    background-image: url("/images/flamehor.svg");
+    background-image: url("images/flamehor.svg");
     background-size: cover;
 }
 
 .flame.horizontal.ends {
-    background-image: url("/images/flameendsh.svg");
+    background-image: url("images/flameendsh.svg");
     background-size: cover;
     z-index: 0;
 }
 
 .flame.vertical {
-    background-image: url("/images/flamevert.svg");
+    background-image: url("images/flamevert.svg");
     background-size: cover;
 }
 
 .flame.vertical.ends {
-    background-image: url("/images/flameendsv.svg");
+    background-image: url("images/flameendsv.svg");
     background-size: cover;
     z-index: 0;
 }
@@ -185,17 +185,17 @@ button {
 }
 
 .bombup {
-    background-image: url("/images/bombup.svg");
+    background-image: url("images/bombup.svg");
     background-size: cover;
 }
 
 .flameup {
-    background-image: url("/images/flameup.svg");
+    background-image: url("images/flameup.svg");
     background-size: cover;
 }
 
 .finish {
-    background-image: url("/images/finishgrey.svg");
+    background-image: url("images/finishgrey.svg");
     background-size: cover;
     position: absolute;
     z-index: 2;
@@ -309,7 +309,7 @@ button {
     height: 70vh;
 /*     width: 100vw;
     height: 80vh; */
-    background-image: url("/images/victory.svg");
+    background-image: url("images/victory.svg");
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;

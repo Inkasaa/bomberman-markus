@@ -43,7 +43,7 @@ class PowerUp {
     }
 
     burn() {
-        this.element.style.backgroundImage = `url("/images/burn.svg")`;
+        this.element.style.backgroundImage = `url("images/burn.svg")`;
         const countNow = timedCount;
         const timedCollapse = new Timer(() => {
             this.element.remove(); // Silent removal, no sound
