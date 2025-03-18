@@ -62,11 +62,10 @@ export class Player {
     }
 
     dropBomb() {
-
         const row = Math.floor((this.y + this.size / 2) / gridStep);
         const col = Math.floor((this.x + this.size / 2) / gridStep);
 
-        if (this.alive && this.bombAmount > 0 && !levelMap[row][col]) {
+        if (this.alive && this.bombAmount > 0 && (!levelMap[row][col] || levelMap[row][col] === "player")) {
 
             // find from bombPool, start explode method
             const bomb = bombsPool.find((b) => !b.active);

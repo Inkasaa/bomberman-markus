@@ -94,7 +94,7 @@ export function nextLevel() {
     flamesPoolV = [];
     bombsPool = [];
 
-    loadLevel();
+    //loadLevel();
     startSequence();
     updateLevelInfo(level);
     updateLivesInfo(player.lives);
@@ -181,46 +181,37 @@ function updateStartTime() {
     gameStartTime = window.performance.now() + 100;     // time buffer to load something
 }
 
-function loadLevel() {
+function startSequence() {
+    const gameContainer = document.getElementById("game-container");
+    gameContainer.style.visibility = "hidden";
+
+    const startMenu = document.getElementById("start-menu");
     let tasks = [
         () => { bounds = resizeGameContainer(level); },
-        () => { [gridStep, halfStep] = getGridSize(); },
-        () => { [mult, player] = setUpGame(bounds) },
-        () => { levelMap = makeLevelMap(); },
-        () => { powerUpMap = makeLevelMap(); },
+        () => { [gridStep, halfStep] = getGridSize();[mult, player] = setUpGame(bounds) },
+        () => { levelMap = makeLevelMap(); powerUpMap = makeLevelMap(); },
         () => { makeWalls(level); },
         () => { fillFlameAndBombPools(); },
         () => { finish = new Finish(gridStep * 12, gridStep * 10, gridStep); },
-    ];
-
-    function processNextTask() {
-        if (tasks.length > 0) {
-            let task = tasks.shift();
-            task();
-            requestAnimationFrame(processNextTask);
-        }
-    }
-
-    requestAnimationFrame(processNextTask);
-
-    const gameContainer = document.getElementById("game-container");
-    gameContainer.style.visibility = "hidden";
-}
-
-function startSequence() {
-    const gameContainer = document.getElementById("game-container");
-    gameContainer.style.visibility = "visible";
-
-    let tasks = [
         () => {
             if (currentMusic) { currentMusic.pause(); currentMusic.currentTime = 0; }
             currentMusic = levelMusic[level - 1]; currentMusic.play();
         },
-        () => { updateStartTime(); },
-        () => { [levelinfo, livesinfo, scoreinfo, timeinfo] = makeTextBar(); },
-        () => { updateLivesInfo(player.lives); },
-        () => { updateLivesInfo(player.lives); },
+        () => {
+            menuMusic.pause();
+            menuMusic.currentTime = 0;
+            startMenu.style.display = "none";
+        },
+        () => {
+            updateStartTime();
+            [levelinfo, livesinfo, scoreinfo, timeinfo] = makeTextBar();
+            updateLivesInfo(player.lives);
+        },
         () => { document.body.classList.add("grey"); },
+        () => {
+            const gameContainer = document.getElementById("game-container");
+            gameContainer.style.visibility = "visible";
+        },
         () => { runGame(); }
     ];
 
@@ -233,6 +224,8 @@ function startSequence() {
     }
 
     requestAnimationFrame(processNextTask);
+
+
 }
 
 
@@ -295,11 +288,6 @@ document.addEventListener("DOMContentLoaded", () => {
     //menuMusic.play();    
 
     document.getElementById("start-btn").addEventListener("click", () => {
-        menuMusic.pause();
-        menuMusic.currentTime = 0;
-        startMenu.style.display = "none";
-
-        loadLevel();
         startSequence();
     });
 });
