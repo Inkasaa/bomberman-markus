@@ -16,57 +16,6 @@ body.grey {
     background-image: none;
 }
 
-body::after {
-    content: '';
-    display: none;
-    background-image:
-        url("images/background03.jpg"),
-        url("images/bluegrass.jpg"),
-        url("images/sandshadow.jpg"),
-        url("images/yellowgrass.jpg"),
-        url("images/lavaSand.jpg"),
-        url("images/weakwallLava2.jpg"),
-        url("images/backgroundDeepwater.png"),
-        url("images/nalleRight3.png"),
-        url("images/nalleLeft3.png"),
-        url("images/nalleDead.png"),
-        url("images/nalleRight3white.png"),
-        url("images/nalleLeft3white.png"),
-        url("images/enemy.png"),
-        url("images/enemyDead.png"),
-        url("images/solidwallConcreat.png"),
-        url("images/solidwallGreen.png"),
-        url("images/weakwallArmy.png"),
-        url("images/solidwallLava.png"),
-        url("images/finish1.png"),
-        url("images/finish2.png"),
-        url("images/finish3.png"),
-        url("images/finish4.png"),
-        url("images/finish5.png"),
-        url("images/finish6.png"),
-        url("images/finish7.png"),
-        url("images/finish8.png"),
-        url("images/solidwall.svg"),
-        url("images/weakwall02.svg"),
-        url("images/solidwallSnow.svg"),
-        url("images/weakwallice.svg"),
-        url("images/weakwallBrown.svg"),
-        url("images/burningwall.svg"),
-        url("images/bomb.svg"),
-        url("images/bomborange.svg"),
-        url("images/flamehor.svg"),
-        url("images/flameendsh.svg"),
-        url("images/flamevert.svg"),
-        url("images/flameendsv.svg"),
-        url("images/bombup.svg"),
-        url("images/flameup.svg"),
-        url("images/finishgrey.svg"),
-        url("images/finish.svg"),
-        url("images/burn.svg"),
-        url("images/loser1.gif"),
-        url("images/loser2.gif");
-}
-
 button {
     font-family: Superclarendon, 'Bookman Old Style', 'URW Bookman', 'URW Bookman L', 'Georgia Pro', Georgia, serif;
 }
