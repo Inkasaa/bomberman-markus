@@ -1,7 +1,7 @@
 import { Bomb } from "./bomb.js";
 import { Enemy } from "./enemy.js";
 import { FlameH, FlameV } from "./flames.js";
-import { enemies, gridStep, halfStep, level, levelMap, mult, powerUpMap, powerups, solidWalls, weakWalls, flamesPoolV, flamesPoolH, bombsPool } from "./game.js";
+import { enemies, gridStep, halfStep, level, levelMap, mult, powerUpMap, powerups, solidWalls, weakWalls, flamesPoolV, flamesPoolH, bombsPool, surroundingWalls } from "./render/game.js";
 import { Player } from "./player.js";
 import { BombUp, FlameUp } from "./powerup.js";
 import { SolidWall, WeakWall } from "./walls.js";
@@ -9,21 +9,27 @@ import { SolidWall, WeakWall } from "./walls.js";
 export function resizeGameContainer(level) {
     const gameContainer = document.getElementById("game-container");
 
-    const windowWidth = window.innerWidth;
-    const windowHeight = window.innerHeight;
+    /*     const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight;
+    
+        // wide or narrow window? single screen Bomberman level is 13 * 11 squares
+        if (windowWidth / windowHeight > 13 / 11) {
+            gameContainer.style.height = windowHeight * 0.8 + "px";
+            gameContainer.style.width = windowHeight * 0.8 * (13 / 11) + "px";
+        } else {
+            gameContainer.style.height = windowWidth * 0.8 * (11 / 13) + "px";
+            gameContainer.style.width = windowWidth * 0.8 + "px";
+        }; */
 
-    // wide or narrow window? single screen Bomberman level is 13 * 11 squares
-    if (windowWidth / windowHeight > 13 / 11) {
-        gameContainer.style.height = windowHeight * 0.8 + "px";
-        gameContainer.style.width = windowHeight * 0.8 * (13 / 11) + "px";
-    } else {
-        gameContainer.style.height = windowWidth * 0.8 * (11 / 13) + "px";
-        gameContainer.style.width = windowWidth * 0.8 + "px";
-    };
+    // Decide one square is 50px wide
+    gameContainer.style.height = 550 + "px";
+    gameContainer.style.width = 650 + "px";
 
     const bounds = gameContainer.getBoundingClientRect();
-    gameContainer.style.left = (windowWidth - bounds.width) / 2 + 'px';
-    gameContainer.style.top = (windowHeight - bounds.height) / 2 + 'px';
+    //gameContainer.style.left = (windowWidth - bounds.width) / 2 + 'px';
+    //gameContainer.style.top = (windowHeight - bounds.height) / 2 + 'px';
+    gameContainer.style.left = 100 + 'px';
+    gameContainer.style.top = 100 + 'px';
 
 
     // Remove the previous level class if it exists
@@ -35,17 +41,20 @@ export function resizeGameContainer(level) {
     return bounds;
 };
 
-export function getGridSize() {
+// Not called anymore
+/* export function getGridSize() {
     const gameContainer = document.getElementById("game-container");
     const gridStep = gameContainer.getBoundingClientRect().width / 13;
     const halfStep = gridStep / 2;
     return [gridStep, halfStep];
-};
+}; */
 
 export function setUpGame(bounds) {
     // multiplier from game-container size scales things (speed, placements) 
     // to different sized windows
-    const multiplier = bounds.width / 1000;
+    
+    //const multiplier = bounds.width / 1000;
+    const multiplier = 0.65;    
 
     const playerSpeed = 4.5 * multiplier;
     const playerSize = 55 * multiplier;
@@ -74,7 +83,7 @@ export function makeWalls(level) {
             const x = gridStep * mapX;
             const y = gridStep * mapY;
             // Create SolidWall instance with level passed
-            const newSolid = new SolidWall(x, y, gridStep, level);
+            const newSolid = new SolidWall(x, y, gridStep, level);      // 6 * 5 solid walls
             solidWalls.push(newSolid);
 
             levelMap[mapY][mapX] = 'solidWall';
@@ -89,7 +98,8 @@ export function makeWalls(level) {
             const mapY = yVal;
             const x = gridStep * mapX;
             const y = gridStep * mapY;
-            new SolidWall(x, y, gridStep, level);
+            const newSolid = new SolidWall(x, y, gridStep, level);   // Only draw solid walls
+            surroundingWalls.push(newSolid)
         }
     };
     const xVals = [-1, 13];
@@ -99,7 +109,8 @@ export function makeWalls(level) {
             const mapY = i;
             const x = gridStep * mapX;
             const y = gridStep * mapY;
-            new SolidWall(x, y, gridStep, level);
+            const newSolid = new SolidWall(x, y, gridStep, level);   // Only draw solid walls
+            surroundingWalls.push(newSolid)
         }
     };
 
@@ -160,7 +171,7 @@ export function makeWalls(level) {
         };
     }
 
-    // place enemies
+/*     // place enemies
     while (enemies.size < 1 + (level * 1.5)) {
         const mapX = Math.floor(Math.random() * 13);
         const mapY = Math.floor(Math.random() * 11);
@@ -185,7 +196,7 @@ export function makeWalls(level) {
                 levelMap[i][j] = null;
             };
         };
-    };
+    }; */
 };
 
 export function makeTextBar() {

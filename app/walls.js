@@ -1,4 +1,4 @@
-import { gridStep, mult, timedEvents } from "./game.js";
+import { gridStep, mult, timedEvents } from "./render/game.js";
 import { Timer } from "./timer.js";
 
 class Wall {
@@ -7,7 +7,7 @@ class Wall {
         this.y = y;
         this.size = size;
 
-        this.element = document.createElement("div");
+/*         this.element = document.createElement("div");
         this.element.classList.add("wall")
         this.element.style.position = "absolute";
         this.element.style.width = `${size}px`;
@@ -15,7 +15,7 @@ class Wall {
         this.element.style.left = `${x}px`;
         this.element.style.top = `${y}px`;
 
-        document.getElementById("game-container").appendChild(this.element);
+        document.getElementById("game-container").appendChild(this.element); */
     };
 
     checkCollision(playerX, playerY, playerSize, slowDown = 1, collisions = 2) {
@@ -50,7 +50,6 @@ class Wall {
                 }
             }
 
-
             let lowestItems = fromSmallest[0];
 
             // modify inputs to place player just outside wall
@@ -67,7 +66,9 @@ export class SolidWall extends Wall {
     constructor(x, y, size, level) {
         super(x, y, size);
         this.wallType = "solid";
-        this.element.classList.add(`level-${level}`, "solid");
+        this.level = level;
+
+        //this.element.classList.add(`level-${level}`, "solid");
     };
 };
 
@@ -77,11 +78,15 @@ export class WeakWall extends Wall {
     constructor(x, y, size, level) {
         super(x, y, size);
         this.wallType = "weak";
-        this.element.classList.add(`level-${level}`, "weak");
+        this.level = level;
+        this.burning = false;
+
+        //this.element.classList.add(`level-${level}`, "weak");
     };
 
     collapse() {
-        this.element.classList.add('burning');
+        this.burning = true;
+
         const countNow = timedCount;
         const timedCollapse = new Timer(() => {
             this.element.remove();
@@ -89,5 +94,6 @@ export class WeakWall extends Wall {
         }, 500);
         timedEvents.set(`collapse${countNow}`, timedCollapse)
         timedCount++;
+        this.element.classList.add('burning');
     };
 };

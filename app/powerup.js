@@ -1,4 +1,4 @@
-import { halfStep, powerUpMap, powerups, timedEvents } from "./game.js";
+import { halfStep, powerUpMap, powerups, timedEvents } from "./render/game.js";
 import { Timer } from "./timer.js";
 
 let timedCount = 0;

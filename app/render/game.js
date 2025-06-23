@@ -1,6 +1,7 @@
-import { Finish } from "./finish.js";
-import { resizeGameContainer, getGridSize, setUpGame, makeWalls, makeLevelMap, makeTextBar, fillFlameAndBombPools } from "./initialize.js";
-import { congrats, crowdClapCheer, levelMusic, menuMusic, tickingBomb, walkingSound } from "./sounds.js";
+import { Finish } from "../finish.js";
+import { resizeGameContainer, setUpGame, makeWalls, makeLevelMap, makeTextBar, fillFlameAndBombPools } from "../initialize.js";
+import { congrats, crowdClapCheer, levelMusic, menuMusic, tickingBomb, walkingSound } from "../sounds.js";
+import { drawSolidWalls, drawWeakWalls } from "./renderWalls.js";
 
 export let bounds;
 export let mult = 1.0;
@@ -10,6 +11,7 @@ export let levelMap;                    // for placing elements, wall collapses
 export let powerUpMap;
 
 export let solidWalls = [];             // for player collisions
+export let surroundingWalls = [];       // no collisions
 export const weakWalls = new Map();     // for player collisions
 export const bombs = new Map();         // for player collisions
 export const bombTime = 2500;
@@ -188,7 +190,8 @@ function startSequence() {
     const startMenu = document.getElementById("start-menu");
     let tasks = [
         () => { bounds = resizeGameContainer(level); },
-        () => { [gridStep, halfStep] = getGridSize();[mult, player] = setUpGame(bounds) },
+        //() => { [gridStep, halfStep] = getGridSize();[mult, player] = setUpGame(bounds) },
+        () => { [gridStep, halfStep] = [50, 25];[mult, player] = setUpGame(bounds) },
         () => { levelMap = makeLevelMap(); powerUpMap = makeLevelMap(); },
         () => { makeWalls(level); },
         () => { fillFlameAndBombPools(); },
@@ -212,7 +215,8 @@ function startSequence() {
             const gameContainer = document.getElementById("game-container");
             gameContainer.style.visibility = "visible";
         },
-        () => { runGame(); }
+        () => { runGame(); },
+        () => { drawSolidWalls(solidWalls); drawSolidWalls(surroundingWalls), drawWeakWalls(weakWalls)}
     ];
 
     function processNextTask() {
@@ -224,8 +228,6 @@ function startSequence() {
     }
 
     requestAnimationFrame(processNextTask);
-
-
 }
 
 

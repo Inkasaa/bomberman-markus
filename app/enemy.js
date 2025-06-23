@@ -1,5 +1,5 @@
 import { tryToActivateFinish } from "./finish.js";
-import { enemies, flames, gridStep, halfStep, levelMap, timedEvents } from "./game.js";
+import { enemies, flames, gridStep, halfStep, levelMap, timedEvents } from "./render/game.js";
 import { Timer } from "./timer.js";
 
 let timedCount = 0;

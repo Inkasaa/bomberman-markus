@@ -1,4 +1,4 @@
-import { enemies, finish, mult } from "./game.js";
+import { enemies, finish, mult } from "./render/game.js";
 
 export class Finish {
     constructor(x, y, size) {
