@@ -1,6 +1,7 @@
 import { Finish } from "../finish.js";
 import { resizeGameContainer, setUpGame, makeWalls, makeLevelMap, makeTextBar, fillFlameAndBombPools } from "../initialize.js";
 import { congrats, crowdClapCheer, levelMusic, menuMusic, tickingBomb, walkingSound } from "../sounds.js";
+import { drawPowerUps } from "./renderItems.js";
 import { drawSolidWalls, drawWeakWalls } from "./renderWalls.js";
 
 export let bounds;
@@ -8,7 +9,7 @@ export let mult = 1.0;
 export let gridStep = 0;
 export let halfStep = 0;
 export let levelMap;                    // for placing elements, wall collapses
-export let powerUpMap;
+export let powerUpMap;                  // powerups on different map
 
 export let solidWalls = [];             // for player collisions
 export let surroundingWalls = [];       // no collisions
@@ -215,8 +216,12 @@ function startSequence() {
             const gameContainer = document.getElementById("game-container");
             gameContainer.style.visibility = "visible";
         },
+
+        // Render dom elements
+        () => { drawSolidWalls(solidWalls); drawSolidWalls(surroundingWalls), drawWeakWalls(weakWalls)},
+        () => { drawPowerUps(powerups)},
+
         () => { runGame(); },
-        () => { drawSolidWalls(solidWalls); drawSolidWalls(surroundingWalls), drawWeakWalls(weakWalls)}
     ];
 
     function processNextTask() {

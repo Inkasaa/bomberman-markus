@@ -1,4 +1,5 @@
 import { halfStep, powerUpMap, powerups, timedEvents } from "./render/game.js";
+import { burnItem } from "./render/renderItems.js";
 import { Timer } from "./timer.js";
 
 let timedCount = 0;
@@ -13,7 +14,7 @@ class PowerUp {
 
         this.name = nameOf;
 
-        this.element = document.createElement("div");
+/*         this.element = document.createElement("div");
         this.element.classList.add("powerup")
         this.element.style.position = "absolute";
         this.element.style.width = `${size}px`;
@@ -21,7 +22,7 @@ class PowerUp {
         this.element.style.left = `${this.x}px`;
         this.element.style.top = `${this.y}px`;
 
-        document.getElementById("game-container").appendChild(this.element);
+        document.getElementById("game-container").appendChild(this.element); */
     };
 
     checkCollision(playerX, playerY, playerSize) {
@@ -37,19 +38,16 @@ class PowerUp {
 
     pickUp() {
         this.sound.play();
-        this.element.remove();
+        //this.element.remove();
         powerUpMap[this.row][this.col] = '';
         powerups.delete(this.name);
     }
 
     burn() {
-        this.element.style.backgroundImage = `url("images/burn.svg")`;
+        burnItem(this.name);
         const countNow = timedCount;
         const timedCollapse = new Timer(() => {
-            this.element.remove(); // Silent removal, no sound
-            powerUpMap[this.row][this.col] = '';
-            powerups.delete(this.name);
-            //this.pickUp();
+            this.pickUp();
             timedEvents.delete(`burnPowerUp${countNow}`)
         }, 500);
         timedEvents.set(`burnPowerUp${countNow}`, timedCollapse)
@@ -61,7 +59,7 @@ export class BombUp extends PowerUp {
     constructor(x, y, size, nameOf, row, col) {
         super(x, y, size, nameOf, row, col);
         this.powerType = "bomb";
-        this.element.classList.add("bombup");
+        //this.element.classList.add("bombup");
         this.sound = new Audio("sfx/bombUp.mp3");
     };
     pickUp() {
@@ -73,7 +71,7 @@ export class FlameUp extends PowerUp {
     constructor(x, y, size, nameOf, row, col) {
         super(x, y, size, nameOf, row, col);
         this.powerType = "flame";
-        this.element.classList.add("flameup");
+        //this.element.classList.add("flameup");
         this.sound = new Audio("sfx/flameUp.mp3");
     };
     pickUp() {

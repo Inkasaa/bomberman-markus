@@ -98,7 +98,7 @@ export function makeWalls(level) {
             const mapY = yVal;
             const x = gridStep * mapX;
             const y = gridStep * mapY;
-            const newSolid = new SolidWall(x, y, gridStep, level);   // Only draw solid walls
+            const newSolid = new SolidWall(x, y, gridStep, level);
             surroundingWalls.push(newSolid)
         }
     };
@@ -109,7 +109,7 @@ export function makeWalls(level) {
             const mapY = i;
             const x = gridStep * mapX;
             const y = gridStep * mapY;
-            const newSolid = new SolidWall(x, y, gridStep, level);   // Only draw solid walls
+            const newSolid = new SolidWall(x, y, gridStep, level);
             surroundingWalls.push(newSolid)
         }
     };
@@ -127,9 +127,9 @@ export function makeWalls(level) {
         const x = gridStep * mapX;
         const y = gridStep * mapY;
         const name = `weakWall${String(mapX).padStart(2, '0')}${String(mapY).padStart(2, '0')}`;
-        const newWeak = new WeakWall(x, y, gridStep, level);
+        const newWeak = new WeakWall(x, y, gridStep, level, name);    
 
-        weakWalls.set(name, newWeak);
+        weakWalls.set(name, newWeak);   
         levelMap[mapY][mapX] = name;
     };
 
@@ -145,7 +145,7 @@ export function makeWalls(level) {
         ) {
             const x = gridStep * mapX;
             const y = gridStep * mapY;
-            const name = `bombUp${String(mapX).padStart(2, '0')}${String(mapY).padStart(2, '0')}`;
+            const name = `bombUp${String(mapX).padStart(2, '0')}${String(mapY).padStart(2, '0')}`;  // use as id to DOM element?
             const newBombUp = new BombUp(x, y, gridStep * 1.0, name, mapY, mapX);
             powerups.set(name, newBombUp)
             powerUpMap[mapY][mapX] = [name, newBombUp];
@@ -164,14 +164,14 @@ export function makeWalls(level) {
         ) {
             const x = gridStep * mapX;
             const y = gridStep * mapY;
-            const name = `flameUp${String(mapX).padStart(2, '0')}${String(mapY).padStart(2, '0')}`;
+            const name = `flameUp${String(mapX).padStart(2, '0')}${String(mapY).padStart(2, '0')}`;  // use as id to DOM element?
             const newFlameUp = new FlameUp(x, y, gridStep * 1.0, name, mapY, mapX);
             powerups.set(name, newFlameUp)
             powerUpMap[mapY][mapX] = [name, newFlameUp];
         };
     }
 
-/*     // place enemies
+    // place enemies
     while (enemies.size < 1 + (level * 1.5)) {
         const mapX = Math.floor(Math.random() * 13);
         const mapY = Math.floor(Math.random() * 11);
@@ -196,7 +196,7 @@ export function makeWalls(level) {
                 levelMap[i][j] = null;
             };
         };
-    }; */
+    };
 };
 
 export function makeTextBar() {

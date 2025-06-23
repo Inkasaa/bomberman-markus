@@ -1,4 +1,5 @@
 import { bombTime, bombs, bounds, enemies, finish, flames, nextLevel, powerups, solidWalls, timedEvents, weakWalls, levelMap, updateLivesInfo, gridStep, toggleFinished, setGameLost, bombsPool, mult } from "./render/game.js";
+import { pickUpItem } from "./render/renderItems.js";
 import { finishLevel, gameLost1, gameLost2, levelMusic, playerBombDeath, playerDeath, playerDeath2, walkingSound } from "./sounds.js";
 import { Timer } from "./timer.js";
 
@@ -272,7 +273,8 @@ export class Player {
 
             // Fatal, power-up and finish collisions after movement 
 
-            let playerBounds = this.element.getBoundingClientRect();
+            //let playerBounds = this.element.getBoundingClientRect();
+            let playerBounds = { left: this.x, right: this.x + this.size, top: this.y, bottom: this.y + this.size }
 
             if (this.vulnerable) {
 
@@ -286,31 +288,34 @@ export class Player {
                 };
 
                 // enemies hit
-                for (const enemy of enemies.values()) {
-                    if (enemy.alive && checkHit(playerBounds, enemy.element)) {
-                        if (window.deathSound === 0) {
-                            playerDeath.play();
-                            window.deathSound = 1;
-                        } else {
-                            playerDeath2.play();
-                            window.deathSound = 0;
-                        }
-                        this.die();
-                        break;
-                    };
-                };
+                /*                 for (const enemy of enemies.values()) {
+                                    if (enemy.alive && checkHit(playerBounds, enemy.element)) {
+                                        if (window.deathSound === 0) {
+                                            playerDeath.play();
+                                            window.deathSound = 1;
+                                        } else {
+                                            playerDeath2.play();
+                                            window.deathSound = 0;
+                                        }
+                                        this.die();
+                                        break;
+                                    };
+                                }; */
             }
 
             // power-ups hit
             for (const pow of powerups.values()) {
-                if (checkHit(playerBounds, pow.element)) {
+                //if (checkHit(playerBounds, pow.element)) {
+                if (checkHit(playerBounds, pow)) {
                     if (pow.powerType === "bomb") {
                         this.bombAmount++;
                         pow.pickUp();
+                        pickUpItem(pow.name);
                     }
                     if (pow.powerType === "flame") {
                         this.bombPower++;
                         pow.pickUp();
+                        pickUpItem(pow.name);
                     }
                     break;
                 };
@@ -328,7 +333,7 @@ export class Player {
                 finishLevel.play();
                 toggleFinished();
 
-               // this.element.style.backgroundImage = `url('images/finish.svg')`
+                // this.element.style.backgroundImage = `url('images/finish.svg')`
 
                 // Trigger the finish animation
                 playFinishAnimation();
@@ -346,7 +351,20 @@ export class Player {
 };
 
 function checkHit(playerBounds, other) {
-    const otherBounds = other.getBoundingClientRect();
+    //console.log("playerbounds are:", playerBounds)
+    //console.log("other is:", other)
+    //const otherBounds = other.getBoundingClientRect();
+    let otherBounds = {};
+    if (other instanceof Element && typeof other.getBoundingClientRect === "function") {
+        otherBounds = other.getBoundingClientRect();
+    } else {
+        otherBounds = { left: other.x, right: other.x + other.size, top: other.y, bottom: other.y + other.size };
+/*         if (other.powerType && other.x == 0) {
+            console.log("other is a powerup:", other)
+            console.log("other bounds:", otherBounds)
+            console.log("player bounds:", playerBounds)
+        } */
+    }    
 
     // No hit (false) if player is safely outside on at least one side
     return !(playerBounds.right - mult * 10 < otherBounds.left ||
@@ -375,9 +393,9 @@ function playFinishAnimation() {
     // Set initial image for the animation
     finish.element.style.backgroundImage = `url('${finishImages[currentImageIndex]}')`;
 
-      // Set a timeout for how long you want the animation to run (e.g., 4 seconds)
-      const animationDuration = 6000; // 6 seconds for the animation
-      const startTime = Date.now(); // Record the start time
+    // Set a timeout for how long you want the animation to run (e.g., 4 seconds)
+    const animationDuration = 6000; // 6 seconds for the animation
+    const startTime = Date.now(); // Record the start time
 
     // Create a timer to switch images in the animation sequence
     const animationInterval = setInterval(() => {
@@ -385,7 +403,7 @@ function playFinishAnimation() {
 
         if (currentImageIndex < totalImages) {
             finish.element.style.backgroundImage = `url('${finishImages[currentImageIndex]}')`;
-        } else  {
+        } else {
             // Reset back to the first image to loop
             currentImageIndex = 0;
             finish.element.style.backgroundImage = `url('${finishImages[currentImageIndex]}')`;
@@ -396,7 +414,7 @@ function playFinishAnimation() {
             clearInterval(animationInterval);  // Stop the animation
             finish.element.style.backgroundImage = `url('images/finishgrey.svg')`;  // Revert back to the static image
             // Optionally, call nextLevel() here or any other logic to proceed to the next level
-             //nextLevel();
+            //nextLevel();
         }
     }, 100); // Change image every 100ms
 }

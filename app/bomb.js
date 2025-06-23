@@ -1,4 +1,5 @@
 import { bombs, bombTime, mult, gridStep, halfStep, levelMap, weakWalls, flames, timedEvents, powerUpMap, flamesPoolH, flamesPoolV } from "./render/game.js";
+import { collapseWeakWall } from "./render/renderWalls.js";
 import { placeBomb, tickingBomb, wallBreak } from "./sounds.js";
 import { Timer } from "./timer.js";
 
@@ -231,7 +232,7 @@ export class Bomb {
                         bomb.explodeEarly();
                     };
                     if (!foundWall && isPowerUp(dirRow, dirCol)) {
-                        const powerUp = powerUpMap[dirRow][dirCol][1];
+                        const powerUp = powerUpMap[dirRow][dirCol][1];                        
                         powerUp.burn();
                         fourDirs[j].going = false;
                     };
@@ -275,7 +276,8 @@ export class Bomb {
 
     destroyWall(row, col) {
         let name = levelMap[row][col];
-        weakWalls.get(name).collapse();
+        //weakWalls.get(name).collapse();
+        collapseWeakWall(name);
 
         const timedDeleteWall = new Timer(() => {
             weakWalls.delete(name);
