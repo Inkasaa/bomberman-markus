@@ -189,6 +189,12 @@ export class Bomb {
         horizontalFlame(this.size, this.x, this.y);
         verticalFlame(this.size, this.x, this.y);
 
+        // flameCounter++
+        // const fullOffset = this.size/2 - halfStep;
+        // const smallOffset = this.size/2 - halfStep/2;
+        // flamesMap.set(`flameH${flameCounter}`, new Flame(this.x + fullOffset, this.y + smallOffset, 'H'))
+        // flamesMap.set(`flameV${flameCounter}`, new Flame(this.x + smallOffset, this.y + fullOffset, 'V'))
+
         // Draw more flames in four directions
         const fourDirs = [
             { name: 'right', going: true, coords: undefined },
@@ -200,12 +206,23 @@ export class Bomb {
         let firstWeakWall = true;
 
         for (let i = 1; i <= this.power; i++) {
+            
             // In four directions: Stop flames at walls and edges, destroy weak walls, explode other bombs
             for (let j = 0; j < 4; j++) {
-                if (fourDirs[j].name == 'right') fourDirs[j].coords = [this.mapRow, this.mapCol + i];
-                if (fourDirs[j].name == 'left') fourDirs[j].coords = [this.mapRow, this.mapCol - i];
-                if (fourDirs[j].name == 'down') fourDirs[j].coords = [this.mapRow + i, this.mapCol];
-                if (fourDirs[j].name == 'up') fourDirs[j].coords = [this.mapRow - i, this.mapCol];
+                switch (fourDirs[j].name) {
+                    case 'right':
+                        fourDirs[j].coords = [this.mapRow, this.mapCol + i];
+                        break;
+                    case 'left':
+                        fourDirs[j].coords = [this.mapRow, this.mapCol - i];
+                        break;
+                    case 'down':
+                        fourDirs[j].coords = [this.mapRow + i, this.mapCol];
+                        break;
+                    case 'up':
+                        fourDirs[j].coords = [this.mapRow - i, this.mapCol];
+                        break;
+                }
 
                 if (fourDirs[j].going) {
                     let foundWall = false;
@@ -232,7 +249,7 @@ export class Bomb {
                         bomb.explodeEarly();
                     };
                     if (!foundWall && isPowerUp(dirRow, dirCol)) {
-                        const powerUp = powerUpMap[dirRow][dirCol][1];                        
+                        const powerUp = powerUpMap[dirRow][dirCol][1];
                         powerUp.burn();
                         fourDirs[j].going = false;
                     };

@@ -25,8 +25,11 @@ export function drawHorizontalFlames(flames) {
     });
 };
 
-export function drawHorizontalFlameEnds(flames) { }
-
 export function drawVerticalFlames(flames) { }
 
-export function drawVerticalFlameEnds(flames) { }
+
+export function drawLeftFlameEnd(flame) { }
+export function drawRightFlameEnd(flame) { }
+export function drawUpFlameEnd(flame) { }
+export function drawDownFlameEnd(flame) { }
+
