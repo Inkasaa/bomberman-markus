@@ -53,7 +53,7 @@ function horizontalFlame(bombsize, x, y) {
         ele.style.top = `${y + (bombsize / 2) - (halfStep / 2)}px`;
         ele.style.display = "block";
     }
-    flame.elements[1].style.clipPath = `inset(0)`;
+    flame.elements[1].style.clipPath = `inset(0)`;  // remove any cropping from before
 
     flameCounter++
     flames.set(`flameH${flameCounter}0`, flame.elements[0])   // to map of flames for collisions

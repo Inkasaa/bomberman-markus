@@ -4,7 +4,8 @@ const gameContainer = document.getElementById("game-container");
 
 export class FlameH {
     constructor(bombsize, x, y) {
-
+        this.x = x;
+        this.y = y;
         this.active = false;
 
         this.elements = [];
@@ -15,8 +16,8 @@ export class FlameH {
             if (i == 0) flame.classList.add("ends");
             flame.style.width = `${gridStep}px`;
             flame.style.height = `${halfStep}px`;
-            flame.style.left = `${x + (bombsize / 2) - halfStep}px`;
-            flame.style.top = `${y + (bombsize / 2) - (halfStep / 2)}px`;
+/*             flame.style.left = `${x + (bombsize / 2) - halfStep}px`;
+            flame.style.top = `${y + (bombsize / 2) - (halfStep / 2)}px`; */
             flame.style.display = "none";
 
             this.elements.push(flame);
@@ -27,7 +28,8 @@ export class FlameH {
 
 export class FlameV {
     constructor(bombsize, x, y) {
-
+        this.x = x;
+        this.y = y;
         this.active = false;
 
         this.elements = [];
@@ -38,8 +40,8 @@ export class FlameV {
             if (i == 0) flame.classList.add("ends");
             flame.style.width = `${halfStep}px`;
             flame.style.height = `${gridStep}px`;
-            flame.style.left = `${x + (bombsize / 2) - (halfStep/2)}px`;
-            flame.style.top = `${y + (bombsize / 2) - halfStep}px`;
+/*             flame.style.left = `${x + (bombsize / 2) - (halfStep/2)}px`;
+            flame.style.top = `${y + (bombsize / 2) - halfStep}px`; */
             flame.style.display = "none";
 
             this.elements.push(flame);

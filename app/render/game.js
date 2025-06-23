@@ -195,7 +195,7 @@ function startSequence() {
         () => { [gridStep, halfStep] = [50, 25];[mult, player] = setUpGame(bounds) },
         () => { levelMap = makeLevelMap(); powerUpMap = makeLevelMap(); },
         () => { makeWalls(level); },
-        () => { fillFlameAndBombPools(); },
+        //() => { fillFlameAndBombPools(); },   // try without for now
         () => { finish = new Finish(gridStep * 12, gridStep * 10, gridStep); },
         () => {
             if (currentMusic) { currentMusic.pause(); currentMusic.currentTime = 0; }

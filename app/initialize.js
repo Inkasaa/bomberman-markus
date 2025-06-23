@@ -189,7 +189,7 @@ export function makeWalls(level) {
         levelMap[mapY][mapX] = 'enemy';
     };
 
-    // enemies were there only to stop them being placed on top of each other
+    // enemies were on the levelMap only to stop them being placed on top of each other
     for (let i = 0; i < levelMap.length; i++) {
         for (let j = 0; j < levelMap[0].length; j++) {
             if (levelMap[i][j] == 'enemy') {
@@ -253,7 +253,9 @@ export function makeTextBar() {
     };
 }
 
-export function fillFlameAndBombPools() {
+
+// Pools are there to avoid creating new dom elements: just move and make olde ones visible
+/* export function fillFlameAndBombPools() {
     const bombSize = mult * 60;
 
     for (let i = 0; i < 200; i++) {
@@ -265,3 +267,4 @@ export function fillFlameAndBombPools() {
         bombsPool.push(new Bomb(bombSize));
     }
 }
+ */
