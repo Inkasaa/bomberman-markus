@@ -1,6 +1,8 @@
 import { tryToActivateFinish } from "./finish.js";
-import { enemies, flames, gridStep, halfStep, levelMap, timedEvents } from "./game.js";
-import { Timer } from "./timer.js";
+import { flames, levelMap, timedEvents } from "./server/game.js";
+import { Timer } from "./server/timer.js";
+import { state } from "./shared/state.js";
+import { gridStep, halfStep } from "./shared/config.js";
 
 let timedCount = 0;
 let enemyCount = 0;
@@ -27,11 +29,11 @@ export class Enemy {
         document.getElementById("game-container").appendChild(this.element);
 
         // Instance-specific enemy walking and dying sound
-        this.enemyWalking = new Audio("sfx/enemyWalking.mp3");
+        this.enemyWalking = new Audio("app/client/sfx/enemyWalking.mp3");
         this.enemyWalking.volume = 0.15;
         this.enemyWalking.loop = true;
         this.enemyWalking.play();
-        this.enemyDeath = new Audio("sfx/enemyDeath.mp3");
+        this.enemyDeath = new Audio("app/client/sfx/enemyDeath.mp3");
         this.enemyDeath.volume = 0.3;
 
         let col = Math.round(x / gridStep);
@@ -56,7 +58,7 @@ export class Enemy {
         const timedDeath = new Timer(() => {
             this.element.remove();  // Remove the enemy element from the DOM
             timedEvents.delete(`enemyDeath${countNow}`);  // Clean up timed events
-            enemies.delete(this.name);  // Remove from the enemies collection
+            state.enemies.delete(this.name);  // Remove from the enemies collection
             tryToActivateFinish();  // Check if the game should finish
         }, 1000);  // 1 second delay before removal
 
@@ -181,7 +183,10 @@ function isEmpty(row, col) {
 }
 
 function checkHit(enemyBounds, flame) {
-    const flameBounds = flame.getBoundingClientRect();
+    //const flameBounds = flame.getBoundingClientRect();
+    const off = gridStep * 2;   // not sure why this is necessary
+    const flameBounds = { left: flame.x + off, right: flame.x + flame.width + off, top: flame.y + off, bottom: flame.y + flame.height +off };
+ 
 
     // No hit (false) if enemy is safely outside on at least one side
     return !(enemyBounds.right < flameBounds.left ||

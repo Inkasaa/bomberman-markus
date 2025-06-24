@@ -1,21 +1,10 @@
-import { gridStep, mult, timedEvents } from "./game.js";
-import { Timer } from "./timer.js";
+import { gridStep, mult } from "../shared/config.js";
 
 class Wall {
     constructor(x, y, size) {
         this.x = x;
         this.y = y;
         this.size = size;
-
-        this.element = document.createElement("div");
-        this.element.classList.add("wall")
-        this.element.style.position = "absolute";
-        this.element.style.width = `${size}px`;
-        this.element.style.height = `${size}px`;
-        this.element.style.left = `${x}px`;
-        this.element.style.top = `${y}px`;
-
-        document.getElementById("game-container").appendChild(this.element);
     };
 
     checkCollision(playerX, playerY, playerSize, slowDown = 1, collisions = 2) {
@@ -50,7 +39,6 @@ class Wall {
                 }
             }
 
-
             let lowestItems = fromSmallest[0];
 
             // modify inputs to place player just outside wall
@@ -67,27 +55,15 @@ export class SolidWall extends Wall {
     constructor(x, y, size, level) {
         super(x, y, size);
         this.wallType = "solid";
-        this.element.classList.add(`level-${level}`, "solid");
+        this.level = level;
     };
 };
 
-let timedCount = 0;
-
 export class WeakWall extends Wall {
-    constructor(x, y, size, level) {
+    constructor(x, y, size, level, name) {
         super(x, y, size);
         this.wallType = "weak";
-        this.element.classList.add(`level-${level}`, "weak");
-    };
-
-    collapse() {
-        this.element.classList.add('burning');
-        const countNow = timedCount;
-        const timedCollapse = new Timer(() => {
-            this.element.remove();
-            timedEvents.delete(`collapse${countNow}`)
-        }, 500);
-        timedEvents.set(`collapse${countNow}`, timedCollapse)
-        timedCount++;
+        this.level = level;
+        this.id = name;         // id is passed to dom element and used in destruction
     };
 };

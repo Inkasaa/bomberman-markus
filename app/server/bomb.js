@@ -1,8 +1,10 @@
-import { bombs, bombTime, mult, gridStep, halfStep, levelMap, weakWalls, flames, timedEvents, powerUpMap, flamesPoolH, flamesPoolV } from "./game.js";
-import { placeBomb, tickingBomb, wallBreak } from "./sounds.js";
+import { Flame } from "./flames.js";
+import { bombs, bombTime, levelMap, flames, timedEvents, powerUpMap } from "./game.js";
+import { placeBomb, tickingBomb, wallBreak } from "../client/sounds.js";
 import { Timer } from "./timer.js";
+import { state } from "../shared/state.js";
+import { gridStep, halfStep, mult } from "../shared/config.js";
 
-const gameContainer = document.getElementById("game-container");
 let flameCounter = 0;
 let timedCount = 0;
 
@@ -43,113 +45,64 @@ function isPowerUp(row, col) {
     );
 }
 
-function horizontalFlame(bombsize, x, y) {
-    const flame = flamesPoolH.find((f) => !f.active);
-
-    flame.active = true;
-    for (const ele of flame.elements) {
-        ele.style.left = `${x + (bombsize / 2) - halfStep}px`;
-        ele.style.top = `${y + (bombsize / 2) - (halfStep / 2)}px`;
-        ele.style.display = "block";
-    }
-    flame.elements[1].style.clipPath = `inset(0)`;
+function makeFlame(x, y, dir) {
+    const fullOffset = mult * 30 - halfStep;        // from corner of bomb to edge square: + half bomb size, - half square size 
+    const smallOffset = mult * 30 - halfStep / 2;
 
     flameCounter++
-    flames.set(`flameH${flameCounter}0`, flame.elements[0])   // to map of flames for collisions
-    flames.set(`flameH${flameCounter}1`, flame.elements[1])
+    const name = `flame${dir}${flameCounter}`;
+    let newFlame;
+    if (dir === 'H' || dir === 'L' || dir === 'R') {
+        newFlame = new Flame(x + fullOffset, y + smallOffset, gridStep, halfStep, dir, name);
+    }
+    if (dir === 'V' || dir === 'U' || dir === 'D') {
+        newFlame = new Flame(x + smallOffset, y + fullOffset, halfStep, gridStep, dir, name);
+    }
 
-    const countNow = timedCount;
-    const timedFlame = new Timer(() => {
-        flame.active = false;
-        flame.elements.forEach(e => e.style.display = "none");
-        flames.delete(`flameH${flameCounter}0`);
-        flames.delete(`flameH${flameCounter}1`);
-        timedEvents.delete(`flameH${countNow}`)
-    }, 500);
-    timedEvents.set(`flameH${countNow}`, timedFlame)
-    timedCount++;
-
-    return flame.elements[1];
+    flames.set(name, newFlame);     // complete map for collisions
+    state.newFlames.set(name, newFlame);  // only track changes for rendering
+    timeFlame(newFlame);
+    return newFlame;
 }
 
-function verticalFlame(bombsize, x, y) {
-    const flame = flamesPoolV.find((f) => !f.active);
-
-    flame.active = true;
-    for (const ele of flame.elements) {
-        ele.style.left = `${x + (bombsize / 2) - (halfStep / 2)}px`;
-        ele.style.top = `${y + (bombsize / 2) - halfStep}px`;
-        ele.style.display = "block";
-    }
-    flame.elements[1].style.clipPath = `inset(0)`;
-
-    flameCounter++
-    flames.set(`flameV${flameCounter}0`, flame.elements[0])   // to map of flames for collisions
-    flames.set(`flameV${flameCounter}1`, flame.elements[1])
-
-    const countNow = timedCount;
+// delete flame from map with delay
+function timeFlame(flame) {
     const timedFlame = new Timer(() => {
         flame.active = false;
-        flame.elements.forEach(e => e.style.display = "none");
-        flames.delete(`flameV${flameCounter}0`);
-        flames.delete(`flameV${flameCounter}1`);
-        timedEvents.delete(`flameV${countNow}`)
+        flames.delete(flame.name);
+        timedEvents.delete(flame.name)
     }, 500);
-    timedEvents.set(`flameV${countNow}`, timedFlame)
+    timedEvents.set(flame.name, timedFlame)
     timedCount++;
-
-    return flame.elements[1];
 }
 
 
 export class Bomb {
-    setValues(size, row, col, power, name) {
+    setValues(size, row, col, power, playerName) {
         // Align dropped bomb to grid
         this.mapCol = col;
         this.mapRow = row;
         this.x = this.mapCol * gridStep + halfStep - size / 2;
         this.y = this.mapRow * gridStep + halfStep - size / 2;
         this.size = size;
-        this.owner = name;
+        this.owner = playerName;
         this.power = power;
+        this.bounds = { left: this.x, right: this.x + this.size, top: this.y, bottom: this.y + this.size }
+        this.name = `bomb${this.mapCol}${this.mapRow}`;
     }
 
-    constructor(size = mult * 60, row = 0, col = 0, power = 1, name = '') {
-        this.setValues(size, row, col, power, name)
+    constructor(size = mult * 60, row = 0, col = 0, power = 1, playerName = '') {
+        this.setValues(size, row, col, power, playerName)
         this.active = false;
-
-        this.element = document.createElement("div");
-        this.element.classList.add("bomb");
-        this.element.style.width = `${size}px`;
-        this.element.style.height = `${size}px`;
-        this.element.style.left = `${this.x}px`;
-        this.element.style.top = `${this.y}px`;
-        this.bounds = this.element.getBoundingClientRect();
-        this.element.style.display = "none";
-
-        this.explosion = new Audio("sfx/explosion.mp3");
-        this.explosion.volume = 0.6;
-
-        gameContainer.appendChild(this.element);
+        this.glowing = false;
     };
 
-    drop(row, col, power, name) {
-        this.setValues(this.size, row, col, power, name)
+    drop(row, col, power, playerName) {
+        this.setValues(this.size, row, col, power, playerName)
         this.active = true;
-
-        this.element.style.left = `${this.x}px`;
-        this.element.style.top = `${this.y}px`;
-        this.bounds = this.element.getBoundingClientRect();
-        this.element.style.display = "block";
-
-        bombs.set(`bomb${this.mapCol}${this.mapRow}`, this);  // add bomb to map for collision checks
+        bombs.set(this.name, this);      // add bomb to map for collision checks
+        state.newBombs.set(this.name, this);
         levelMap[this.mapRow][this.mapCol] = ['bomb', this];  // store reference to level map
-
-        // Play sound when bomb is dropped
-        placeBomb.play();
-
-        // Start ticking sound
-        tickingBomb.play();
 
         this.countNow = timedCount;
         const timedBomb = new Timer(() => {
@@ -177,18 +130,14 @@ export class Bomb {
     }
 
     explode() {
-        this.element.classList.add('glowing');  // let css swap background
-        this.explosion.play();
-
-        // Stop ticking sound when bomb explodes
-        tickingBomb.pause();
-        tickingBomb.currentTime = 0; // Reset for next use
+        this.glowing = true;
+        state.newBombs.set(this.name, this);
 
         // Draw flames of explosion in the middle
-        horizontalFlame(this.size, this.x, this.y);
-        verticalFlame(this.size, this.x, this.y);
+        makeFlame(this.x, this.y, 'H');
+        makeFlame(this.x, this.y, 'V');
 
-        // Draw more flames in four directions
+        // More flames in four directions
         const fourDirs = [
             { name: 'right', going: true, coords: undefined },
             { name: 'left', going: true, coords: undefined },
@@ -196,15 +145,25 @@ export class Bomb {
             { name: 'up', going: true, coords: undefined },
         ];
         let [lastLeft, lastRight, lastUp, lastDown] = [undefined, undefined, undefined, undefined];
-        let firstWeakWall = true;
 
         for (let i = 1; i <= this.power; i++) {
+
             // In four directions: Stop flames at walls and edges, destroy weak walls, explode other bombs
             for (let j = 0; j < 4; j++) {
-                if (fourDirs[j].name == 'right') fourDirs[j].coords = [this.mapRow, this.mapCol + i];
-                if (fourDirs[j].name == 'left') fourDirs[j].coords = [this.mapRow, this.mapCol - i];
-                if (fourDirs[j].name == 'down') fourDirs[j].coords = [this.mapRow + i, this.mapCol];
-                if (fourDirs[j].name == 'up') fourDirs[j].coords = [this.mapRow - i, this.mapCol];
+                switch (fourDirs[j].name) {
+                    case 'right':
+                        fourDirs[j].coords = [this.mapRow, this.mapCol + i];
+                        break;
+                    case 'left':
+                        fourDirs[j].coords = [this.mapRow, this.mapCol - i];
+                        break;
+                    case 'down':
+                        fourDirs[j].coords = [this.mapRow + i, this.mapCol];
+                        break;
+                    case 'up':
+                        fourDirs[j].coords = [this.mapRow - i, this.mapCol];
+                        break;
+                }
 
                 if (fourDirs[j].going) {
                     let foundWall = false;
@@ -214,10 +173,6 @@ export class Bomb {
                     if (isWall(dirRow, dirCol)) {
                         if (levelMap[dirRow][dirCol].startsWith('weakWall')) {
                             this.destroyWall(dirRow, dirCol);
-                            if (firstWeakWall) {
-                                setTimeout(() => wallBreak.play(), 100);
-                                firstWeakWall = false;
-                            }
                         }
                         fourDirs[j].going = false;
                         foundWall = true;
@@ -239,33 +194,33 @@ export class Bomb {
             };
 
             // if still going, draw flames and save the most recent
-            if (fourDirs[0].going) lastRight = horizontalFlame(this.size, this.x + gridStep * i, this.y);
-            if (fourDirs[1].going) lastLeft = horizontalFlame(this.size, this.x - gridStep * i, this.y);
-            if (fourDirs[2].going) lastDown = verticalFlame(this.size, this.x, this.y + gridStep * i);
-            if (fourDirs[3].going) lastUp = verticalFlame(this.size, this.x, this.y - gridStep * i);
+            if (fourDirs[0].going) lastRight = makeFlame(this.x + gridStep * i, this.y, 'H');
+            if (fourDirs[1].going) lastLeft = makeFlame(this.x - gridStep * i, this.y, 'H');
+            if (fourDirs[2].going) lastDown = makeFlame(this.x, this.y + gridStep * i, 'V');
+            if (fourDirs[3].going) lastUp = makeFlame(this.x, this.y - gridStep * i, 'V');
 
-            // Cut off tip of full flame at the end to reveal rounded end
+            // Mark flames as ends
             if (fourDirs[0].going && lastRight && i == this.power) {
-                lastRight.style.clipPath = `inset(0 ${20 * mult}px 0 0)`;
+                lastRight.direction = 'R';  // Does it update the one on the map too? Same reference?
             }
             if (fourDirs[1].going && lastLeft && i == this.power) {
-                lastLeft.style.clipPath = `inset(0 0 0 ${20 * mult}px)`;
+                lastLeft.direction = 'L';
             }
             if (fourDirs[2].going && lastDown && i == this.power) {
-                lastDown.style.clipPath = `inset(0 0 ${20 * mult}px 0)`;
+                lastDown.direction = 'D';
             }
             if (fourDirs[3].going && lastUp && i == this.power) {
-                lastUp.style.clipPath = `inset(${20 * mult}px 0 0 0)`;
+                lastUp.direction = 'U';
             }
         };
 
         // delay deleting bomb for a bit
         const timedExplotion = new Timer(() => {
-            this.element.classList.remove('glowing');
-            this.element.style.display = "none";
+            this.glowing = false;
             this.active = false;
 
-            bombs.delete(`bomb${this.mapCol}${this.mapRow}`);
+            state.removedBombs.set(this.name, this);
+            bombs.delete(this.name);
             timedEvents.delete(`explosion${this.countNow}`);
             levelMap[this.mapRow][this.mapCol] = '';
         }, 500);
@@ -275,10 +230,10 @@ export class Bomb {
 
     destroyWall(row, col) {
         let name = levelMap[row][col];
-        weakWalls.get(name).collapse();
+        state.collapsingWalls.push(name);        
 
         const timedDeleteWall = new Timer(() => {
-            weakWalls.delete(name);
+            state.weakWalls.delete(name);
             levelMap[row][col] = "";
             timedEvents.delete(`deleteWall${this.countNow}`)
         }, 500);
