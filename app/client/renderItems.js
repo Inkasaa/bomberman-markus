@@ -1,5 +1,5 @@
-import { Timer } from "../timer.js";
-import { timedEvents } from "./game.js";
+import { Timer } from "../shared/timer.js";
+import { clientEvents } from "./runGame.js";
 
 function generalItemAttributes(domItem, item) {
     domItem.classList.add("powerup")
@@ -51,8 +51,8 @@ export function burnItem(id) {
     const countNow = timedCount;
     const timedCollapse = new Timer(() => {
         targetItem.remove();
-        timedEvents.delete(`burnPowerUpElement${countNow}`)
+        clientEvents.delete(`burnPowerUpElement${countNow}`)
     }, 500);
-    timedEvents.set(`burnPowerUpElement${countNow}`, timedCollapse)
+    clientEvents.set(`burnPowerUpElement${countNow}`, timedCollapse)
     timedCount++;
 }

@@ -1,32 +1,18 @@
 import { Enemy } from "./enemy.js";
-import { gridStep, halfStep, level, levelMap, mult, powerUpMap, powerups } from "./client/game.js";
-import { Player } from "./player.js";
-import { BombUp, FlameUp } from "./powerup.js";
-import { SolidWall, WeakWall } from "./walls.js";
+import { gridStep, halfStep, levelMap, mult, powerUpMap } from "./server/game.js";
+import { Player } from "./server/player.js";
+import { BombUp, FlameUp } from "./server/powerup.js";
+import { SolidWall, WeakWall } from "./server/walls.js";
 import { state } from "./shared/state.js";
 
 export function resizeGameContainer(level) {
     const gameContainer = document.getElementById("game-container");
-
-    /*     const windowWidth = window.innerWidth;
-        const windowHeight = window.innerHeight;
-    
-        // wide or narrow window? single screen Bomberman level is 13 * 11 squares
-        if (windowWidth / windowHeight > 13 / 11) {
-            gameContainer.style.height = windowHeight * 0.8 + "px";
-            gameContainer.style.width = windowHeight * 0.8 * (13 / 11) + "px";
-        } else {
-            gameContainer.style.height = windowWidth * 0.8 * (11 / 13) + "px";
-            gameContainer.style.width = windowWidth * 0.8 + "px";
-        }; */
 
     // Decide one square is 50px wide
     gameContainer.style.height = 550 + "px";
     gameContainer.style.width = 650 + "px";
 
     const bounds = gameContainer.getBoundingClientRect();
-    //gameContainer.style.left = (windowWidth - bounds.width) / 2 + 'px';
-    //gameContainer.style.top = (windowHeight - bounds.height) / 2 + 'px';
     gameContainer.style.left = 100 + 'px';
     gameContainer.style.top = 100 + 'px';
 
@@ -40,21 +26,7 @@ export function resizeGameContainer(level) {
     return bounds;
 };
 
-// Not called anymore
-/* export function getGridSize() {
-    const gameContainer = document.getElementById("game-container");
-    const gridStep = gameContainer.getBoundingClientRect().width / 13;
-    const halfStep = gridStep / 2;
-    return [gridStep, halfStep];
-}; */
-
-export function setUpGame(playerName) {
-    // multiplier from game-container size scales things (speed, placements) 
-    // to different sized windows
-    
-    //const multiplier = bounds.width / 1000;
-    const multiplier = 0.65;    
-
+export function setUpGame(playerName, multiplier) {
     const playerSpeed = 4.5 * multiplier;
     const playerSize = 55 * multiplier;
     const playerX = halfStep - (playerSize / 2); // put player to top left
@@ -62,7 +34,7 @@ export function setUpGame(playerName) {
 
     const player = new Player(playerSize, playerSpeed, playerX, playerY, playerName);
 
-    return [multiplier, player];
+    return player;
 };
 
 export function makeLevelMap() {
@@ -133,7 +105,7 @@ export function makeWalls(level) {
     };
 
     // place bomb powerups inside weak walls
-    while (powerups.size < 5) {
+    while (state.powerups.size < 5) {
         const mapX = Math.floor(Math.random() * 13);
         const mapY = Math.floor(Math.random() * 11);
 
@@ -146,13 +118,13 @@ export function makeWalls(level) {
             const y = gridStep * mapY;
             const name = `bombUp${String(mapX).padStart(2, '0')}${String(mapY).padStart(2, '0')}`;  // use as id to DOM element?
             const newBombUp = new BombUp(x, y, gridStep * 1.0, name, mapY, mapX);
-            powerups.set(name, newBombUp)
+            state.powerups.set(name, newBombUp)
             powerUpMap[mapY][mapX] = [name, newBombUp];
         };
     }
 
     // place flame powerups inside weak walls
-    while (powerups.size < 10) {
+    while (state.powerups.size < 10) {
         const mapX = Math.floor(Math.random() * 13);
         const mapY = Math.floor(Math.random() * 11);
 
@@ -165,7 +137,7 @@ export function makeWalls(level) {
             const y = gridStep * mapY;
             const name = `flameUp${String(mapX).padStart(2, '0')}${String(mapY).padStart(2, '0')}`;  // use as id to DOM element?
             const newFlameUp = new FlameUp(x, y, gridStep * 1.0, name, mapY, mapX);
-            powerups.set(name, newFlameUp)
+            state.powerups.set(name, newFlameUp)
             powerUpMap[mapY][mapX] = [name, newFlameUp];
         };
     }
@@ -215,9 +187,9 @@ export function makeTextBar() {
 
         // four smaller bits to display info
         const infos = [];
-        const ids = ["levelinfo", "livesinfo", "scoreinfo", "timeinfo"];
-        const placeholders = ["Level: 1", "Lives: X", "Score: 0", "00:00"]
-        for (let i = 0; i < 4; i++) {
+        const ids = ["levelinfo", "livesinfo"]; //, "scoreinfo", "timeinfo"];
+        const placeholders = ["Level: 1", "Lives: X"]; //, "Score: 0", "00:00"]
+        for (let i = 0; i < 2; i++) {
             let info = document.createElement('div');
             info.classList.add("infobox");
             info.style.margin = `${pad * mult}px`;
@@ -231,7 +203,7 @@ export function makeTextBar() {
             infos.push(info);
         }
 
-        infos[3].style.justifyContent = "center";
+        //infos[3].style.justifyContent = "center";
         document.body.appendChild(textbar);
 
         return infos;
@@ -246,24 +218,8 @@ export function makeTextBar() {
         return [
             document.getElementById("levelinfo"),
             document.getElementById("livesinfo"),
-            document.getElementById("scoreinfo"),
-            document.getElementById("timeinfo")
+            //document.getElementById("scoreinfo"),
+            //document.getElementById("timeinfo")
         ];
     };
 }
-
-
-// Pools are there to avoid creating new dom elements: just move and make olde ones visible
-/* export function fillFlameAndBombPools() {
-    const bombSize = mult * 60;
-
-    for (let i = 0; i < 200; i++) {
-        flamesPoolH.push(new FlameH(bombSize, 0, 0));
-        flamesPoolV.push(new FlameV(bombSize, 0, 0));
-    }
-
-    for (let i = 0; i < 50; i++) {
-        bombsPool.push(new Bomb(bombSize));
-    }
-}
- */

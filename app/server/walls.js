@@ -1,4 +1,4 @@
-import { gridStep, mult } from "./client/game.js";
+import { gridStep, mult } from "./game.js";
 
 class Wall {
     constructor(x, y, size) {

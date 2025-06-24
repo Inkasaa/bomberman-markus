@@ -1,6 +1,6 @@
-import { halfStep, powerUpMap, powerups, timedEvents } from "./client/game.js";
-import { Timer } from "./timer.js";
-import { state } from "./shared/state.js";
+import { halfStep, powerUpMap, timedEvents } from "./game.js";
+import { Timer } from "../shared/timer.js";
+import { state } from "../shared/state.js";
 
 let timedCount = 0;
 
@@ -30,7 +30,7 @@ class PowerUp {
         this.sound.play();
         //this.element.remove();
         powerUpMap[this.row][this.col] = '';
-        powerups.delete(this.name);
+        state.powerups.delete(this.name);
     }
 
     burn() {

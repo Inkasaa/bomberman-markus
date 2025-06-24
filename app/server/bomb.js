@@ -1,8 +1,8 @@
 import { Flame } from "./flames.js";
-import { bombs, bombTime, mult, gridStep, halfStep, levelMap, flames, timedEvents, powerUpMap } from "./client/game.js";
-import { placeBomb, tickingBomb, wallBreak } from "./sounds.js";
-import { Timer } from "./timer.js";
-import { state } from "./shared/state.js";
+import { bombs, bombTime, mult, gridStep, halfStep, levelMap, flames, timedEvents, powerUpMap } from "./game.js";
+import { placeBomb, tickingBomb, wallBreak } from "../sounds.js";
+import { Timer } from "../shared/timer.js";
+import { state } from "../shared/state.js";
 
 let flameCounter = 0;
 let timedCount = 0;
@@ -94,31 +94,14 @@ export class Bomb {
         this.setValues(size, row, col, power, playerName)
         this.active = false;
         this.glowing = false;
-
-        /*         this.element = document.createElement("div");
-                this.element.classList.add("bomb");
-                this.element.style.width = `${size}px`;
-                this.element.style.height = `${size}px`;
-                this.element.style.left = `${this.x}px`;
-                this.element.style.top = `${this.y}px`; */
-        //this.bounds = this.element.getBoundingClientRect();
-        //this.element.style.display = "none";
         
         this.explosion = new Audio("sfx/explosion.mp3");
         this.explosion.volume = 0.6;
-
-        //gameContainer.appendChild(this.element);
     };
 
     drop(row, col, power, playerName) {
         this.setValues(this.size, row, col, power, playerName)
         this.active = true;
-
-        //this.element.style.left = `${this.x}px`;
-        //this.element.style.top = `${this.y}px`;
-        //this.bounds = this.element.getBoundingClientRect();
-        //this.element.style.display = "block";
-
         bombs.set(this.name, this);      // add bomb to map for collision checks
         state.newBombs.set(this.name, this);
         levelMap[this.mapRow][this.mapCol] = ['bomb', this];  // store reference to level map
@@ -165,9 +148,6 @@ export class Bomb {
         tickingBomb.currentTime = 0; // Reset for next use
 
         // Draw flames of explosion in the middle
-        //horizontalFlame(this.size, this.x, this.y);
-        //verticalFlame(this.size, this.x, this.y);
-
         makeFlame(this.x, this.y, 'H');
         makeFlame(this.x, this.y, 'V');
 
@@ -233,11 +213,6 @@ export class Bomb {
             };
 
             // if still going, draw flames and save the most recent
-            /* if (fourDirs[0].going) lastRight = horizontalFlame(this.size, this.x + gridStep * i, this.y);
-            if (fourDirs[1].going) lastLeft = horizontalFlame(this.size, this.x - gridStep * i, this.y);
-            if (fourDirs[2].going) lastDown = verticalFlame(this.size, this.x, this.y + gridStep * i);
-            if (fourDirs[3].going) lastUp = verticalFlame(this.size, this.x, this.y - gridStep * i); */
-
             if (fourDirs[0].going) lastRight = makeFlame(this.x + gridStep * i, this.y, 'H');
             if (fourDirs[1].going) lastLeft = makeFlame(this.x - gridStep * i, this.y, 'H');
             if (fourDirs[2].going) lastDown = makeFlame(this.x, this.y + gridStep * i, 'V');
@@ -245,32 +220,25 @@ export class Bomb {
 
             // Mark flames as ends
             if (fourDirs[0].going && lastRight && i == this.power) {
-                //lastRight.style.clipPath = `inset(0 ${20 * mult}px 0 0)`;
                 lastRight.direction = 'R';  // Does it update the one on the map too? Same reference?
             }
             if (fourDirs[1].going && lastLeft && i == this.power) {
-                //lastLeft.style.clipPath = `inset(0 0 0 ${20 * mult}px)`;
                 lastLeft.direction = 'L';
             }
             if (fourDirs[2].going && lastDown && i == this.power) {
-                //lastDown.style.clipPath = `inset(0 0 ${20 * mult}px 0)`;
                 lastDown.direction = 'D';
             }
             if (fourDirs[3].going && lastUp && i == this.power) {
-                //lastUp.style.clipPath = `inset(${20 * mult}px 0 0 0)`;
                 lastUp.direction = 'U';
             }
         };
 
         // delay deleting bomb for a bit
         const timedExplotion = new Timer(() => {
-            //this.element.classList.remove('glowing');
             this.glowing = false;
-            //this.element.style.display = "none";
             this.active = false;
 
             state.removedBombs.set(this.name, this);
-            //bombs.delete(`bomb${this.mapCol}${this.mapRow}`);
             bombs.delete(this.name);
             timedEvents.delete(`explosion${this.countNow}`);
             levelMap[this.mapRow][this.mapCol] = '';
@@ -281,8 +249,6 @@ export class Bomb {
 
     destroyWall(row, col) {
         let name = levelMap[row][col];
-        //weakWalls.get(name).collapse();
-        //collapseWeakWall(name);
         state.collapsingWalls.push(name);        
 
         const timedDeleteWall = new Timer(() => {

@@ -1,8 +1,8 @@
 import { Bomb } from "./bomb.js";
-import { bombTime, bombs, bounds, finish, flames, nextLevel, powerups, timedEvents, levelMap, updateLivesInfo, gridStep, toggleFinished, setGameLost, mult } from "./client/game.js";
-import { finishLevel, gameLost1, gameLost2, levelMusic, playerBombDeath, playerDeath, playerDeath2, walkingSound } from "./sounds.js";
-import { Timer } from "./timer.js";
-import { state } from "./shared/state.js";
+import { bombTime, bombs, bounds, finish, flames, nextLevel, timedEvents, levelMap, gridStep, setGameLost, mult } from "./game.js";
+import { finishLevel, gameLost1, gameLost2, levelMusic, playerBombDeath, playerDeath, playerDeath2, walkingSound } from "../sounds.js";
+import { Timer } from "../shared/timer.js";
+import { state } from "../shared/state.js";
 
 let timedCount = 0;
 
@@ -23,6 +23,7 @@ export class Player {
         this.bombAmount = 1;
         this.bombPower = 2;
         this.isMoving = false;
+        this.score = 0;
 
         this.invulnerability();
     };
@@ -48,13 +49,9 @@ export class Player {
 
         if (this.alive && this.bombAmount > 0 && (!levelMap[row][col] || levelMap[row][col] === "player")) {
 
-            // find from bombPool, start explode method
-            //const bomb = bombsPool.find((b) => !b.active);
             const bomb = new Bomb();
             bomb.drop(row, col, this.bombPower, 'player');
-
             this.bombAmount--;
-
             let countNow = timedCount;
             const timedBombsBack = new Timer(() => {
                 this.bombAmount++;
@@ -73,11 +70,10 @@ export class Player {
     }
 
     die() {
-        //this.element.classList.add('dead');
         this.dead = true;
         this.alive = false;
         this.lives--;
-        updateLivesInfo(this.lives);
+        //updateLivesInfo(this.lives);
 
         // Stop walking sound when player dies
         walkingSound.pause();
@@ -89,8 +85,6 @@ export class Player {
             if (this.lives > 0) {
                 this.x = this.startX;
                 this.y = this.startY;
-                //this.element.style.transform = `translate(${this.x}px, ${this.y}px)`;
-                //this.element.classList.remove('dead');
                 this.dead = false;
                 this.alive = true;
                 this.invulnerability();
@@ -253,7 +247,7 @@ export class Player {
             }
 
             // power-ups hit
-            for (const pow of powerups.values()) {
+            for (const pow of state.powerups.values()) {
                 //if (checkHit(playerBounds, pow.element)) {
                 if (checkHit(playerBounds, pow)) {
                     if (pow.powerType === "bomb") {
@@ -279,9 +273,7 @@ export class Player {
                     track.currentTime = 0;
                 });
                 finishLevel.play();
-                toggleFinished();
-
-                // this.element.style.backgroundImage = `url('images/finish.svg')`
+                //toggleFinished();
 
                 // Trigger the finish animation
                 playFinishAnimation();
@@ -289,6 +281,7 @@ export class Player {
                 const timedNextLevel = new Timer(() => {
                     nextLevel();
                     timedEvents.delete(`finishingTheLevel`);
+                    state.finished = true;
                 }, 4000);
                 timedEvents.set(`finishingTheLevel`, timedNextLevel);
                 timedCount++;

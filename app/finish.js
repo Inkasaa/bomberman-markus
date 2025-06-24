@@ -1,4 +1,4 @@
-import { finish, mult } from "./client/game.js";
+import { finish, mult } from "./server/game.js";
 import { state } from "./shared/state.js";
 
 export class Finish {

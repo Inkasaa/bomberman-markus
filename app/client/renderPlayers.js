@@ -1,8 +1,12 @@
+import { playerName, setThisPlayer } from "./runGame.js";
+
 const gameContainer = document.getElementById("game-container");
 const domPlayers = new Map();
 
 // first draw, adding dom elements
 export function addPlayers(players) {
+    console.log("adding players:", players)
+
     players.forEach(player => {
         const domPlayer = document.createElement("div");
 
@@ -21,7 +25,11 @@ export function addPlayers(players) {
 export function updatePlayers(players) {
 
     players.forEach(player => {
-        const p = domPlayers.get(player.name);     
+        if (player.name === playerName) {
+            setThisPlayer(player);
+        }
+
+        const p = domPlayers.get(player.name);
 
         p.style.transform = `translate(${player.x}px, ${player.y}px)`;
         if (!player.vulnerable) {
@@ -40,7 +48,7 @@ export function updatePlayers(players) {
             p.classList.add("dead");
         } else {
             p.classList.remove("dead")
-        }        
+        }
     })
 }
 

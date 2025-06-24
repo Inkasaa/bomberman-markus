@@ -1,9 +1,9 @@
-import { Timer } from "../timer.js";
-import { flames, timedEvents } from "./game.js";
-import { gridStep, halfStep } from "./game.js";
+import { Timer } from "../shared/timer.js";
+import { clientEvents } from "./runGame.js";
 
 let timedCount = 0;
 const gameContainer = document.getElementById("game-container");
+const [gridStep, halfStep] = [50, 25];
 
 export function drawFlames(flames) {
 
@@ -45,13 +45,13 @@ function removeDomFlame(domFlame, flame) {
     const countNow = timedCount;
     const timedBurn = new Timer(() => {
         domFlame.remove();
-        timedEvents.delete(`flame${flame.direction}${countNow}`)
+        clientEvents.delete(`flame${flame.direction}${countNow}`)
     }, 500);
-    timedEvents.set(`flame${flame.direction}${countNow}`, timedBurn)
+    clientEvents.set(`flame${flame.direction}${countNow}`, timedBurn)
     timedCount++;
 }
 
-export function drawHorizontalFlame(flame) {
+function drawHorizontalFlame(flame) {
     const domFlame = document.createElement('div');
     generalFlameAttributes(domFlame, flame);
     domFlame.classList.add("horizontal");               // update css
@@ -62,7 +62,7 @@ export function drawHorizontalFlame(flame) {
     removeDomFlame(domFlame, flame);
 };
 
-export function drawVerticalFlame(flame) {
+function drawVerticalFlame(flame) {
     const domFlame = document.createElement('div');
     generalFlameAttributes(domFlame, flame);
     domFlame.classList.add("vertical");
@@ -74,7 +74,7 @@ export function drawVerticalFlame(flame) {
 }
 
 
-export function drawLeftFlameEnd(flame) {
+function drawLeftFlameEnd(flame) {
     const domFlame = document.createElement('div');
     generalFlameAttributes(domFlame, flame);
     domFlame.classList.add("left");
@@ -85,7 +85,7 @@ export function drawLeftFlameEnd(flame) {
     removeDomFlame(domFlame, flame);
 }
 
-export function drawRightFlameEnd(flame) {
+function drawRightFlameEnd(flame) {
     const domFlame = document.createElement('div');
     generalFlameAttributes(domFlame, flame);
     domFlame.classList.add("right");
@@ -97,7 +97,7 @@ export function drawRightFlameEnd(flame) {
 }
 
 
-export function drawUpFlameEnd(flame) {
+function drawUpFlameEnd(flame) {
     const domFlame = document.createElement('div');
     generalFlameAttributes(domFlame, flame);
     domFlame.classList.add("up");
@@ -108,7 +108,7 @@ export function drawUpFlameEnd(flame) {
     removeDomFlame(domFlame, flame);
 }
 
-export function drawDownFlameEnd(flame) {
+function drawDownFlameEnd(flame) {
     const domFlame = document.createElement('div');
     generalFlameAttributes(domFlame, flame);
     domFlame.classList.add("down");

@@ -1,4 +1,4 @@
-import { gridStep, halfStep } from "./client/game.js";
+import { gridStep, halfStep } from "./game.js";
 
 const gameContainer = document.getElementById("game-container");
 
