@@ -3,8 +3,8 @@ import { resizeGameContainer, setUpGame, makeWalls, makeLevelMap, makeTextBar } 
 import { congrats, crowdClapCheer, levelMusic, menuMusic, tickingBomb, walkingSound } from "../sounds.js";
 import { clearBombs, drawBombs } from "./renderBombs.js";
 import { drawFlames } from "./renderFlames.js";
-import { drawPowerUps } from "./renderItems.js";
-import { drawSolidWalls, drawWeakWalls } from "./renderWalls.js";
+import { burnItem, drawPowerUps, pickUpItem } from "./renderItems.js";
+import { collapseWeakWall, drawSolidWalls, drawWeakWalls } from "./renderWalls.js";
 
 export let bounds;
 export let mult = 1.0;
@@ -16,6 +16,7 @@ export let powerUpMap;                  // powerups on different map
 export let solidWalls = [];             // for player collisions
 export let surroundingWalls = [];       // no collisions
 export const weakWalls = new Map();     // for player collisions
+export const collapsingWalls = [];   // for rendering
 export const bombs = new Map();         // for player collisions
 export const newBombs = new Map();      // for rendering
 export const removedBombs = new Map();  // for rendering
@@ -25,6 +26,8 @@ export const newFlames = new Map();     // for rendering
 export const timedEvents = new Map();
 export const enemies = new Map();       // for player collisions
 export const powerups = new Map();      // for player collisions
+export const pickedItems = [];          // for rendering
+export const burningItems = [];         // for rendering
 
 //export let flamesPoolH = [];              // pools of objects to avoid run time memory allocations
 //export let flamesPoolV = [];
@@ -268,11 +271,26 @@ function runGame() {
             player.movePlayer(deltaTime);
             enemies.forEach((en) => en.moveEnemy(deltaTime));
 
+            if (collapsingWalls.length > 0) {
+                console.log()
+                collapsingWalls.forEach(id => collapseWeakWall(id))
+                collapsingWalls.length = 0; 
+            }
+
+            if (pickedItems.length > 0) {
+                pickedItems.forEach(name => pickUpItem(name))
+                pickedItems.length = 0;
+            }
+
+            if (burningItems.length > 0) {
+                burningItems.forEach(name => burnItem(name))
+                burningItems.length = 0;
+            }
+
             if (newFlames.size > 0) {
                 drawFlames(newFlames);
                 newFlames.clear();
             }
-
             if (newBombs.size > 0) {
                 drawBombs(newBombs);
                 newBombs.clear();

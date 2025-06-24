@@ -34,7 +34,6 @@ let timedCount = 0;
 
 export function collapseWeakWall(id){
         const targetWall = document.getElementById(id);
-
         const countNow = timedCount;
         const timedCollapse = new Timer(() => {
             targetWall.remove();

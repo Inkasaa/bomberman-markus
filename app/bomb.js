@@ -1,5 +1,5 @@
 import { Flame } from "./flames.js";
-import { bombs, bombTime, mult, gridStep, halfStep, levelMap, weakWalls, flames, timedEvents, powerUpMap, newFlames, removedBombs, newBombs } from "./render/game.js";
+import { bombs, bombTime, mult, gridStep, halfStep, levelMap, weakWalls, flames, timedEvents, powerUpMap, newFlames, removedBombs, newBombs, collapsingWalls } from "./render/game.js";
 import { collapseWeakWall } from "./render/renderWalls.js";
 import { placeBomb, tickingBomb, wallBreak } from "./sounds.js";
 import { Timer } from "./timer.js";
@@ -283,7 +283,8 @@ export class Bomb {
     destroyWall(row, col) {
         let name = levelMap[row][col];
         //weakWalls.get(name).collapse();
-        collapseWeakWall(name);
+        //collapseWeakWall(name);
+        collapsingWalls.push(name);
 
         const timedDeleteWall = new Timer(() => {
             weakWalls.delete(name);
