@@ -41,3 +41,45 @@ export function tryToActivateFinish() {
         finish.makeActive();        
     }
 };
+
+export function playFinishAnimation() {
+    const finishImages = [
+        'images/finish8.png',
+        'images/finish7.png',
+        'images/finish6.png',
+        'images/finish5.png',
+        'images/finish4.png',
+        'images/finish3.png',
+        'images/finish2.png',
+        'images/finish1.png',
+    ];
+
+    let currentImageIndex = 0;
+    const totalImages = finishImages.length;
+
+    // Set initial image for the animation
+    finish.element.style.backgroundImage = `url('${finishImages[currentImageIndex]}')`;
+
+    // Set a timeout for how long you want the animation to run (e.g., 4 seconds)
+    const animationDuration = 6000; // 6 seconds for the animation
+    const startTime = Date.now(); // Record the start time
+
+    // Create a timer to switch images in the animation sequence
+    const animationInterval = setInterval(() => {
+        currentImageIndex++;
+
+        if (currentImageIndex < totalImages) {
+            finish.element.style.backgroundImage = `url('${finishImages[currentImageIndex]}')`;
+        } else {
+            // Reset back to the first image to loop
+            currentImageIndex = 0;
+            finish.element.style.backgroundImage = `url('${finishImages[currentImageIndex]}')`;
+        }
+
+        // If animation runs for 6 seconds, stop it and revert to the static finish image
+        if (Date.now() - startTime >= animationDuration) {
+            clearInterval(animationInterval);  // Stop the animation
+            finish.element.style.backgroundImage = `url('images/finishgrey.svg')`;  // Revert back to the static image
+        }
+    }, 100); // Change image every 100ms
+}

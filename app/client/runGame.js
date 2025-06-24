@@ -8,6 +8,8 @@ import { drawBombs, clearBombs } from "./renderBombs.js";
 import { drawFlames } from "./renderFlames.js"
 import { addPlayers, updatePlayers } from "./renderPlayers.js";
 import { listenPlayerInputs } from "./inputListeners.js";
+import { Timer } from "./timerClient.js";
+import { levelMusic, gameLost1, gameLost2 } from "../sounds.js";
 
 export const playerName = "Player1";
 export let thisPlayer;
@@ -16,6 +18,7 @@ let livesinfo;
 let oldlives;
 let finished = false;
 export const clientEvents = new Map();
+let timedCount = 0;
 
 export function setThisPlayer(player) {
     thisPlayer = player;
@@ -106,7 +109,7 @@ export function startSequenceClient() {
             [levelinfo, livesinfo] = makeTextBar();
             updateLivesInfo(thisPlayer.lives);
         },
-        () => { document.body.classList.add("grey"); listenPlayerInputs();},
+        () => { document.body.classList.add("grey"); listenPlayerInputs(); },
         () => {
             const gameContainer = document.getElementById("game-container");
             gameContainer.style.visibility = "visible";
@@ -141,7 +144,12 @@ function runGame() {
         };
 
         updatePlayers(state.players);
-        if (oldlives !== thisPlayer.lives) updateLivesInfo(thisPlayer.lives);
+        if (oldlives !== thisPlayer.lives) {
+            updateLivesInfo(thisPlayer.lives);
+            if (thisPlayer.lives === 0) {
+                loserScreen();
+            }
+        }
 
         if (state.collapsingWalls.length > 0) {
             state.collapsingWalls.forEach(id => collapseWeakWall(id))
@@ -177,6 +185,34 @@ function runGame() {
         requestAnimationFrame(gameLoop);
     }
 };
+
+function loserScreen() {
+    const countNow = timedCount;
+    const timedResurrection = new Timer(() => {
+
+        const gameOverMenu = document.getElementById("game-over-menu");
+        const gifs = ["images/loser1.gif", "images/loser2.gif"];
+        const randomGif = gifs[Math.floor(Math.random() * gifs.length)];
+        gameOverMenu.style.background = `rgba(0, 0, 0, 0.8) url("${randomGif}") no-repeat center center`;
+        gameOverMenu.style.backgroundSize = "cover";
+        gameOverMenu.style.display = "block";
+
+        levelMusic.forEach(track => {
+            track.pause();
+            track.currentTime = 0;
+        });
+
+        if (randomGif === "images/loser1.gif") {
+            gameLost1.play(); // sad-trombone for loser1.gif
+        } else {
+            gameLost2.play(); // sinister-laugh for loser2.gif
+        }
+
+        clientEvents.delete(`resurrection${countNow}`)
+    }, 2000)
+    clientEvents.set(`resurrection${countNow}`, timedResurrection)
+    timedCount++;
+}
 
 document.addEventListener("DOMContentLoaded", () => {
     // Start music on interaction to avoid errors

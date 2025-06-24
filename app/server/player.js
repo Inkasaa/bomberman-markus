@@ -3,7 +3,8 @@ import { bombTime, bombs, bounds, finish, flames, nextLevel, timedEvents, levelM
 import { finishLevel, gameLost1, gameLost2, levelMusic, playerBombDeath, playerDeath, playerDeath2, walkingSound } from "../sounds.js";
 import { Timer } from "./timer.js";
 import { state } from "../shared/state.js";
-import { gridStep, halfStep, mult } from "../shared/config.js";
+import { gridStep, mult } from "../shared/config.js";
+import { playFinishAnimation } from "../finish.js";
 
 let timedCount = 0;
 
@@ -90,28 +91,11 @@ export class Player {
                 this.alive = true;
                 this.invulnerability();
             } else {
-                const gameOverMenu = document.getElementById("game-over-menu");
-                const gifs = ["images/loser1.gif", "images/loser2.gif"];
-                const randomGif = gifs[Math.floor(Math.random() * gifs.length)];
-                gameOverMenu.style.background = `rgba(0, 0, 0, 0.8) url("${randomGif}") no-repeat center center`;
-                gameOverMenu.style.backgroundSize = "cover";
-                gameOverMenu.style.display = "block";
-
-                levelMusic.forEach(track => {
-                    track.pause();
-                    track.currentTime = 0;
-                });
                 state.enemies.forEach(enemy => {
                     enemy.enemyWalking.pause();
                     enemy.enemyWalking.currentTime = 0;
                 });
                 setGameLost(); // Stop game loop updates
-
-                if (randomGif === "images/loser1.gif") {
-                    gameLost1.play(); // sad-trombone for loser1.gif
-                } else {
-                    gameLost2.play(); // sinister-laugh for loser2.gif
-                }
             };
             timedEvents.delete(`resurrection${countNow}`)
         }, 2000);
@@ -202,9 +186,6 @@ export class Player {
             this.x = Math.max(0, Math.min(newX, bounds.width - this.size));
             this.y = Math.max(0, Math.min(newY, bounds.height - this.size));
 
-            // apply movement
-            //this.element.style.transform = `translate(${this.x}px, ${this.y}px)`;
-
             // Walking sound logic
             const wasMoving = this.isMoving;
             this.isMoving = inputs.left || inputs.right || inputs.up || inputs.down;
@@ -217,7 +198,6 @@ export class Player {
 
             // Fatal, power-up and finish collisions after movement 
 
-            //let playerBounds = this.element.getBoundingClientRect();
             let playerBounds = { left: this.x, right: this.x + this.size, top: this.y, bottom: this.y + this.size }
 
             if (this.vulnerable) {
@@ -233,7 +213,7 @@ export class Player {
 
                 // enemies hit
                 for (const enemy of state.enemies.values()) {
-                    if (enemy.alive && checkHit(playerBounds, enemy.element)) {
+                    if (enemy.alive && checkHit(playerBounds, enemy.element)) {     // enemies not present in multiplayer
                         if (window.deathSound === 0) {
                             playerDeath.play();
                             window.deathSound = 1;
@@ -249,7 +229,6 @@ export class Player {
 
             // power-ups hit
             for (const pow of state.powerups.values()) {
-                //if (checkHit(playerBounds, pow.element)) {
                 if (checkHit(playerBounds, pow)) {
                     if (pow.powerType === "bomb") {
                         this.bombAmount++;
@@ -310,46 +289,3 @@ function checkHit(playerBounds, other) {
         playerBounds.bottom - mult * 10 < otherBounds.top ||
         playerBounds.top + mult * 10 > otherBounds.bottom);
 };
-
-
-function playFinishAnimation() {
-    const finishImages = [
-        'images/finish8.png',
-        'images/finish7.png',
-        'images/finish6.png',
-        'images/finish5.png',
-        'images/finish4.png',
-        'images/finish3.png',
-        'images/finish2.png',
-        'images/finish1.png',
-    ];
-
-    let currentImageIndex = 0;
-    const totalImages = finishImages.length;
-
-    // Set initial image for the animation
-    finish.element.style.backgroundImage = `url('${finishImages[currentImageIndex]}')`;
-
-    // Set a timeout for how long you want the animation to run (e.g., 4 seconds)
-    const animationDuration = 6000; // 6 seconds for the animation
-    const startTime = Date.now(); // Record the start time
-
-    // Create a timer to switch images in the animation sequence
-    const animationInterval = setInterval(() => {
-        currentImageIndex++;
-
-        if (currentImageIndex < totalImages) {
-            finish.element.style.backgroundImage = `url('${finishImages[currentImageIndex]}')`;
-        } else {
-            // Reset back to the first image to loop
-            currentImageIndex = 0;
-            finish.element.style.backgroundImage = `url('${finishImages[currentImageIndex]}')`;
-        }
-
-        // If animation runs for 6 seconds, stop it and revert to the static finish image
-        if (Date.now() - startTime >= animationDuration) {
-            clearInterval(animationInterval);  // Stop the animation
-            finish.element.style.backgroundImage = `url('images/finishgrey.svg')`;  // Revert back to the static image
-        }
-    }, 100); // Change image every 100ms
-}
