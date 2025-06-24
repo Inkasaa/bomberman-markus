@@ -1,6 +1,6 @@
 import { Bomb } from "./bomb.js";
 import { bombTime, bombs, bounds, finish, flames, nextLevel, timedEvents, levelMap, setGameLost } from "./game.js";
-import { playerBombDeath, playerDeath, playerDeath2, walkingSound } from "../sounds.js";
+import { playerBombDeath, playerDeath, playerDeath2, walkingSound } from "../client/sounds.js";
 import { Timer } from "./timer.js";
 import { state } from "../shared/state.js";
 import { gridStep, mult } from "../shared/config.js";

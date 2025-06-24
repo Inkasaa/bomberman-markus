@@ -1,6 +1,6 @@
 import { Flame } from "./flames.js";
 import { bombs, bombTime, levelMap, flames, timedEvents, powerUpMap } from "./game.js";
-import { placeBomb, tickingBomb, wallBreak } from "../sounds.js";
+import { placeBomb, tickingBomb, wallBreak } from "../client/sounds.js";
 import { Timer } from "./timer.js";
 import { state } from "../shared/state.js";
 import { gridStep, halfStep, mult } from "../shared/config.js";

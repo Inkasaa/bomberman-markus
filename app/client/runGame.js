@@ -1,6 +1,6 @@
 import { startSequence } from "../server/game.js";
 import { state } from "../shared/state.js";
-import { finishLevel, menuMusic, walkingSound } from "../sounds.js";
+import { finishLevel, menuMusic, walkingSound } from "./sounds.js";
 import { makeTextBar, resizeGameContainer } from "./initializeClient.js";
 import { drawSolidWalls, drawWeakWalls, collapseWeakWall } from "./renderWalls.js";
 import { drawPowerUps, pickUpItem, burnItem } from "./renderItems.js";
@@ -9,8 +9,8 @@ import { drawFlames } from "./renderFlames.js"
 import { addPlayers, updatePlayers } from "./renderPlayers.js";
 import { listenPlayerInputs } from "./inputListeners.js";
 import { Timer } from "./timerClient.js";
-import { levelMusic, gameLost1, gameLost2 } from "../sounds.js";
-import { congrats, crowdClapCheer } from "../sounds.js";
+import { levelMusic, gameLost1, gameLost2 } from "./sounds.js";
+import { congrats, crowdClapCheer } from "./sounds.js";
 
 export const playerName = "Player1";
 export let thisPlayer;
@@ -61,8 +61,7 @@ export function nextLevel() {
     }
 
     document.getElementById("game-container").replaceChildren();
-
-    startSequence(playerName);
+    startSequence(playerName);  // this should be started with a websockets message containing info about the player
     startSequenceClient();
     updateLevelInfo(state.level);
     updateLivesInfo(thisPlayer.lives);
@@ -149,25 +148,15 @@ export function startSequenceClient() {
     requestAnimationFrame(processNextTask);
 }
 
-
 function runGame() {
-    //let lastTimestamp = null;
     requestAnimationFrame(gameLoop);
-    console.log("Starting gameLoop");
 
     function gameLoop(timestamp) {
-        /* if (lastTimestamp !== null) {
-            const loopDuration = timestamp - lastTimestamp;
-            console.log(`${loopDuration.toFixed(2)} ms`);
-        }
-        lastTimestamp = timestamp; */
-
         if (state.finishing) finishLevel.play();
 
         if (state.finished === true) {
             state.finished = false;
             nextLevel();
-            console.log("exiting gameLoop")
             return
         };
 
@@ -219,7 +208,7 @@ function loserScreen() {
     const timedResurrection = new Timer(() => {
 
         const gameOverMenu = document.getElementById("game-over-menu");
-        const gifs = ["images/loser1.gif", "images/loser2.gif"];
+        const gifs = ["app/client/images/loser1.gif", "app/client/images/loser2.gif"];
         const randomGif = gifs[Math.floor(Math.random() * gifs.length)];
         gameOverMenu.style.background = `rgba(0, 0, 0, 0.8) url("${randomGif}") no-repeat center center`;
         gameOverMenu.style.backgroundSize = "cover";
@@ -230,7 +219,7 @@ function loserScreen() {
             track.currentTime = 0;
         });
 
-        if (randomGif === "images/loser1.gif") {
+        if (randomGif === "app/client/images/loser1.gif") {
             gameLost1.play(); // sad-trombone for loser1.gif
         } else {
             gameLost2.play(); // sinister-laugh for loser2.gif

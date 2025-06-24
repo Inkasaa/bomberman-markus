@@ -1,6 +1,6 @@
 import { Timer } from "../client/timerClient.js";
 import { clientEvents } from "./runGame.js";
-import { wallBreak } from "../sounds.js";
+import { wallBreak } from "./sounds.js";
 
 function generalWallAttributes(domWall, wall) {
         domWall.classList.add("wall")

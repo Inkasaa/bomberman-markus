@@ -1,4 +1,4 @@
-import { placeBomb, tickingBomb } from "../sounds.js";
+import { placeBomb, tickingBomb } from "./sounds.js";
 
 const gameContainer = document.getElementById("game-container");
 
@@ -11,7 +11,7 @@ export function drawBombs(bombs) {
         if (bomb.glowing) {
             domBomb.classList.add("glowing");
 
-            const explosion = new Audio("sfx/explosion.mp3");
+            const explosion = new Audio("app/client/sfx/explosion.mp3");
             explosion.volume = 0.6;
             explosion.play();
         }

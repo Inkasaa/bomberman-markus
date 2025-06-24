@@ -29,11 +29,11 @@ export class Enemy {
         document.getElementById("game-container").appendChild(this.element);
 
         // Instance-specific enemy walking and dying sound
-        this.enemyWalking = new Audio("sfx/enemyWalking.mp3");
+        this.enemyWalking = new Audio("app/client/sfx/enemyWalking.mp3");
         this.enemyWalking.volume = 0.15;
         this.enemyWalking.loop = true;
         this.enemyWalking.play();
-        this.enemyDeath = new Audio("sfx/enemyDeath.mp3");
+        this.enemyDeath = new Audio("app/client/sfx/enemyDeath.mp3");
         this.enemyDeath.volume = 0.3;
 
         let col = Math.round(x / gridStep);

@@ -32,7 +32,7 @@ export class Finish {
 
     makeActive() {
         this.active = true;
-        this.element.style.backgroundImage = `url("images/finish.svg")`;
+        this.element.style.backgroundImage = `url("app/client/images/finish.svg")`;
     }
 };
 
@@ -44,14 +44,14 @@ export function tryToActivateFinish() {
 
 export function playFinishAnimation() {
     const finishImages = [
-        'images/finish8.png',
-        'images/finish7.png',
-        'images/finish6.png',
-        'images/finish5.png',
-        'images/finish4.png',
-        'images/finish3.png',
-        'images/finish2.png',
-        'images/finish1.png',
+        'client/images/finish8.png',
+        'client/images/finish7.png',
+        'client/images/finish6.png',
+        'client/images/finish5.png',
+        'client/images/finish4.png',
+        'client/images/finish3.png',
+        'client/images/finish2.png',
+        'client/images/finish1.png',
     ];
 
     let currentImageIndex = 0;
@@ -79,7 +79,7 @@ export function playFinishAnimation() {
         // If animation runs for 6 seconds, stop it and revert to the static finish image
         if (Date.now() - startTime >= animationDuration) {
             clearInterval(animationInterval);  // Stop the animation
-            finish.element.style.backgroundImage = `url('images/finishgrey.svg')`;  // Revert back to the static image
+            finish.element.style.backgroundImage = `url('app/client/images/finishgrey.svg')`;  // Revert back to the static image
         }
     }, 100); // Change image every 100ms
 }

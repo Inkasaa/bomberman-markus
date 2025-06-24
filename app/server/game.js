@@ -2,7 +2,7 @@ import { Finish } from "../finish.js";
 import { setUpGame, makeWalls, makeLevelMap } from "./initialize.js";
 import { inputs } from "../shared/inputs.js";
 import { state } from "../shared/state.js";
-import { gridStep, mult } from "../shared/config.js";
+import { gridStep, interval, mult, speed } from "../shared/config.js";
 
 export let bounds;
 export let levelMap;                    // for placing elements, wall collapses
@@ -14,8 +14,6 @@ export const flames = new Map();        // for player collisions
 export const timedEvents = new Map();
 
 export let finish;
-//let lastFrameTime;
-//let gameRunning;
 let gameLost;
 let gameIntervalId;
 
@@ -29,7 +27,6 @@ export function nextLevel() {
     state.enemies.clear();
     state.powerups.clear();
     stopGame();
-    //startSequence();
 };
 
 export function startSequence(playerName = "") {
@@ -47,18 +44,15 @@ export function setGameLost() {
 }
 
 function runGame() {
-    const interval = 10;
     gameIntervalId = setInterval(gameLoop, interval);
-    console.log("starting server loop");
 
     function gameLoop(timestamp) {
         if (!gameLost) {
-            //lastFrameTime = timestamp;
             state.players.forEach(p => {
-                p.movePlayer(interval * 0.08, inputs);
+                p.movePlayer(speed, inputs);
             })
             inputs.bomb = false;
-            state.enemies.forEach((en) => en.moveEnemy(interval * 0.08));
+            state.enemies.forEach((en) => en.moveEnemy(speed));
         }
     };
 };
@@ -66,7 +60,6 @@ function runGame() {
 
 function stopGame() {
     if (gameIntervalId) {
-        console.log("stopping server loop");
         clearInterval(gameIntervalId);
         gameIntervalId = null;
     }

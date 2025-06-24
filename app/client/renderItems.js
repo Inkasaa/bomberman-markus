@@ -18,12 +18,12 @@ export function drawPowerUps(items) {
 
         if (item.powerType === "bomb") {
             domItem.classList.add("bombup");
-            domItem.dataset.sound = "sfx/bombUp.mp3"; // Store sound path in dataset
+            domItem.dataset.sound = "app/client/sfx/bombUp.mp3"; // Store sound path in dataset
         }
 
         if (item.powerType === "flame") {
             domItem.classList.add("flameup");
-            domItem.dataset.sound = "sfx/flameUp.mp3";
+            domItem.dataset.sound = "app/client/sfx/flameUp.mp3";
         }
 
         document.getElementById("game-container").appendChild(domItem);
@@ -34,7 +34,7 @@ let timedCount = 0;
 
 export function pickUpItem(id) {
     const targetItem = document.getElementById(id);
-    
+
     // Play sound if present
     if (targetItem && targetItem.dataset.sound) {
         const audio = new Audio(targetItem.dataset.sound);
@@ -46,7 +46,7 @@ export function pickUpItem(id) {
 export function burnItem(id) {
     const targetItem = document.getElementById(id);
 
-    targetItem.style.backgroundImage = `url("images/burn.svg")`;
+    targetItem.style.backgroundImage = `url("app/client/images/burn.svg")`;
     const countNow = timedCount;
     const timedCollapse = new Timer(() => {
         targetItem.remove();
