@@ -181,7 +181,10 @@ function isEmpty(row, col) {
 }
 
 function checkHit(enemyBounds, flame) {
-    const flameBounds = flame.getBoundingClientRect();
+    //const flameBounds = flame.getBoundingClientRect();
+    const off = gridStep * 2;   // not sure why this is necessary
+    const flameBounds = { left: flame.x + off, right: flame.x + flame.width + off, top: flame.y + off, bottom: flame.y + flame.height +off };
+ 
 
     // No hit (false) if enemy is safely outside on at least one side
     return !(enemyBounds.right < flameBounds.left ||

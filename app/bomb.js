@@ -1,4 +1,5 @@
-import { bombs, bombTime, mult, gridStep, halfStep, levelMap, weakWalls, flames, timedEvents, powerUpMap, flamesPoolH, flamesPoolV } from "./render/game.js";
+import { Flame } from "./flames.js";
+import { bombs, bombTime, mult, gridStep, halfStep, levelMap, weakWalls, flames, timedEvents, powerUpMap, flamesPoolH, flamesPoolV, newFlames } from "./render/game.js";
 import { collapseWeakWall } from "./render/renderWalls.js";
 import { placeBomb, tickingBomb, wallBreak } from "./sounds.js";
 import { Timer } from "./timer.js";
@@ -44,7 +45,7 @@ function isPowerUp(row, col) {
     );
 }
 
-function horizontalFlame(bombsize, x, y) {
+/* function horizontalFlame(bombsize, x, y) {
     const flame = flamesPoolH.find((f) => !f.active);
 
     flame.active = true;
@@ -100,6 +101,39 @@ function verticalFlame(bombsize, x, y) {
     timedCount++;
 
     return flame.elements[1];
+} */
+
+
+
+function makeFlame(x, y, dir) {
+    const fullOffset = mult * 30 - halfStep;        // from corner of bomb to edge square: + half bomb size, - half square size 
+    const smallOffset = mult * 30 - halfStep / 2;
+
+    flameCounter++
+    const name = `flame${dir}${flameCounter}`;
+    let newFlame;
+    if (dir === 'H' || dir === 'L' || dir === 'R') {
+        newFlame = new Flame(x + fullOffset, y + smallOffset, gridStep, halfStep, dir, name);
+    }
+    if (dir === 'V' || dir === 'U' || dir === 'D') {
+        newFlame = new Flame(x + smallOffset, y + fullOffset, halfStep, gridStep, dir, name);
+    }
+
+    flames.set(name, newFlame);     // complete map for collisions
+    newFlames.set(name, newFlame);  // only track changes for rendering
+    timeFlame(newFlame);
+    return newFlame;
+}
+
+// delete flame from map with delay
+function timeFlame(flame) {
+    const timedFlame = new Timer(() => {
+        flame.active = false;
+        flames.delete(flame.name);
+        timedEvents.delete(flame.name)
+    }, 500);
+    timedEvents.set(flame.name, timedFlame)
+    timedCount++;
 }
 
 
@@ -186,16 +220,13 @@ export class Bomb {
         tickingBomb.currentTime = 0; // Reset for next use
 
         // Draw flames of explosion in the middle
-        horizontalFlame(this.size, this.x, this.y);
-        verticalFlame(this.size, this.x, this.y);
+        //horizontalFlame(this.size, this.x, this.y);
+        //verticalFlame(this.size, this.x, this.y);
 
-        // flameCounter++
-        // const fullOffset = this.size/2 - halfStep;
-        // const smallOffset = this.size/2 - halfStep/2;
-        // flamesMap.set(`flameH${flameCounter}`, new Flame(this.x + fullOffset, this.y + smallOffset, 'H'))
-        // flamesMap.set(`flameV${flameCounter}`, new Flame(this.x + smallOffset, this.y + fullOffset, 'V'))
+        makeFlame(this.x, this.y, 'H');
+        makeFlame(this.x, this.y, 'V');
 
-        // Draw more flames in four directions
+        // More flames in four directions
         const fourDirs = [
             { name: 'right', going: true, coords: undefined },
             { name: 'left', going: true, coords: undefined },
@@ -206,7 +237,7 @@ export class Bomb {
         let firstWeakWall = true;
 
         for (let i = 1; i <= this.power; i++) {
-            
+
             // In four directions: Stop flames at walls and edges, destroy weak walls, explode other bombs
             for (let j = 0; j < 4; j++) {
                 switch (fourDirs[j].name) {
@@ -257,23 +288,32 @@ export class Bomb {
             };
 
             // if still going, draw flames and save the most recent
-            if (fourDirs[0].going) lastRight = horizontalFlame(this.size, this.x + gridStep * i, this.y);
+            /* if (fourDirs[0].going) lastRight = horizontalFlame(this.size, this.x + gridStep * i, this.y);
             if (fourDirs[1].going) lastLeft = horizontalFlame(this.size, this.x - gridStep * i, this.y);
             if (fourDirs[2].going) lastDown = verticalFlame(this.size, this.x, this.y + gridStep * i);
-            if (fourDirs[3].going) lastUp = verticalFlame(this.size, this.x, this.y - gridStep * i);
+            if (fourDirs[3].going) lastUp = verticalFlame(this.size, this.x, this.y - gridStep * i); */
 
-            // Cut off tip of full flame at the end to reveal rounded end
+            if (fourDirs[0].going) lastRight = makeFlame(this.x + gridStep * i, this.y, 'H');
+            if (fourDirs[1].going) lastLeft = makeFlame(this.x - gridStep * i, this.y, 'H');
+            if (fourDirs[2].going) lastDown = makeFlame(this.x, this.y + gridStep * i, 'V');
+            if (fourDirs[3].going) lastUp = makeFlame(this.x, this.y - gridStep * i, 'V');
+
+            // Mark flames as ends
             if (fourDirs[0].going && lastRight && i == this.power) {
-                lastRight.style.clipPath = `inset(0 ${20 * mult}px 0 0)`;
+                //lastRight.style.clipPath = `inset(0 ${20 * mult}px 0 0)`;
+                lastRight.direction = 'R';  // Does it update the one on the map too? Same reference?
             }
             if (fourDirs[1].going && lastLeft && i == this.power) {
-                lastLeft.style.clipPath = `inset(0 0 0 ${20 * mult}px)`;
+                //lastLeft.style.clipPath = `inset(0 0 0 ${20 * mult}px)`;
+                lastLeft.direction = 'L';
             }
             if (fourDirs[2].going && lastDown && i == this.power) {
-                lastDown.style.clipPath = `inset(0 0 ${20 * mult}px 0)`;
+                //lastDown.style.clipPath = `inset(0 0 ${20 * mult}px 0)`;
+                lastDown.direction = 'D';
             }
             if (fourDirs[3].going && lastUp && i == this.power) {
-                lastUp.style.clipPath = `inset(${20 * mult}px 0 0 0)`;
+                //lastUp.style.clipPath = `inset(${20 * mult}px 0 0 0)`;
+                lastUp.direction = 'U';
             }
         };
 

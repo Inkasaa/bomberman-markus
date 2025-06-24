@@ -168,8 +168,20 @@ button {
     background-size: cover;
 }
 
-.flame.horizontal.ends {
+/* .flame.horizontal.ends {
     background-image: url("images/flameendsh.svg");
+    background-size: cover;
+    z-index: 0;
+} */
+
+.flame.left {
+    background-image: url("images/flameendl.svg");
+    background-size: cover;
+    z-index: 0;
+}
+
+.flame.right {
+    background-image: url("images/flameendr.svg");
     background-size: cover;
     z-index: 0;
 }
@@ -179,8 +191,20 @@ button {
     background-size: cover;
 }
 
-.flame.vertical.ends {
+/* .flame.vertical.ends {
     background-image: url("images/flameendsv.svg");
+    background-size: cover;
+    z-index: 0;
+} */
+
+.flame.up {
+    background-image: url("images/flameendu.svg");
+    background-size: cover;
+    z-index: 0;
+}
+
+.flame.down {
+    background-image: url("images/flameendd.svg");
     background-size: cover;
     z-index: 0;
 }

@@ -1,35 +1,121 @@
 import { Timer } from "../timer.js";
-import { timedEvents } from "./game.js";
+import { flames, timedEvents } from "./game.js";
 import { gridStep, halfStep } from "./game.js";
 
 let timedCount = 0;
+const gameContainer = document.getElementById("game-container");
 
-export function drawHorizontalFlames(flames) {
+export function drawFlames(flames) {
 
-    flames.forEach(() => {
-        const domFlame = document.createElement('div');
-        domFlame.classList.add("horizontal");
-        if (i == 0) domFlame.classList.add("ends");
-        domFlame.style.width = `${gridStep}px`;
-        domFlame.style.height = `${halfStep}px`;
-        domFlame.style.display = "none";
-        gameContainer.appendChild(domFlame);
-
-        const countNow = timedCount;
-        const timedBurn = new Timer(() => {
-            domFlame.remove();
-            timedEvents.delete(`flameH${countNow}`)
-        }, 500);
-        timedEvents.set(`flameH${countNow}`, timedBurn)
-        timedCount++;
+    flames.forEach((flame) => {
+        switch (flame.direction) {
+            case 'H':
+                drawHorizontalFlame(flame);
+                break;
+            case 'V':
+                drawVerticalFlame(flame);
+                break;
+            case 'L':
+                drawLeftFlameEnd(flame);
+                break;
+            case 'R':
+                drawRightFlameEnd(flame);
+                break;
+            case 'U':
+                drawUpFlameEnd(flame);
+                break;
+            case 'D':
+                drawDownFlameEnd(flame);
+                break;
+            default:
+                console.log("Bad flame direction:", flame)
+                break;
+        }
     });
+}
+
+function generalFlameAttributes(domFlame, flame) {
+    domFlame.classList.add("flame");
+    domFlame.style.display = "block";                   // is this necessary?
+    domFlame.style.left = `${flame.x}px`;
+    domFlame.style.top = `${flame.y}px`;
+}
+
+function removeDomFlame(domFlame, flame) {
+    const countNow = timedCount;
+    const timedBurn = new Timer(() => {
+        domFlame.remove();
+        timedEvents.delete(`flame${flame.direction}${countNow}`)
+    }, 500);
+    timedEvents.set(`flame${flame.direction}${countNow}`, timedBurn)
+    timedCount++;
+}
+
+export function drawHorizontalFlame(flame) {
+    const domFlame = document.createElement('div');
+    generalFlameAttributes(domFlame, flame);
+    domFlame.classList.add("horizontal");               // update css
+    domFlame.style.width = `${gridStep}px`;
+    domFlame.style.height = `${halfStep}px`;
+    gameContainer.appendChild(domFlame);
+
+    removeDomFlame(domFlame, flame);
 };
 
-export function drawVerticalFlames(flames) { }
+export function drawVerticalFlame(flame) {
+    const domFlame = document.createElement('div');
+    generalFlameAttributes(domFlame, flame);
+    domFlame.classList.add("vertical");
+    domFlame.style.width = `${halfStep}px`;
+    domFlame.style.height = `${gridStep}px`;
+    gameContainer.appendChild(domFlame);
+
+    removeDomFlame(domFlame, flame);
+}
 
 
-export function drawLeftFlameEnd(flame) { }
-export function drawRightFlameEnd(flame) { }
-export function drawUpFlameEnd(flame) { }
-export function drawDownFlameEnd(flame) { }
+export function drawLeftFlameEnd(flame) {
+    const domFlame = document.createElement('div');
+    generalFlameAttributes(domFlame, flame);
+    domFlame.classList.add("left");
+    domFlame.style.width = `${gridStep}px`;
+    domFlame.style.height = `${halfStep}px`;
+    gameContainer.appendChild(domFlame);
+
+    removeDomFlame(domFlame, flame);
+}
+
+export function drawRightFlameEnd(flame) {
+    const domFlame = document.createElement('div');
+    generalFlameAttributes(domFlame, flame);
+    domFlame.classList.add("right");
+    domFlame.style.width = `${gridStep}px`;
+    domFlame.style.height = `${halfStep}px`;
+    gameContainer.appendChild(domFlame);
+
+    removeDomFlame(domFlame, flame);
+}
+
+
+export function drawUpFlameEnd(flame) {
+    const domFlame = document.createElement('div');
+    generalFlameAttributes(domFlame, flame);
+    domFlame.classList.add("up");
+    domFlame.style.width = `${halfStep}px`;
+    domFlame.style.height = `${gridStep}px`;
+    gameContainer.appendChild(domFlame);
+
+    removeDomFlame(domFlame, flame);
+}
+
+export function drawDownFlameEnd(flame) {
+    const domFlame = document.createElement('div');
+    generalFlameAttributes(domFlame, flame);
+    domFlame.classList.add("down");
+    domFlame.style.width = `${halfStep}px`;
+    domFlame.style.height = `${gridStep}px`;
+    gameContainer.appendChild(domFlame);
+
+    removeDomFlame(domFlame, flame);
+}
 

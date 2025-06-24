@@ -1,3 +1,4 @@
+import { Bomb } from "./bomb.js";
 import { bombTime, bombs, bounds, enemies, finish, flames, nextLevel, powerups, solidWalls, timedEvents, weakWalls, levelMap, updateLivesInfo, gridStep, toggleFinished, setGameLost, bombsPool, mult } from "./render/game.js";
 import { pickUpItem } from "./render/renderItems.js";
 import { finishLevel, gameLost1, gameLost2, levelMusic, playerBombDeath, playerDeath, playerDeath2, walkingSound } from "./sounds.js";
@@ -69,7 +70,8 @@ export class Player {
         if (this.alive && this.bombAmount > 0 && (!levelMap[row][col] || levelMap[row][col] === "player")) {
 
             // find from bombPool, start explode method
-            const bomb = bombsPool.find((b) => !b.active);
+            //const bomb = bombsPool.find((b) => !b.active);
+            const bomb = new Bomb();
             bomb.drop(row, col, this.bombPower, 'player');
 
             this.bombAmount--;
@@ -357,14 +359,16 @@ function checkHit(playerBounds, other) {
     let otherBounds = {};
     if (other instanceof Element && typeof other.getBoundingClientRect === "function") {
         otherBounds = other.getBoundingClientRect();
-    } else {
+    } else if (other.size) {
         otherBounds = { left: other.x, right: other.x + other.size, top: other.y, bottom: other.y + other.size };
-/*         if (other.powerType && other.x == 0) {
-            console.log("other is a powerup:", other)
-            console.log("other bounds:", otherBounds)
-            console.log("player bounds:", playerBounds)
-        } */
-    }    
+        /*         if (other.powerType && other.x == 0) {
+                    console.log("other is a powerup:", other)
+                    console.log("other bounds:", otherBounds)
+                    console.log("player bounds:", playerBounds)
+                } */
+    } else {    // flames have width and height, not size
+        otherBounds = { left: other.x, right: other.x + other.width, top: other.y, bottom: other.y + other.height };
+    }
 
     // No hit (false) if player is safely outside on at least one side
     return !(playerBounds.right - mult * 10 < otherBounds.left ||

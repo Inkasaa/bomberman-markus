@@ -1,6 +1,7 @@
 import { Finish } from "../finish.js";
-import { resizeGameContainer, setUpGame, makeWalls, makeLevelMap, makeTextBar, fillFlameAndBombPools } from "../initialize.js";
+import { resizeGameContainer, setUpGame, makeWalls, makeLevelMap, makeTextBar } from "../initialize.js";
 import { congrats, crowdClapCheer, levelMusic, menuMusic, tickingBomb, walkingSound } from "../sounds.js";
+import { drawFlames } from "./renderFlames.js";
 import { drawPowerUps } from "./renderItems.js";
 import { drawSolidWalls, drawWeakWalls } from "./renderWalls.js";
 
@@ -17,6 +18,7 @@ export const weakWalls = new Map();     // for player collisions
 export const bombs = new Map();         // for player collisions
 export const bombTime = 2500;
 export const flames = new Map();        // for player collisions
+export const newFlames = new Map();     // for rendering
 export const timedEvents = new Map();
 export const enemies = new Map();       // for player collisions
 export const powerups = new Map();      // for player collisions
@@ -248,6 +250,8 @@ function runGame() {
     requestAnimationFrame(gameLoop);
 
     function gameLoop(timestamp) {
+        
+
         let deltaTime = (timestamp - lastFrameTime) / 16.7; // use deltaTime to normalize speed for different refresh rates
         lastFrameTime = timestamp;
 
@@ -258,6 +262,8 @@ function runGame() {
             if (!finished) updateTimeInfo(timestamp - timeToSubtract);
             player.movePlayer(deltaTime);
             enemies.forEach((en) => en.moveEnemy(deltaTime));
+            drawFlames(newFlames);
+            newFlames.clear();
         }
 
         // requestAnimationFrame() always runs callback with 'timestamp' argument (milliseconds since the page loaded)
