@@ -5,8 +5,6 @@ const domPlayers = new Map();
 
 // first draw, adding dom elements
 export function addPlayers(players) {
-    console.log("adding players:", players)
-
     players.forEach(player => {
         const domPlayer = document.createElement("div");
 

@@ -1,5 +1,6 @@
-import { finish, mult } from "./server/game.js";
+import { finish } from "./server/game.js";
 import { state } from "./shared/state.js";
+import { mult } from "./shared/config.js";
 
 export class Finish {
     constructor(x, y, size) {

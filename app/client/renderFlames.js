@@ -1,9 +1,9 @@
-import { Timer } from "../shared/timer.js";
+import { Timer } from "../client/timerClient.js";
 import { clientEvents } from "./runGame.js";
+import { gridStep, halfStep, mult } from "../shared/config.js";
 
 let timedCount = 0;
 const gameContainer = document.getElementById("game-container");
-const [gridStep, halfStep] = [50, 25];
 
 export function drawFlames(flames) {
 

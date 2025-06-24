@@ -1,4 +1,4 @@
-import { Timer } from "../shared/timer.js";
+import { Timer } from "../client/timerClient.js";
 import { clientEvents } from "./runGame.js";
 
 function generalItemAttributes(domItem, item) {

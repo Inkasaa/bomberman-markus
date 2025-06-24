@@ -1,6 +1,7 @@
-import { halfStep, powerUpMap, timedEvents } from "./game.js";
-import { Timer } from "../shared/timer.js";
+import { powerUpMap, timedEvents } from "./game.js";
+import { Timer } from "./timer.js";
 import { state } from "../shared/state.js";
+import { halfStep } from "../shared/config.js";
 
 let timedCount = 0;
 
@@ -28,13 +29,11 @@ class PowerUp {
 
     pickUp() {
         this.sound.play();
-        //this.element.remove();
         powerUpMap[this.row][this.col] = '';
         state.powerups.delete(this.name);
     }
 
     burn() {
-        //burnItem(this.name);
         state.burningItems.push(this.name);
         const countNow = timedCount;
         const timedCollapse = new Timer(() => {

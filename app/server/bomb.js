@@ -1,8 +1,9 @@
 import { Flame } from "./flames.js";
-import { bombs, bombTime, mult, gridStep, halfStep, levelMap, flames, timedEvents, powerUpMap } from "./game.js";
+import { bombs, bombTime, levelMap, flames, timedEvents, powerUpMap } from "./game.js";
 import { placeBomb, tickingBomb, wallBreak } from "../sounds.js";
-import { Timer } from "../shared/timer.js";
+import { Timer } from "./timer.js";
 import { state } from "../shared/state.js";
+import { gridStep, halfStep, mult } from "../shared/config.js";
 
 let flameCounter = 0;
 let timedCount = 0;

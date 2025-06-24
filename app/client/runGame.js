@@ -1,18 +1,16 @@
 import { startSequence } from "../server/game.js";
 import { state } from "../shared/state.js";
 import { menuMusic } from "../sounds.js";
-import { makeTextBar, resizeGameContainer } from "../initialize.js";
+import { makeTextBar, resizeGameContainer } from "./initializeClient.js";
 import { drawSolidWalls, drawWeakWalls, collapseWeakWall } from "./renderWalls.js";
 import { drawPowerUps, pickUpItem, burnItem } from "./renderItems.js";
 import { drawBombs, clearBombs } from "./renderBombs.js";
 import { drawFlames } from "./renderFlames.js"
 import { addPlayers, updatePlayers } from "./renderPlayers.js";
-
+import { listenPlayerInputs } from "./inputListeners.js";
 
 export const playerName = "Player1";
 export let thisPlayer;
-let currentMusic;
-let gameStartTime;
 let levelinfo;
 let livesinfo;
 let oldlives;
@@ -87,9 +85,9 @@ function playMenuMusicOnInteraction() {
     document.removeEventListener('keydown', playMenuMusicOnInteraction);
 }
 
-function updateStartTime() {
+/* function updateStartTime() {
     gameStartTime = window.performance.now() + 100;     // time buffer to load something
-}
+} */
 
 export function startSequenceClient() {
     const gameContainer = document.getElementById("game-container");
@@ -104,11 +102,11 @@ export function startSequenceClient() {
             startMenu.style.display = "none";
         },
         () => {
-            updateStartTime();
+            //updateStartTime();
             [levelinfo, livesinfo] = makeTextBar();
             updateLivesInfo(thisPlayer.lives);
         },
-        () => { document.body.classList.add("grey"); },
+        () => { document.body.classList.add("grey"); listenPlayerInputs();},
         () => {
             const gameContainer = document.getElementById("game-container");
             gameContainer.style.visibility = "visible";

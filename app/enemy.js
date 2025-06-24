@@ -1,7 +1,8 @@
 import { tryToActivateFinish } from "./finish.js";
-import { flames, gridStep, halfStep, levelMap, timedEvents } from "./server/game.js";
-import { Timer } from "./shared/timer.js";
+import { flames, levelMap, timedEvents } from "./server/game.js";
+import { Timer } from "./server/timer.js";
 import { state } from "./shared/state.js";
+import { gridStep, halfStep, mult } from "./shared/config.js";
 
 let timedCount = 0;
 let enemyCount = 0;

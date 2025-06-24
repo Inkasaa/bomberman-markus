@@ -1,8 +1,9 @@
 import { Bomb } from "./bomb.js";
-import { bombTime, bombs, bounds, finish, flames, nextLevel, timedEvents, levelMap, gridStep, setGameLost, mult } from "./game.js";
+import { bombTime, bombs, bounds, finish, flames, nextLevel, timedEvents, levelMap, setGameLost } from "./game.js";
 import { finishLevel, gameLost1, gameLost2, levelMusic, playerBombDeath, playerDeath, playerDeath2, walkingSound } from "../sounds.js";
-import { Timer } from "../shared/timer.js";
+import { Timer } from "./timer.js";
 import { state } from "../shared/state.js";
+import { gridStep, halfStep, mult } from "../shared/config.js";
 
 let timedCount = 0;
 
@@ -273,7 +274,6 @@ export class Player {
                     track.currentTime = 0;
                 });
                 finishLevel.play();
-                //toggleFinished();
 
                 // Trigger the finish animation
                 playFinishAnimation();
@@ -326,7 +326,6 @@ function playFinishAnimation() {
 
     let currentImageIndex = 0;
     const totalImages = finishImages.length;
-
 
     // Set initial image for the animation
     finish.element.style.backgroundImage = `url('${finishImages[currentImageIndex]}')`;
