@@ -1,4 +1,5 @@
-import { enemies, finish, mult } from "./render/game.js";
+import { finish, mult } from "./client/game.js";
+import { state } from "./shared/state.js";
 
 export class Finish {
     constructor(x, y, size) {
@@ -35,7 +36,7 @@ export class Finish {
 };
 
 export function tryToActivateFinish() {
-    if (enemies.size == 0) {
-        finish.makeActive();
+    if (state.enemies.size == 0) {
+        finish.makeActive();        
     }
 };

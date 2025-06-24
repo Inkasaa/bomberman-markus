@@ -1,10 +1,14 @@
 import { Finish } from "../finish.js";
 import { resizeGameContainer, setUpGame, makeWalls, makeLevelMap, makeTextBar } from "../initialize.js";
+import { inputs } from "../shared/inputs.js";
 import { congrats, crowdClapCheer, levelMusic, menuMusic, tickingBomb, walkingSound } from "../sounds.js";
+import { listenPlayerInputs } from "./inputListeners.js";
 import { clearBombs, drawBombs } from "./renderBombs.js";
 import { drawFlames } from "./renderFlames.js";
 import { burnItem, drawPowerUps, pickUpItem } from "./renderItems.js";
+import { addPlayers, updatePlayers } from "./renderPlayers.js";
 import { collapseWeakWall, drawSolidWalls, drawWeakWalls } from "./renderWalls.js";
+import { state } from "../shared/state.js";
 
 export let bounds;
 export let mult = 1.0;
@@ -13,25 +17,11 @@ export let halfStep = 0;
 export let levelMap;                    // for placing elements, wall collapses
 export let powerUpMap;                  // powerups on different map
 
-export let solidWalls = [];             // for player collisions
-export let surroundingWalls = [];       // no collisions
-export const weakWalls = new Map();     // for player collisions
-export const collapsingWalls = [];   // for rendering
 export const bombs = new Map();         // for player collisions
-export const newBombs = new Map();      // for rendering
-export const removedBombs = new Map();  // for rendering
 export const bombTime = 2500;
 export const flames = new Map();        // for player collisions
-export const newFlames = new Map();     // for rendering
 export const timedEvents = new Map();
-export const enemies = new Map();       // for player collisions
 export const powerups = new Map();      // for player collisions
-export const pickedItems = [];          // for rendering
-export const burningItems = [];         // for rendering
-
-//export let flamesPoolH = [];              // pools of objects to avoid run time memory allocations
-//export let flamesPoolV = [];
-//export let bombsPool = [];
 
 export let finish;
 
@@ -96,16 +86,13 @@ export function nextLevel() {
 
     level++;
     timeToSubtract = window.performance.now(); // resets level clock  
-    solidWalls = [];
-    weakWalls.clear();
+    state.solidWalls = [];
+    state.weakWalls.clear();
     bombs.clear();
     flames.clear();
     timedEvents.clear();
-    enemies.clear();
+    state.enemies.clear();
     powerups.clear();
-    flamesPoolH = [];
-    flamesPoolV = [];
-    bombsPool = [];
 
     //loadLevel();
     startSequence();
@@ -128,7 +115,7 @@ function togglePause() {
                 currentMusic.pause();
             }
             walkingSound.pause();
-            enemies.forEach(enemy => {
+            state.enemies.forEach(enemy => {
                 enemy.enemyWalking.pause();
             });
             tickingBomb.pause();
@@ -144,7 +131,7 @@ function togglePause() {
             if (player.isMoving) {
                 walkingSound.play();
             }
-            enemies.forEach(enemy => {
+            state.enemies.forEach(enemy => {
                 if (enemy.isMoving) {
                     enemy.enemyWalking.play();
                 }
@@ -202,7 +189,7 @@ function startSequence() {
     let tasks = [
         () => { bounds = resizeGameContainer(level); },
         //() => { [gridStep, halfStep] = getGridSize();[mult, player] = setUpGame(bounds) },
-        () => { [gridStep, halfStep] = [50, 25];[mult, player] = setUpGame(bounds) },
+        () => { [gridStep, halfStep] = [50, 25];[mult, player] = setUpGame("Player1"); state.players.push(player); listenPlayerInputs() },       // Player initialized => serve should start game
         () => { levelMap = makeLevelMap(); powerUpMap = makeLevelMap(); },
         () => { makeWalls(level); },
         //() => { fillFlameAndBombPools(); },   // try without for now
@@ -228,8 +215,8 @@ function startSequence() {
         },
 
         // Render dom elements
-        () => { drawSolidWalls(solidWalls); drawSolidWalls(surroundingWalls), drawWeakWalls(weakWalls) },
-        () => { drawPowerUps(powerups) },
+        () => { drawSolidWalls(state.solidWalls); drawSolidWalls(state.surroundingWalls), drawWeakWalls(state.weakWalls) },
+        () => { drawPowerUps(powerups); addPlayers(state.players) },
 
         () => { runGame(); },
     ];
@@ -268,36 +255,40 @@ function runGame() {
 
         if (timestamp > gameStartTime && !paused && !gameLost) {
             if (!finished) updateTimeInfo(timestamp - timeToSubtract);
-            player.movePlayer(deltaTime);
-            enemies.forEach((en) => en.moveEnemy(deltaTime));
+            player.movePlayer(deltaTime, inputs);
+            inputs.bomb = false;
 
-            if (collapsingWalls.length > 0) {
-                console.log()
-                collapsingWalls.forEach(id => collapseWeakWall(id))
-                collapsingWalls.length = 0; 
-            }
+            state.enemies.forEach((en) => en.moveEnemy(deltaTime));
+            updatePlayers(state.players);
 
-            if (pickedItems.length > 0) {
-                pickedItems.forEach(name => pickUpItem(name))
-                pickedItems.length = 0;
+            if (state.collapsingWalls.length > 0) {
+                state.collapsingWalls.forEach(id => collapseWeakWall(id))
+                state.collapsingWalls.length = 0; 
             }
 
-            if (burningItems.length > 0) {
-                burningItems.forEach(name => burnItem(name))
-                burningItems.length = 0;
+            if (state.pickedItems.length > 0) {
+                state.pickedItems.forEach(name => pickUpItem(name))
+                state.pickedItems.length = 0;
             }
 
-            if (newFlames.size > 0) {
-                drawFlames(newFlames);
-                newFlames.clear();
+            if (state.burningItems.length > 0) {
+                state.burningItems.forEach(name => burnItem(name))
+                state.burningItems.length = 0;
             }
-            if (newBombs.size > 0) {
-                drawBombs(newBombs);
-                newBombs.clear();
+
+            if (state.newFlames.size > 0) {
+                drawFlames(state.newFlames);
+                state.newFlames.clear();
             }
-            if (removedBombs.size > 0) {
-                clearBombs(removedBombs);
-                removedBombs.clear();
+
+            if (state.newBombs.size > 0) {
+                drawBombs(state.newBombs);
+                state.newBombs.clear();
+            }
+
+            if (state.removedBombs.size > 0) {
+                clearBombs(state.removedBombs);
+                state.removedBombs.clear();
             }
         }
 

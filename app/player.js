@@ -1,48 +1,27 @@
 import { Bomb } from "./bomb.js";
-import { bombTime, bombs, bounds, enemies, finish, flames, nextLevel, powerups, solidWalls, timedEvents, weakWalls, levelMap, updateLivesInfo, gridStep, toggleFinished, setGameLost, mult, pickedItems } from "./render/game.js";
-import { pickUpItem } from "./render/renderItems.js";
+import { bombTime, bombs, bounds, finish, flames, nextLevel, powerups, timedEvents, levelMap, updateLivesInfo, gridStep, toggleFinished, setGameLost, mult } from "./client/game.js";
 import { finishLevel, gameLost1, gameLost2, levelMusic, playerBombDeath, playerDeath, playerDeath2, walkingSound } from "./sounds.js";
 import { Timer } from "./timer.js";
+import { state } from "./shared/state.js";
 
 let timedCount = 0;
 
 export class Player {
-    constructor(size, speed, x, y) {
+    constructor(size, speed, x, y, name = "player") {
         this.size = size;
         this.speed = speed;
         this.startX = x;
         this.startY = y;
         this.x = x;
         this.y = y;
+        this.name = name;
+        this.left = false;
+        this.dead = false;
 
-        this.lives = 5;
+        this.lives = 3;
         this.alive = true;
         this.bombAmount = 1;
         this.bombPower = 2;
-
-        this.element = document.createElement('div');
-        this.element.id = "player";
-        this.element.style.width = `${size}px`;
-        this.element.style.height = `${size}px`;
-        this.element.style.position = 'absolute';
-        this.element.style.transform = `translate(${x}px, ${y}px)`;
-        document.getElementById("game-container").appendChild(this.element);
-
-        // listen for bomb drop button
-        document.addEventListener("keydown", (event) => {
-            if (event.key === " ") { // drop bomb with space
-                this.dropBomb();
-            }
-        });
-
-        // listen for direction controls
-        this.left = false;
-        this.right = false;
-        this.up = false;
-        this.down = false;
-        // bind move() and stop() to this instance (instead of document) with arrow functions
-        document.addEventListener('keydown', (event) => this.move(event));
-        document.addEventListener('keyup', (event) => this.stop(event));
         this.isMoving = false;
 
         this.invulnerability();
@@ -51,11 +30,11 @@ export class Player {
     invulnerability() {
         let countNow = timedCount;
         this.vulnerable = false;
-        this.element.classList.add("invulnerable");
+        //this.element.classList.add("invulnerable");
 
         const timedInvulnerability = new Timer(() => {
             this.vulnerable = true;
-            this.element.classList.remove("invulnerable");
+            //this.element.classList.remove("invulnerable");
             timedEvents.delete(`invulnerability${countNow}`)
         }, 2000);
 
@@ -87,55 +66,15 @@ export class Player {
     };
 
     // Handle sprite direction change based on movement
-    updateSpriteDirection(key) {
+    updateSpriteDirection(direction) {
         if (this.alive) {
-            if (key == 'ArrowLeft') {
-                this.element.classList.add('left');
-            }
-            if (key == 'ArrowRight') {
-                this.element.classList.remove('left');
-            }
+            this.left = (direction === 'left');
         }
     }
 
-    move(event) {
-        switch (event.key) {
-            case "ArrowLeft":
-                this.left = true;
-                break;
-            case "ArrowRight":
-                this.right = true;
-                break;
-            case "ArrowUp":
-                this.up = true;
-                break;
-            case "ArrowDown":
-                this.down = true;
-                break;
-        };
-        this.updateSpriteDirection(event.key); // Update the sprite if player moves left or right    
-    };
-
-    stop(event) {
-        switch (event.key) {
-            case "ArrowLeft":
-                this.left = false;
-                break;
-            case "ArrowRight":
-                this.right = false;
-                break;
-            case "ArrowUp":
-                this.up = false;
-                break;
-            case "ArrowDown":
-                this.down = false;
-                break;
-        };
-    };
-
     die() {
-        this.element.classList.add('dead');
-
+        //this.element.classList.add('dead');
+        this.dead = true;
         this.alive = false;
         this.lives--;
         updateLivesInfo(this.lives);
@@ -150,8 +89,9 @@ export class Player {
             if (this.lives > 0) {
                 this.x = this.startX;
                 this.y = this.startY;
-                this.element.style.transform = `translate(${this.x}px, ${this.y}px)`;
-                this.element.classList.remove('dead');
+                //this.element.style.transform = `translate(${this.x}px, ${this.y}px)`;
+                //this.element.classList.remove('dead');
+                this.dead = false;
                 this.alive = true;
                 this.invulnerability();
             } else {
@@ -166,7 +106,7 @@ export class Player {
                     track.pause();
                     track.currentTime = 0;
                 });
-                enemies.forEach(enemy => {
+                state.enemies.forEach(enemy => {
                     enemy.enemyWalking.pause();
                     enemy.enemyWalking.currentTime = 0;
                 });
@@ -194,13 +134,20 @@ export class Player {
         timedCount++;
     };
 
-    movePlayer(deltaTime) {
+    movePlayer(deltaTime, inputs) {
 
         if (this.alive) {
 
+            if (inputs.bomb) {
+                this.dropBomb();
+            }
+
+            if (inputs.left) this.updateSpriteDirection('left');
+            if (inputs.right) this.updateSpriteDirection('right');
+
             // diagonal movement slowdown factor
             let slowDown = 1;
-            if ((this.left || this.right) && (this.up || this.down)) {
+            if ((inputs.left || inputs.right) && (inputs.up || inputs.down)) {
                 slowDown = 0.707;
             };
 
@@ -210,14 +157,14 @@ export class Player {
             // calculate next position
             let newX = this.x;
             let newY = this.y;
-            if (this.left) newX -= moveDistance;
-            if (this.right) newX += moveDistance;
-            if (this.up) newY -= moveDistance;
-            if (this.down) newY += moveDistance;
+            if (inputs.left) newX -= moveDistance;
+            if (inputs.right) newX += moveDistance;
+            if (inputs.up) newY -= moveDistance;
+            if (inputs.down) newY += moveDistance;
 
             // solid wall collisions
             const collidingWalls = [];
-            for (const wall of solidWalls) {
+            for (const wall of state.solidWalls) {
                 if (wall.checkCollision(newX, newY, this.size, slowDown).toString() != [newX, newY].toString()) {
                     collidingWalls.push(wall);
                     if (collidingWalls.length == 1) break; // Can't collide with more than one solid wall
@@ -225,7 +172,7 @@ export class Player {
             };
 
             // weak wall collisions
-            for (const wall of weakWalls.values()) {
+            for (const wall of state.weakWalls.values()) {
                 if (wall.checkCollision(newX, newY, this.size, slowDown).toString() != [newX, newY].toString()) {
                     collidingWalls.push(wall);
                     if (collidingWalls.length === 3) break; // Can't collide with more than three walls
@@ -261,11 +208,11 @@ export class Player {
             this.y = Math.max(0, Math.min(newY, bounds.height - this.size));
 
             // apply movement
-            this.element.style.transform = `translate(${this.x}px, ${this.y}px)`;
+            //this.element.style.transform = `translate(${this.x}px, ${this.y}px)`;
 
             // Walking sound logic
             const wasMoving = this.isMoving;
-            this.isMoving = this.left || this.right || this.up || this.down;
+            this.isMoving = inputs.left || inputs.right || inputs.up || inputs.down;
             if (this.isMoving && !wasMoving) {
                 walkingSound.play();
             } else if (!this.isMoving && wasMoving) {
@@ -290,19 +237,19 @@ export class Player {
                 };
 
                 // enemies hit
-                /*                 for (const enemy of enemies.values()) {
-                                    if (enemy.alive && checkHit(playerBounds, enemy.element)) {
-                                        if (window.deathSound === 0) {
-                                            playerDeath.play();
-                                            window.deathSound = 1;
-                                        } else {
-                                            playerDeath2.play();
-                                            window.deathSound = 0;
-                                        }
-                                        this.die();
-                                        break;
-                                    };
-                                }; */
+                for (const enemy of state.enemies.values()) {
+                    if (enemy.alive && checkHit(playerBounds, enemy.element)) {
+                        if (window.deathSound === 0) {
+                            playerDeath.play();
+                            window.deathSound = 1;
+                        } else {
+                            playerDeath2.play();
+                            window.deathSound = 0;
+                        }
+                        this.die();
+                        break;
+                    };
+                };
             }
 
             // power-ups hit
@@ -317,7 +264,7 @@ export class Player {
                     }
                     pow.pickUp();
                     //pickUpItem(pow.name);
-                    pickedItems.push(pow.name);
+                    state.pickedItems.push(pow.name);
                     break;
                 };
             };
@@ -352,19 +299,14 @@ export class Player {
 };
 
 function checkHit(playerBounds, other) {
-    //console.log("playerbounds are:", playerBounds)
-    //console.log("other is:", other)
-    //const otherBounds = other.getBoundingClientRect();
     let otherBounds = {};
-    if (other instanceof Element && typeof other.getBoundingClientRect === "function") {
-        otherBounds = other.getBoundingClientRect();
+    if (other instanceof Element && typeof other.getBoundingClientRect === "function") {        // enemies not untied of dom elements
+        otherBounds.left = other.getBoundingClientRect().left - gridStep * 2;
+        otherBounds.right = other.getBoundingClientRect().right - gridStep * 2;
+        otherBounds.top = other.getBoundingClientRect().top - gridStep * 2;
+        otherBounds.bottom = other.getBoundingClientRect().bottom - gridStep * 2;
     } else if (other.size) {
         otherBounds = { left: other.x, right: other.x + other.size, top: other.y, bottom: other.y + other.size };
-        /*         if (other.powerType && other.x == 0) {
-                    console.log("other is a powerup:", other)
-                    console.log("other bounds:", otherBounds)
-                    console.log("player bounds:", playerBounds)
-                } */
     } else {    // flames have width and height, not size
         otherBounds = { left: other.x, right: other.x + other.width, top: other.y, bottom: other.y + other.height };
     }
@@ -416,8 +358,6 @@ function playFinishAnimation() {
         if (Date.now() - startTime >= animationDuration) {
             clearInterval(animationInterval);  // Stop the animation
             finish.element.style.backgroundImage = `url('images/finishgrey.svg')`;  // Revert back to the static image
-            // Optionally, call nextLevel() here or any other logic to proceed to the next level
-            //nextLevel();
         }
     }, 100); // Change image every 100ms
 }

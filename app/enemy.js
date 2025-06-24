@@ -1,6 +1,7 @@
 import { tryToActivateFinish } from "./finish.js";
-import { enemies, flames, gridStep, halfStep, levelMap, timedEvents } from "./render/game.js";
+import { flames, gridStep, halfStep, levelMap, timedEvents } from "./client/game.js";
 import { Timer } from "./timer.js";
+import { state } from "./shared/state.js";
 
 let timedCount = 0;
 let enemyCount = 0;
@@ -56,7 +57,7 @@ export class Enemy {
         const timedDeath = new Timer(() => {
             this.element.remove();  // Remove the enemy element from the DOM
             timedEvents.delete(`enemyDeath${countNow}`);  // Clean up timed events
-            enemies.delete(this.name);  // Remove from the enemies collection
+            state.enemies.delete(this.name);  // Remove from the enemies collection
             tryToActivateFinish();  // Check if the game should finish
         }, 1000);  // 1 second delay before removal
 

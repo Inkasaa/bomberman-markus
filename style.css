@@ -52,7 +52,7 @@ button {
 }
 
 
-#player {
+.player {
     will-change: transform;
     /* to own layer => GPU acceleration */
     background-image: url("images/nalleRight3.png");
@@ -60,19 +60,19 @@ button {
     z-index: 10;
 }
 
-#player.left {
+.player.left {
     background-image: url('images/nalleLeft3.png');
 }
 
-#player.dead {
+.player.dead {
     background-image: url("images/nalleDead.png");
 }
 
-#player.invulnerable {
+.player.invulnerable {
     background-image: url('images/nalleRight3white.png');
 }
 
-#player.left.invulnerable {
+.player.left.invulnerable {
     background-image: url('images/nalleLeft3white.png');
 }
 

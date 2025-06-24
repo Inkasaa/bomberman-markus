@@ -1,10 +1,9 @@
-import { Bomb } from "./bomb.js";
 import { Enemy } from "./enemy.js";
-import { FlameH, FlameV } from "./flames.js";
-import { enemies, gridStep, halfStep, level, levelMap, mult, powerUpMap, powerups, solidWalls, weakWalls, surroundingWalls } from "./render/game.js";
+import { gridStep, halfStep, level, levelMap, mult, powerUpMap, powerups } from "./client/game.js";
 import { Player } from "./player.js";
 import { BombUp, FlameUp } from "./powerup.js";
 import { SolidWall, WeakWall } from "./walls.js";
+import { state } from "./shared/state.js";
 
 export function resizeGameContainer(level) {
     const gameContainer = document.getElementById("game-container");
@@ -49,7 +48,7 @@ export function resizeGameContainer(level) {
     return [gridStep, halfStep];
 }; */
 
-export function setUpGame(bounds) {
+export function setUpGame(playerName) {
     // multiplier from game-container size scales things (speed, placements) 
     // to different sized windows
     
@@ -58,10 +57,10 @@ export function setUpGame(bounds) {
 
     const playerSpeed = 4.5 * multiplier;
     const playerSize = 55 * multiplier;
-    const playerX = halfStep - (playerSize / 2); // put player to top left    
+    const playerX = halfStep - (playerSize / 2); // put player to top left
     const playerY = halfStep - (playerSize / 2);
 
-    const player = new Player(playerSize, playerSpeed, playerX, playerY);
+    const player = new Player(playerSize, playerSpeed, playerX, playerY, playerName);
 
     return [multiplier, player];
 };
@@ -84,7 +83,7 @@ export function makeWalls(level) {
             const y = gridStep * mapY;
             // Create SolidWall instance with level passed
             const newSolid = new SolidWall(x, y, gridStep, level);      // 6 * 5 solid walls
-            solidWalls.push(newSolid);
+            state.solidWalls.push(newSolid);
 
             levelMap[mapY][mapX] = 'solidWall';
         };
@@ -99,7 +98,7 @@ export function makeWalls(level) {
             const x = gridStep * mapX;
             const y = gridStep * mapY;
             const newSolid = new SolidWall(x, y, gridStep, level);
-            surroundingWalls.push(newSolid)
+            state.surroundingWalls.push(newSolid)
         }
     };
     const xVals = [-1, 13];
@@ -110,12 +109,12 @@ export function makeWalls(level) {
             const x = gridStep * mapX;
             const y = gridStep * mapY;
             const newSolid = new SolidWall(x, y, gridStep, level);
-            surroundingWalls.push(newSolid)
+            state.surroundingWalls.push(newSolid)
         }
     };
 
     // place weak walls randomly
-    while (weakWalls.size < 45) {
+    while (state.weakWalls.size < 45) {
         const mapX = Math.floor(Math.random() * 13);
         const mapY = Math.floor(Math.random() * 11);
 
@@ -129,7 +128,7 @@ export function makeWalls(level) {
         const name = `weakWall${String(mapX).padStart(2, '0')}${String(mapY).padStart(2, '0')}`;
         const newWeak = new WeakWall(x, y, gridStep, level, name);    
 
-        weakWalls.set(name, newWeak);   
+        state.weakWalls.set(name, newWeak);   
         levelMap[mapY][mapX] = name;
     };
 
@@ -172,7 +171,7 @@ export function makeWalls(level) {
     }
 
     // place enemies
-    while (enemies.size < 1 + (level * 1.5)) {
+    while (state.enemies.size < 1 + (level * 1.5)) {
         const mapX = Math.floor(Math.random() * 13);
         const mapY = Math.floor(Math.random() * 11);
 
@@ -185,7 +184,7 @@ export function makeWalls(level) {
         const y = gridStep * mapY;
         const name = `enemy${String(mapX).padStart(2, '0')}${String(mapY).padStart(2, '0')}`;
         const newEnemy = new Enemy(55 * mult, level * mult, x, y, name);
-        enemies.set(name, newEnemy);
+        state.enemies.set(name, newEnemy);
         levelMap[mapY][mapX] = 'enemy';
     };
 

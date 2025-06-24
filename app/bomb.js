@@ -1,10 +1,9 @@
 import { Flame } from "./flames.js";
-import { bombs, bombTime, mult, gridStep, halfStep, levelMap, weakWalls, flames, timedEvents, powerUpMap, newFlames, removedBombs, newBombs, collapsingWalls } from "./render/game.js";
-import { collapseWeakWall } from "./render/renderWalls.js";
+import { bombs, bombTime, mult, gridStep, halfStep, levelMap, flames, timedEvents, powerUpMap } from "./client/game.js";
 import { placeBomb, tickingBomb, wallBreak } from "./sounds.js";
 import { Timer } from "./timer.js";
+import { state } from "./shared/state.js";
 
-const gameContainer = document.getElementById("game-container");
 let flameCounter = 0;
 let timedCount = 0;
 
@@ -60,7 +59,7 @@ function makeFlame(x, y, dir) {
     }
 
     flames.set(name, newFlame);     // complete map for collisions
-    newFlames.set(name, newFlame);  // only track changes for rendering
+    state.newFlames.set(name, newFlame);  // only track changes for rendering
     timeFlame(newFlame);
     return newFlame;
 }
@@ -121,7 +120,7 @@ export class Bomb {
         //this.element.style.display = "block";
 
         bombs.set(this.name, this);      // add bomb to map for collision checks
-        newBombs.set(this.name, this);
+        state.newBombs.set(this.name, this);
         levelMap[this.mapRow][this.mapCol] = ['bomb', this];  // store reference to level map
 
         // Play sound when bomb is dropped
@@ -158,7 +157,7 @@ export class Bomb {
     explode() {
         //this.element.classList.add('glowing');  // let css swap background
         this.glowing = true;
-        newBombs.set(this.name, this);
+        state.newBombs.set(this.name, this);
         this.explosion.play();
 
         // Stop ticking sound when bomb explodes
@@ -270,7 +269,7 @@ export class Bomb {
             //this.element.style.display = "none";
             this.active = false;
 
-            removedBombs.set(this.name, this);
+            state.removedBombs.set(this.name, this);
             //bombs.delete(`bomb${this.mapCol}${this.mapRow}`);
             bombs.delete(this.name);
             timedEvents.delete(`explosion${this.countNow}`);
@@ -284,10 +283,10 @@ export class Bomb {
         let name = levelMap[row][col];
         //weakWalls.get(name).collapse();
         //collapseWeakWall(name);
-        collapsingWalls.push(name);
+        state.collapsingWalls.push(name);        
 
         const timedDeleteWall = new Timer(() => {
-            weakWalls.delete(name);
+            state.weakWalls.delete(name);
             levelMap[row][col] = "";
             timedEvents.delete(`deleteWall${this.countNow}`)
         }, 500);

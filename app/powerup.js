@@ -1,6 +1,6 @@
-import { burningItems, halfStep, powerUpMap, powerups, timedEvents } from "./render/game.js";
-import { burnItem } from "./render/renderItems.js";
+import { halfStep, powerUpMap, powerups, timedEvents } from "./client/game.js";
 import { Timer } from "./timer.js";
+import { state } from "./shared/state.js";
 
 let timedCount = 0;
 
@@ -35,7 +35,7 @@ class PowerUp {
 
     burn() {
         //burnItem(this.name);
-        burningItems.push(this.name);
+        state.burningItems.push(this.name);
         const countNow = timedCount;
         const timedCollapse = new Timer(() => {
             this.pickUp();

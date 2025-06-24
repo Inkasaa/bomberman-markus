@@ -22,6 +22,8 @@ export function drawBombs(bombs) {
 export function clearBombs(bombs) {
     bombs.forEach(bomb => {
         document.getElementById(bomb.name).remove();    // black version
-        document.getElementById(bomb.name).remove();    // orange version
+        if (document.getElementById(bomb.name)) {
+            document.getElementById(bomb.name).remove();    // orange version, doesn't always get created at early explosion
+        }
     })
 }
