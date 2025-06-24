@@ -1,5 +1,5 @@
 import { Flame } from "./flames.js";
-import { bombs, bombTime, mult, gridStep, halfStep, levelMap, weakWalls, flames, timedEvents, powerUpMap, flamesPoolH, flamesPoolV, newFlames } from "./render/game.js";
+import { bombs, bombTime, mult, gridStep, halfStep, levelMap, weakWalls, flames, timedEvents, powerUpMap, newFlames, removedBombs, newBombs } from "./render/game.js";
 import { collapseWeakWall } from "./render/renderWalls.js";
 import { placeBomb, tickingBomb, wallBreak } from "./sounds.js";
 import { Timer } from "./timer.js";
@@ -45,66 +45,6 @@ function isPowerUp(row, col) {
     );
 }
 
-/* function horizontalFlame(bombsize, x, y) {
-    const flame = flamesPoolH.find((f) => !f.active);
-
-    flame.active = true;
-    for (const ele of flame.elements) {
-        ele.style.left = `${x + (bombsize / 2) - halfStep}px`;
-        ele.style.top = `${y + (bombsize / 2) - (halfStep / 2)}px`;
-        ele.style.display = "block";
-    }
-    flame.elements[1].style.clipPath = `inset(0)`;  // remove any cropping from before
-
-    flameCounter++
-    flames.set(`flameH${flameCounter}0`, flame.elements[0])   // to map of flames for collisions
-    flames.set(`flameH${flameCounter}1`, flame.elements[1])
-
-    const countNow = timedCount;
-    const timedFlame = new Timer(() => {
-        flame.active = false;
-        flame.elements.forEach(e => e.style.display = "none");
-        flames.delete(`flameH${flameCounter}0`);
-        flames.delete(`flameH${flameCounter}1`);
-        timedEvents.delete(`flameH${countNow}`)
-    }, 500);
-    timedEvents.set(`flameH${countNow}`, timedFlame)
-    timedCount++;
-
-    return flame.elements[1];
-}
-
-function verticalFlame(bombsize, x, y) {
-    const flame = flamesPoolV.find((f) => !f.active);
-
-    flame.active = true;
-    for (const ele of flame.elements) {
-        ele.style.left = `${x + (bombsize / 2) - (halfStep / 2)}px`;
-        ele.style.top = `${y + (bombsize / 2) - halfStep}px`;
-        ele.style.display = "block";
-    }
-    flame.elements[1].style.clipPath = `inset(0)`;
-
-    flameCounter++
-    flames.set(`flameV${flameCounter}0`, flame.elements[0])   // to map of flames for collisions
-    flames.set(`flameV${flameCounter}1`, flame.elements[1])
-
-    const countNow = timedCount;
-    const timedFlame = new Timer(() => {
-        flame.active = false;
-        flame.elements.forEach(e => e.style.display = "none");
-        flames.delete(`flameV${flameCounter}0`);
-        flames.delete(`flameV${flameCounter}1`);
-        timedEvents.delete(`flameV${countNow}`)
-    }, 500);
-    timedEvents.set(`flameV${countNow}`, timedFlame)
-    timedCount++;
-
-    return flame.elements[1];
-} */
-
-
-
 function makeFlame(x, y, dir) {
     const fullOffset = mult * 30 - halfStep;        // from corner of bomb to edge square: + half bomb size, - half square size 
     const smallOffset = mult * 30 - halfStep / 2;
@@ -138,46 +78,50 @@ function timeFlame(flame) {
 
 
 export class Bomb {
-    setValues(size, row, col, power, name) {
+    setValues(size, row, col, power, playerName) {
         // Align dropped bomb to grid
         this.mapCol = col;
         this.mapRow = row;
         this.x = this.mapCol * gridStep + halfStep - size / 2;
         this.y = this.mapRow * gridStep + halfStep - size / 2;
         this.size = size;
-        this.owner = name;
+        this.owner = playerName;
         this.power = power;
+        this.bounds = { left: this.x, right: this.x + this.size, top: this.y, bottom: this.y + this.size }
+        this.name = `bomb${this.mapCol}${this.mapRow}`;
     }
 
-    constructor(size = mult * 60, row = 0, col = 0, power = 1, name = '') {
-        this.setValues(size, row, col, power, name)
+    constructor(size = mult * 60, row = 0, col = 0, power = 1, playerName = '') {
+        this.setValues(size, row, col, power, playerName)
         this.active = false;
+        this.glowing = false;
 
-        this.element = document.createElement("div");
-        this.element.classList.add("bomb");
-        this.element.style.width = `${size}px`;
-        this.element.style.height = `${size}px`;
-        this.element.style.left = `${this.x}px`;
-        this.element.style.top = `${this.y}px`;
-        this.bounds = this.element.getBoundingClientRect();
-        this.element.style.display = "none";
-
+        /*         this.element = document.createElement("div");
+                this.element.classList.add("bomb");
+                this.element.style.width = `${size}px`;
+                this.element.style.height = `${size}px`;
+                this.element.style.left = `${this.x}px`;
+                this.element.style.top = `${this.y}px`; */
+        //this.bounds = this.element.getBoundingClientRect();
+        //this.element.style.display = "none";
+        
         this.explosion = new Audio("sfx/explosion.mp3");
         this.explosion.volume = 0.6;
 
-        gameContainer.appendChild(this.element);
+        //gameContainer.appendChild(this.element);
     };
 
-    drop(row, col, power, name) {
-        this.setValues(this.size, row, col, power, name)
+    drop(row, col, power, playerName) {
+        this.setValues(this.size, row, col, power, playerName)
         this.active = true;
 
-        this.element.style.left = `${this.x}px`;
-        this.element.style.top = `${this.y}px`;
-        this.bounds = this.element.getBoundingClientRect();
-        this.element.style.display = "block";
+        //this.element.style.left = `${this.x}px`;
+        //this.element.style.top = `${this.y}px`;
+        //this.bounds = this.element.getBoundingClientRect();
+        //this.element.style.display = "block";
 
-        bombs.set(`bomb${this.mapCol}${this.mapRow}`, this);  // add bomb to map for collision checks
+        bombs.set(this.name, this);      // add bomb to map for collision checks
+        newBombs.set(this.name, this);
         levelMap[this.mapRow][this.mapCol] = ['bomb', this];  // store reference to level map
 
         // Play sound when bomb is dropped
@@ -212,7 +156,9 @@ export class Bomb {
     }
 
     explode() {
-        this.element.classList.add('glowing');  // let css swap background
+        //this.element.classList.add('glowing');  // let css swap background
+        this.glowing = true;
+        newBombs.set(this.name, this);
         this.explosion.play();
 
         // Stop ticking sound when bomb explodes
@@ -319,11 +265,14 @@ export class Bomb {
 
         // delay deleting bomb for a bit
         const timedExplotion = new Timer(() => {
-            this.element.classList.remove('glowing');
-            this.element.style.display = "none";
+            //this.element.classList.remove('glowing');
+            this.glowing = false;
+            //this.element.style.display = "none";
             this.active = false;
 
-            bombs.delete(`bomb${this.mapCol}${this.mapRow}`);
+            removedBombs.set(this.name, this);
+            //bombs.delete(`bomb${this.mapCol}${this.mapRow}`);
+            bombs.delete(this.name);
             timedEvents.delete(`explosion${this.countNow}`);
             levelMap[this.mapRow][this.mapCol] = '';
         }, 500);

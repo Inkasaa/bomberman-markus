@@ -13,16 +13,6 @@ class PowerUp {
         this.col = col;
 
         this.name = nameOf;
-
-/*         this.element = document.createElement("div");
-        this.element.classList.add("powerup")
-        this.element.style.position = "absolute";
-        this.element.style.width = `${size}px`;
-        this.element.style.height = `${size}px`;
-        this.element.style.left = `${this.x}px`;
-        this.element.style.top = `${this.y}px`;
-
-        document.getElementById("game-container").appendChild(this.element); */
     };
 
     checkCollision(playerX, playerY, playerSize) {

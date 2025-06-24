@@ -1,7 +1,7 @@
 import { Bomb } from "./bomb.js";
 import { Enemy } from "./enemy.js";
 import { FlameH, FlameV } from "./flames.js";
-import { enemies, gridStep, halfStep, level, levelMap, mult, powerUpMap, powerups, solidWalls, weakWalls, flamesPoolV, flamesPoolH, bombsPool, surroundingWalls } from "./render/game.js";
+import { enemies, gridStep, halfStep, level, levelMap, mult, powerUpMap, powerups, solidWalls, weakWalls, surroundingWalls } from "./render/game.js";
 import { Player } from "./player.js";
 import { BombUp, FlameUp } from "./powerup.js";
 import { SolidWall, WeakWall } from "./walls.js";
