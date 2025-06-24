@@ -2,7 +2,7 @@ import { Finish } from "../finish.js";
 import { setUpGame, makeWalls, makeLevelMap } from "./initialize.js";
 import { inputs } from "../shared/inputs.js";
 import { state } from "../shared/state.js";
-import { gridStep, halfStep, mult } from "../shared/config.js";
+import { gridStep, mult } from "../shared/config.js";
 
 export let bounds;
 export let levelMap;                    // for placing elements, wall collapses
@@ -29,7 +29,7 @@ export function nextLevel() {
     state.enemies.clear();
     state.powerups.clear();
     stopGame();
-    startSequence();
+    //startSequence();
 };
 
 export function startSequence(playerName = "") {
@@ -49,6 +49,7 @@ export function setGameLost() {
 function runGame() {
     const interval = 10;
     gameIntervalId = setInterval(gameLoop, interval);
+    console.log("starting server loop");
 
     function gameLoop(timestamp) {
         if (!gameLost) {
@@ -65,6 +66,7 @@ function runGame() {
 
 function stopGame() {
     if (gameIntervalId) {
+        console.log("stopping server loop");
         clearInterval(gameIntervalId);
         gameIntervalId = null;
     }

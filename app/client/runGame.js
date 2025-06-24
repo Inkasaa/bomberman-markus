@@ -1,6 +1,6 @@
 import { startSequence } from "../server/game.js";
 import { state } from "../shared/state.js";
-import { menuMusic } from "../sounds.js";
+import { finishLevel, menuMusic, walkingSound } from "../sounds.js";
 import { makeTextBar, resizeGameContainer } from "./initializeClient.js";
 import { drawSolidWalls, drawWeakWalls, collapseWeakWall } from "./renderWalls.js";
 import { drawPowerUps, pickUpItem, burnItem } from "./renderItems.js";
@@ -10,6 +10,7 @@ import { addPlayers, updatePlayers } from "./renderPlayers.js";
 import { listenPlayerInputs } from "./inputListeners.js";
 import { Timer } from "./timerClient.js";
 import { levelMusic, gameLost1, gameLost2 } from "../sounds.js";
+import { congrats, crowdClapCheer } from "../sounds.js";
 
 export const playerName = "Player1";
 export let thisPlayer;
@@ -19,9 +20,26 @@ let oldlives;
 let finished = false;
 export const clientEvents = new Map();
 let timedCount = 0;
+let currentMusic;
+let isMoving = false;
+let wasMoving = false;
 
+// update local player info (for lives mostly)
 export function setThisPlayer(player) {
     thisPlayer = player;
+}
+
+// Walking sounds controlled from inputlisteners
+export function setMoving(moving) {
+    wasMoving = isMoving;
+    isMoving = moving;
+
+    if (isMoving && !wasMoving) {
+        walkingSound.play();
+    } else if (!isMoving && wasMoving) {
+        walkingSound.pause();
+        walkingSound.currentTime = 0;
+    }
 }
 
 // Prevent default behavior for arrow keys to avoid page scrolling. Notice 'window'
@@ -88,10 +106,6 @@ function playMenuMusicOnInteraction() {
     document.removeEventListener('keydown', playMenuMusicOnInteraction);
 }
 
-/* function updateStartTime() {
-    gameStartTime = window.performance.now() + 100;     // time buffer to load something
-} */
-
 export function startSequenceClient() {
     const gameContainer = document.getElementById("game-container");
     gameContainer.style.visibility = "hidden";
@@ -105,9 +119,12 @@ export function startSequenceClient() {
             startMenu.style.display = "none";
         },
         () => {
-            //updateStartTime();
             [levelinfo, livesinfo] = makeTextBar();
             updateLivesInfo(thisPlayer.lives);
+        },
+        () => {
+            if (currentMusic) { currentMusic.pause(); currentMusic.currentTime = 0; }
+            currentMusic = levelMusic[state.level - 1]; currentMusic.play();
         },
         () => { document.body.classList.add("grey"); listenPlayerInputs(); },
         () => {
@@ -134,12 +151,23 @@ export function startSequenceClient() {
 
 
 function runGame() {
+    //let lastTimestamp = null;
     requestAnimationFrame(gameLoop);
+    console.log("Starting gameLoop");
 
     function gameLoop(timestamp) {
+        /* if (lastTimestamp !== null) {
+            const loopDuration = timestamp - lastTimestamp;
+            console.log(`${loopDuration.toFixed(2)} ms`);
+        }
+        lastTimestamp = timestamp; */
+
+        if (state.finishing) finishLevel.play();
+
         if (state.finished === true) {
             state.finished = false;
             nextLevel();
+            console.log("exiting gameLoop")
             return
         };
 
@@ -223,6 +251,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const startMenu = document.getElementById("start-menu");
     startMenu.style.display = "block";
 
+    // Restart button
+    document.getElementById("restart-btn-game-over").addEventListener("click", () => {
+        document.getElementById("game-over-menu").style.display = "none";
+        restartGame();
+    });
+
+    // Start button
     document.getElementById("start-btn").addEventListener("click", () => {
         startSequence(playerName);
         thisPlayer = state.players[0];

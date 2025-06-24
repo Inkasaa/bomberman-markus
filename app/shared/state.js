@@ -13,5 +13,6 @@ export const state = {
     players: [],
 
     level: 1,
+    finishing: false,
     finished: false,
 };

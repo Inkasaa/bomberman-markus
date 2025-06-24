@@ -1,4 +1,6 @@
 import { playerName, setThisPlayer } from "./runGame.js";
+import { playerBombDeath, playerDeath, playerDeath2, walkingSound } from "../sounds.js";
+import { state } from "../shared/state.js";
 
 const gameContainer = document.getElementById("game-container");
 const domPlayers = new Map();
@@ -43,6 +45,11 @@ export function updatePlayers(players) {
         }
 
         if (player.dead) {
+            if (!p.classList.contains("dead")) {
+                if (player.killer === "bomb") playerBombDeath.play();
+                if (player.killer === "enemy1") playerDeath.play();
+                if (player.killer === "enemy2") playerDeath2.play();
+            }
             p.classList.add("dead");
         } else {
             p.classList.remove("dead")

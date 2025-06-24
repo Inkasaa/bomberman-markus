@@ -28,7 +28,6 @@ class PowerUp {
     };
 
     pickUp() {
-        this.sound.play();
         powerUpMap[this.row][this.col] = '';
         state.powerups.delete(this.name);
     }
@@ -49,8 +48,6 @@ export class BombUp extends PowerUp {
     constructor(x, y, size, nameOf, row, col) {
         super(x, y, size, nameOf, row, col);
         this.powerType = "bomb";
-        //this.element.classList.add("bombup");
-        this.sound = new Audio("sfx/bombUp.mp3");
     };
     pickUp() {
         super.pickUp();
@@ -61,8 +58,6 @@ export class FlameUp extends PowerUp {
     constructor(x, y, size, nameOf, row, col) {
         super(x, y, size, nameOf, row, col);
         this.powerType = "flame";
-        //this.element.classList.add("flameup");
-        this.sound = new Audio("sfx/flameUp.mp3");
     };
     pickUp() {
         super.pickUp();

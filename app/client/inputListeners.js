@@ -1,4 +1,5 @@
 import { inputs } from "../shared/inputs.js";
+import { setMoving } from "./runGame.js";
 
 export function listenPlayerInputs() {
     document.addEventListener("keydown", (event) => {
@@ -6,7 +7,6 @@ export function listenPlayerInputs() {
             inputs.bomb = true;
         }
     });
-
     document.addEventListener('keydown', (event) => move(event));
     document.addEventListener('keyup', (event) => stop(event));
 }
@@ -28,10 +28,7 @@ function move(event) {
             break;
     };
 
-    /* if (event.key === "ArrowLeft" || event.key === "ArrowRight" || event.key === "ArrowUp" || event.key === "ArrowDown") {
-        console.log("moving", event.key)
-    } */
-
+    setMoving(inputs.left || inputs.right || inputs.up || inputs.down);
 };
 
 function stop(event) {
@@ -49,4 +46,6 @@ function stop(event) {
             inputs.down = false;
             break;
     };
+
+    setMoving(inputs.left || inputs.right || inputs.up || inputs.down);
 };

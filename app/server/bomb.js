@@ -95,9 +95,6 @@ export class Bomb {
         this.setValues(size, row, col, power, playerName)
         this.active = false;
         this.glowing = false;
-        
-        this.explosion = new Audio("sfx/explosion.mp3");
-        this.explosion.volume = 0.6;
     };
 
     drop(row, col, power, playerName) {
@@ -106,12 +103,6 @@ export class Bomb {
         bombs.set(this.name, this);      // add bomb to map for collision checks
         state.newBombs.set(this.name, this);
         levelMap[this.mapRow][this.mapCol] = ['bomb', this];  // store reference to level map
-
-        // Play sound when bomb is dropped
-        placeBomb.play();
-
-        // Start ticking sound
-        tickingBomb.play();
 
         this.countNow = timedCount;
         const timedBomb = new Timer(() => {
@@ -139,14 +130,8 @@ export class Bomb {
     }
 
     explode() {
-        //this.element.classList.add('glowing');  // let css swap background
         this.glowing = true;
         state.newBombs.set(this.name, this);
-        this.explosion.play();
-
-        // Stop ticking sound when bomb explodes
-        tickingBomb.pause();
-        tickingBomb.currentTime = 0; // Reset for next use
 
         // Draw flames of explosion in the middle
         makeFlame(this.x, this.y, 'H');
@@ -160,7 +145,6 @@ export class Bomb {
             { name: 'up', going: true, coords: undefined },
         ];
         let [lastLeft, lastRight, lastUp, lastDown] = [undefined, undefined, undefined, undefined];
-        let firstWeakWall = true;
 
         for (let i = 1; i <= this.power; i++) {
 
@@ -189,10 +173,6 @@ export class Bomb {
                     if (isWall(dirRow, dirCol)) {
                         if (levelMap[dirRow][dirCol].startsWith('weakWall')) {
                             this.destroyWall(dirRow, dirCol);
-                            if (firstWeakWall) {
-                                setTimeout(() => wallBreak.play(), 100);
-                                firstWeakWall = false;
-                            }
                         }
                         fourDirs[j].going = false;
                         foundWall = true;

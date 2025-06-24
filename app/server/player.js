@@ -1,12 +1,13 @@
 import { Bomb } from "./bomb.js";
 import { bombTime, bombs, bounds, finish, flames, nextLevel, timedEvents, levelMap, setGameLost } from "./game.js";
-import { finishLevel, gameLost1, gameLost2, levelMusic, playerBombDeath, playerDeath, playerDeath2, walkingSound } from "../sounds.js";
+import { playerBombDeath, playerDeath, playerDeath2, walkingSound } from "../sounds.js";
 import { Timer } from "./timer.js";
 import { state } from "../shared/state.js";
 import { gridStep, mult } from "../shared/config.js";
 import { playFinishAnimation } from "../finish.js";
 
 let timedCount = 0;
+let deathSound = 1;
 
 export class Player {
     constructor(size, speed, x, y, name = "player") {
@@ -26,6 +27,7 @@ export class Player {
         this.bombPower = 2;
         this.isMoving = false;
         this.score = 0;
+        this.killer = "";
 
         this.invulnerability();
     };
@@ -84,6 +86,7 @@ export class Player {
 
         const countNow = timedCount;
         const timedResurrection = new Timer(() => {
+            this.killer = "";
             if (this.lives > 0) {
                 this.x = this.startX;
                 this.y = this.startY;
@@ -186,26 +189,13 @@ export class Player {
             this.x = Math.max(0, Math.min(newX, bounds.width - this.size));
             this.y = Math.max(0, Math.min(newY, bounds.height - this.size));
 
-            // Walking sound logic
-            const wasMoving = this.isMoving;
-            this.isMoving = inputs.left || inputs.right || inputs.up || inputs.down;
-            if (this.isMoving && !wasMoving) {
-                walkingSound.play();
-            } else if (!this.isMoving && wasMoving) {
-                walkingSound.pause();
-                walkingSound.currentTime = 0;
-            }
-
             // Fatal, power-up and finish collisions after movement 
-
             let playerBounds = { left: this.x, right: this.x + this.size, top: this.y, bottom: this.y + this.size }
-
             if (this.vulnerable) {
-
                 // flames hit
                 for (const flame of flames.values()) {
                     if (checkHit(playerBounds, flame)) {
-                        playerBombDeath.play();
+                        this.killer = "bomb";
                         this.die();
                         break;
                     };
@@ -214,12 +204,12 @@ export class Player {
                 // enemies hit
                 for (const enemy of state.enemies.values()) {
                     if (enemy.alive && checkHit(playerBounds, enemy.element)) {     // enemies not present in multiplayer
-                        if (window.deathSound === 0) {
-                            playerDeath.play();
-                            window.deathSound = 1;
+                        if (deathSound === 0) {
+                            this.killer = "enemy1";
+                            deathSound = 1;
                         } else {
-                            playerDeath2.play();
-                            window.deathSound = 0;
+                            this.killer = "enemy2";
+                            deathSound = 0;
                         }
                         this.die();
                         break;
@@ -248,15 +238,11 @@ export class Player {
                 this.alive = false;
                 walkingSound.pause();
                 walkingSound.currentTime = 0;
-                levelMusic.forEach(track => {
-                    track.pause();
-                    track.currentTime = 0;
-                });
-                finishLevel.play();
 
                 // Trigger the finish animation
                 playFinishAnimation();
 
+                state.finishing = true;
                 const timedNextLevel = new Timer(() => {
                     nextLevel();
                     timedEvents.delete(`finishingTheLevel`);

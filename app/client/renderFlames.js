@@ -1,6 +1,6 @@
 import { Timer } from "../client/timerClient.js";
 import { clientEvents } from "./runGame.js";
-import { gridStep, halfStep, mult } from "../shared/config.js";
+import { gridStep, halfStep } from "../shared/config.js";
 
 let timedCount = 0;
 const gameContainer = document.getElementById("game-container");

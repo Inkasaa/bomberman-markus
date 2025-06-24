@@ -1,3 +1,5 @@
+import { placeBomb, tickingBomb } from "../sounds.js";
+
 const gameContainer = document.getElementById("game-container");
 
 export function drawBombs(bombs) {
@@ -8,6 +10,10 @@ export function drawBombs(bombs) {
         domBomb.classList.add("bomb");
         if (bomb.glowing) {
             domBomb.classList.add("glowing");
+
+            const explosion = new Audio("sfx/explosion.mp3");
+            explosion.volume = 0.6;
+            explosion.play();
         }
         domBomb.style.width = `${bomb.size}px`;
         domBomb.style.height = `${bomb.size}px`;
@@ -16,11 +22,18 @@ export function drawBombs(bombs) {
 
         domBomb.style.display = "block";
         gameContainer.appendChild(domBomb);
+
+        // Sound for bomb
+        placeBomb.play();
+        tickingBomb.play();
     });
 }
 
 export function clearBombs(bombs) {
     bombs.forEach(bomb => {
+        tickingBomb.pause();
+        tickingBomb.currentTime = 0;
+
         document.getElementById(bomb.name).remove();    // black version
         if (document.getElementById(bomb.name)) {
             document.getElementById(bomb.name).remove();    // orange version, doesn't always get created at early explosion

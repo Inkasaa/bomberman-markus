@@ -1,4 +1,4 @@
-import { gridStep, halfStep, mult } from "../shared/config.js";
+import { gridStep, mult } from "../shared/config.js";
 
 class Wall {
     constructor(x, y, size) {

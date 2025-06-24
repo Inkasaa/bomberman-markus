@@ -18,13 +18,11 @@ export function drawPowerUps(items) {
 
         if (item.powerType === "bomb") {
             domItem.classList.add("bombup");
-            //domItem.sound = new Audio("sfx/bombUp.mp3");  // How to tie sound to dom?
             domItem.dataset.sound = "sfx/bombUp.mp3"; // Store sound path in dataset
         }
 
         if (item.powerType === "flame") {
             domItem.classList.add("flameup");
-            //domItem.sound = new Audio("sfx/flameUp.mp3");
             domItem.dataset.sound = "sfx/flameUp.mp3";
         }
 
@@ -36,6 +34,7 @@ let timedCount = 0;
 
 export function pickUpItem(id) {
     const targetItem = document.getElementById(id);
+    
     // Play sound if present
     if (targetItem && targetItem.dataset.sound) {
         const audio = new Audio(targetItem.dataset.sound);
