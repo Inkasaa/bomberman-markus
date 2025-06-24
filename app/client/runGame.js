@@ -155,7 +155,7 @@ function runGame() {
         if (state.finishing) finishLevel.play();
 
         if (state.finished === true) {
-            state.finished = false;
+            state.finished = false;     // client should not write to state: handle with ws
             nextLevel();
             return
         };
@@ -170,32 +170,32 @@ function runGame() {
 
         if (state.collapsingWalls.length > 0) {
             state.collapsingWalls.forEach(id => collapseWeakWall(id))
-            state.collapsingWalls.length = 0;
+            state.collapsingWalls.length = 0;     // client should not write to state: handle with ws
         }
 
         if (state.pickedItems.length > 0) {
             state.pickedItems.forEach(name => pickUpItem(name))
-            state.pickedItems.length = 0;
+            state.pickedItems.length = 0;     // client should not write to state: handle with ws
         }
 
         if (state.burningItems.length > 0) {
             state.burningItems.forEach(name => burnItem(name))
-            state.burningItems.length = 0;
+            state.burningItems.length = 0;     // client should not write to state: handle with ws
         }
 
         if (state.newFlames.size > 0) {
             drawFlames(state.newFlames);
-            state.newFlames.clear();
+            state.newFlames.clear();     // client should not write to state: handle with ws
         }
 
         if (state.newBombs.size > 0) {
             drawBombs(state.newBombs);
-            state.newBombs.clear();
+            state.newBombs.clear();     // client should not write to state: handle with ws
         }
 
         if (state.removedBombs.size > 0) {
             clearBombs(state.removedBombs);
-            state.removedBombs.clear();
+            state.removedBombs.clear();     // client should not write to state: handle with ws
         }
 
         // requestAnimationFrame() always runs callback with 'timestamp' argument (milliseconds since the page loaded)

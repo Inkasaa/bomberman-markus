@@ -1,6 +1,5 @@
 import { playerName, setThisPlayer } from "./runGame.js";
-import { playerBombDeath, playerDeath, playerDeath2, walkingSound } from "./sounds.js";
-import { state } from "../shared/state.js";
+import { playerBombDeath, playerDeath, playerDeath2 } from "./sounds.js";
 
 const gameContainer = document.getElementById("game-container");
 const domPlayers = new Map();
