@@ -1,10 +1,10 @@
 import { Bomb } from "./bomb.js";
-import { bombTime, bombs, bounds, finish, flames, nextLevel, timedEvents, levelMap, setGameLost } from "./game.js";
+import { bombTime, bombs, bounds, flames, nextLevel, timedEvents, levelMap, setGameLost } from "./game.js";
 import { playerBombDeath, playerDeath, playerDeath2, walkingSound } from "../client/sounds.js";
 import { Timer } from "./timer.js";
 import { state } from "../shared/state.js";
 import { gridStep, mult } from "../shared/config.js";
-import { playFinishAnimation } from "../finish.js";
+//import { playFinishAnimation } from "../finish.js";
 
 let timedCount = 0;
 let deathSound = 1;
@@ -82,7 +82,7 @@ export class Player {
         // Stop walking sound when player dies
         walkingSound.pause();
         walkingSound.currentTime = 0;
-        levelMap[0][0] = 'player';  // make sure enemies don't walk over player
+        //levelMap[0][0] = 'player';  // make sure enemies don't walk over player
 
         const countNow = timedCount;
         const timedResurrection = new Timer(() => {
@@ -94,25 +94,21 @@ export class Player {
                 this.alive = true;
                 this.invulnerability();
             } else {
-                state.enemies.forEach(enemy => {
-                    enemy.enemyWalking.pause();
-                    enemy.enemyWalking.currentTime = 0;
-                });
                 setGameLost(); // Stop game loop updates
             };
             timedEvents.delete(`resurrection${countNow}`)
         }, 2000);
+        timedEvents.set(`resurrection${countNow}`, timedResurrection)
 
         // Block enemies for 2 seconds after resurrection
-        const timedEnemyBlock = new Timer(() => {
+        /* const timedEnemyBlock = new Timer(() => {
             if (this.lives > 0) {
                 levelMap[0][0] = '';
             }
             timedEvents.delete(`enemyBlock${countNow}`)
-        }, 4000);
-
-        timedEvents.set(`resurrection${countNow}`, timedResurrection)
-        timedEvents.set(`enemyBlock${countNow}`, timedEnemyBlock)
+        }, 4000); */
+        //timedEvents.set(`enemyBlock${countNow}`, timedEnemyBlock)
+        
         timedCount++;
     };
 
@@ -200,21 +196,6 @@ export class Player {
                         break;
                     };
                 };
-
-                // enemies hit
-                for (const enemy of state.enemies.values()) {
-                    if (enemy.alive && checkHit(playerBounds, enemy.element)) {     // enemies not present in multiplayer
-                        if (deathSound === 0) {
-                            this.killer = "enemy1";
-                            deathSound = 1;
-                        } else {
-                            this.killer = "enemy2";
-                            deathSound = 0;
-                        }
-                        this.die();
-                        break;
-                    };
-                };
             }
 
             // power-ups hit
@@ -227,43 +208,17 @@ export class Player {
                         this.bombPower++;
                     }
                     pow.pickUp();
-                    //pickUpItem(pow.name);
                     state.pickedItems.push(pow.name);
                     break;
                 };
-            };
-
-            // finish hit
-            if (finish.active && finish.checkCollision(newX, newY, this.size)) {
-                this.alive = false;
-                walkingSound.pause();
-                walkingSound.currentTime = 0;
-
-                // Trigger the finish animation
-                playFinishAnimation();
-
-                state.finishing = true;
-                const timedNextLevel = new Timer(() => {
-                    nextLevel();
-                    timedEvents.delete(`finishingTheLevel`);
-                    state.finished = true;
-                }, 4000);
-                timedEvents.set(`finishingTheLevel`, timedNextLevel);
-                timedCount++;
-                finish.active = false;
             };
         };
     };
 };
 
 function checkHit(playerBounds, other) {
-    let otherBounds = {};
-    if (other instanceof Element && typeof other.getBoundingClientRect === "function") {        // enemies not untied of dom elements
-        otherBounds.left = other.getBoundingClientRect().left - gridStep * 2;
-        otherBounds.right = other.getBoundingClientRect().right - gridStep * 2;
-        otherBounds.top = other.getBoundingClientRect().top - gridStep * 2;
-        otherBounds.bottom = other.getBoundingClientRect().bottom - gridStep * 2;
-    } else if (other.size) {
+    let otherBounds = {};    
+    if (other.size) {
         otherBounds = { left: other.x, right: other.x + other.size, top: other.y, bottom: other.y + other.size };
     } else {    // flames have width and height, not size
         otherBounds = { left: other.x, right: other.x + other.width, top: other.y, bottom: other.y + other.height };

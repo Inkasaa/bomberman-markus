@@ -1,4 +1,3 @@
-import { Enemy } from "../enemy.js";
 import { levelMap, powerUpMap } from "./game.js";
 import { Player } from "./player.js";
 import { BombUp, FlameUp } from "./powerup.js";
@@ -121,31 +120,4 @@ export function makeWalls(level) {
             powerUpMap[mapY][mapX] = [name, newFlameUp];
         };
     }
-
-    // place enemies
-    while (state.enemies.size < 1 + (level * 1.5)) {
-        const mapX = Math.floor(Math.random() * 13);
-        const mapY = Math.floor(Math.random() * 11);
-
-        // don't replace content or put anything in the top left
-        if (levelMap[mapY][mapX] || (mapX < 3 && mapY < 3)) {
-            continue;
-        };
-
-        const x = gridStep * mapX;
-        const y = gridStep * mapY;
-        const name = `enemy${String(mapX).padStart(2, '0')}${String(mapY).padStart(2, '0')}`;
-        const newEnemy = new Enemy(55 * mult, level * mult, x, y, name);
-        state.enemies.set(name, newEnemy);
-        levelMap[mapY][mapX] = 'enemy';
-    };
-
-    // enemies were on the levelMap only to stop them being placed on top of each other
-    for (let i = 0; i < levelMap.length; i++) {
-        for (let j = 0; j < levelMap[0].length; j++) {
-            if (levelMap[i][j] == 'enemy') {
-                levelMap[i][j] = null;
-            };
-        };
-    };
 };

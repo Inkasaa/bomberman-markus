@@ -42,13 +42,6 @@ export function setMoving(moving) {
     }
 }
 
-// Prevent default behavior for arrow keys to avoid page scrolling. Notice 'window'
-window.addEventListener("keydown", function (e) {
-    if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
-        e.preventDefault();
-    };
-});
-
 export function nextLevel() {
 
     if (state.level >= 5) {

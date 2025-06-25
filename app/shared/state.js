@@ -6,7 +6,6 @@ export const state = {
     newBombs: new Map(),        // for rendering
     removedBombs: new Map(),    // for rendering
     newFlames: new Map(),       // for rendering
-    enemies: new Map(),         // for player collisions
     powerups: new Map(),
     pickedItems: [],            // for rendering
     burningItems: [],           // for rendering
