@@ -75,9 +75,10 @@ export function updateLivesInfo(lives) {
     oldlives = lives;
     let livesText = '';
     for (let i = 0; i < lives; i++) {
-        livesText += `❤️`;
+        livesText += `🩷`;
     };
     livesinfo.textContent = 'Lives: ' + livesText;
+  /* ❤️🧡💛💚💙🩵💜 */
 }
 
 function updateLevelInfo(level) {

@@ -11,7 +11,7 @@ export function addPlayers(players) {
 
         domPlayer.id = player.name;
         domPlayer.classList.add("player");
-        domPlayer.style.width = `${player.size}px`;
+        domPlayer.style.width = `${player.size}px`;  
         domPlayer.style.height = `${player.size}px`;
         domPlayer.style.position = 'absolute';
         domPlayer.style.transform = `translate(${player.x}px, ${player.y}px)`;

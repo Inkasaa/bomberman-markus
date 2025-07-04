@@ -7,7 +7,7 @@ import { gridStep, halfStep, mult } from "../shared/config.js";
 
 export function setUpGame(playerName, multiplier) {
     const playerSpeed = 4.5 * multiplier;
-    const playerSize = 55 * multiplier;
+    const playerSize = 75 * multiplier;
     const playerX = halfStep - (playerSize / 2); // put player to top left
     const playerY = halfStep - (playerSize / 2);
 
