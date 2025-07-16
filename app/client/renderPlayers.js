@@ -43,6 +43,25 @@ export function updatePlayers(players) {
             p.classList.remove("left")
         }
 
+            if (player.right) {
+            p.classList.add("right");
+        } else {
+            p.classList.remove("right")
+        }
+
+            if (player.down) {
+            p.classList.add("down");
+        } else {
+            p.classList.remove("down")
+        }
+        
+              if (player.up) {
+            p.classList.add("up");
+        } else {
+            p.classList.remove("up")
+        }
+
+
         if (player.dead) {
             if (!p.classList.contains("dead")) {
                 if (player.killer === "bomb") playerBombDeath.play();

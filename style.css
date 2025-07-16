@@ -6,7 +6,7 @@ body {
     height: 100vh;
     background-color: #474747;
     /* background: #000 url("app/client/images/background03.jpg") no-repeat center center; */
-    background-image: url("app/client/images/background03.jpg");
+    background-image: url("app/client/images/lobbyTimer.gif");
     background-size: cover;
 
     font-family: Rockwell, 'Rockwell Nova', 'Roboto Slab', 'DejaVu Serif', 'Sitka Small', serif;
@@ -22,7 +22,7 @@ button {
 
 #game-container {
     position: absolute;
-    background: #379089;
+    background: #54412b;
   /*  background-image: url("app/client/images/solidwall.png");
        background-repeat: repeat; /* Ensures repeating */
    background-size: 6.25% 7.6923%; /* 16x horizontally, 13x vertically */
@@ -42,15 +42,80 @@ button {
 .player {
     will-change: transform;
     /* to own layer => GPU acceleration */
-    background-image: url("app/client/images/penguine.gif");
+    background-image: url("app/client/images/pingufront_still.png");
      background-repeat: no-repeat;
     background-size: contain;
- 
+ /*   transition: background-image 0.1s;*/
     z-index: 10;
 }
 
+/* Animated states */
 .player.left {
-    background-image: url('app/client/images/penguine.gif');
+    background-image: url('app/client/images/pinguleft.gif');
+   animation: leftToStill 0.5s forwards;
+}
+
+.player.right {
+    background-image: url('app/client/images/pinguright.gif');
+    animation: rightToStill 0.5s forwards;
+}
+
+.player.up {
+    background-image: url('app/client/images/pinguback.gif');
+    animation: upToStill 0.5s forwards;
+}
+
+.player.down {
+    background-image: url('app/client/images/pingugreen.gif');
+    animation: downToStill 0.5s forwards;
+}
+
+/* Still states 
+.player.left.still {
+    background-image: url('app/client/images/pinguleft_still.png');
+}
+
+.player.right.still {
+    background-image: url('app/client/images/pinguright_still.png');
+}
+
+.player.up.still {
+    background-image: url('app/client/images/pinguback_still.png');
+}
+
+.player.down.still {
+    background-image: url('app/client/images/pingugreen_still.png');
+}
+*/
+/* Keyframes for each direction */
+@keyframes leftToStill {
+  0%, 99% {
+        background-image: url('app/client/images/pinguleft.gif');
+    }
+    100% {
+        background-image: url('app/client/images/pinguleft_still.png');
+    }
+}
+
+@keyframes rightToStill {
+      0%, 99% {
+        background-image: url('app/client/images/pinguright.gif');
+    }
+    100% {
+        background-image: url('app/client/images/pinguright_still.png');
+    }
+}
+
+@keyframes upToStill {
+    to {
+        background-image: url('app/client/images/pinguback_still.png');
+    }
+}
+
+@keyframes downToStill {
+    to {
+        background-image: url('app/client/images/pingugreen_still.png');
+    }
 }
 
 .player.dead {
@@ -71,16 +136,16 @@ button {
 }
 
 .level-1.wall.solid {
-    background-image: url("app/client/images/solidwallSnow.svg")
+    background-image: url("app/client/images/solidwallLava.png")
 }
 
 .level-1.wall.weak {
-    background-image: url("app/client/images/weakwallice.svg");
-    opacity: 0.82;
+    background-image: url("app/client/images/newrocks.png");
+   /* opacity: 0.82; */
 }
 
 .level-2.wall.solid {
-    background-image: url("app/client/images/solidwallSnow.svg")
+    background-image: url("app/client/images/solidwallLava.png")
 }
 
 .level-2.wall.weak {

@@ -18,7 +18,11 @@ export class Player {
         this.x = x;
         this.y = y;
         this.name = name;
+        this.still = true;
         this.left = false;
+        this.right = false;
+        this.up = false;
+        this.down = false;
         this.dead = false;
 
         this.lives = 3;
@@ -70,6 +74,9 @@ export class Player {
     updateSpriteDirection(direction) {
         if (this.alive) {
             this.left = (direction === 'left');
+            this.right = (direction === 'right');
+            this.up = (direction === 'up');
+            this.down = (direction === 'down');
         }
     }
 
@@ -122,6 +129,8 @@ export class Player {
 
             if (inputs.left) this.updateSpriteDirection('left');
             if (inputs.right) this.updateSpriteDirection('right');
+            if (inputs.up) this.updateSpriteDirection('up');
+            if (inputs.down) this.updateSpriteDirection('down');
 
             // diagonal movement slowdown factor
             let slowDown = 1;
